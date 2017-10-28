@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  padding: 10px;
+  font-family: Calibri,serif;
+}
+.listBox{
+  border-style: inset;
+  border-width: 2px;
+}
+.listSelected{
+  color: white;
+  background: darkblue;
+}
+.listSelectedDisabled{
+  color: darkgray;
+  background: lightgrey;
+}
+.rubric{
+  font-weight: bold;
+}
+.rubricDisabled{
+  font-weight: bold;
+  color: darkgray;
+}
+.textDisabled,.listItemDisabled{
+  color: darkgray;
+}
+.textualField{
+  font-style: normal;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.panelRubric{
+  font-size: larger;
+  font-style: italic;
+  margin-bottom: 5px;
+}
+div.panel{
+  margin-bottom: 15px;
+}
+div.panelRow{
+  margin-top: 15px;
+}

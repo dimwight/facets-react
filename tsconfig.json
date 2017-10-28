@@ -1,0 +1,22 @@
+{
+  "include": [
+    "src/**/*"
+  ],
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "es2015",
+      "es2016"
+    ],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "allowUnreachableCode": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "strict": false,
+    "moduleResolution": "node",
+    "module": "es6",
+    "target": "esnext",
+    "jsx": "react"
+  }
+}

@@ -1,0 +1,10 @@
+/.idea/workspace.xml
+node_modules
+*.log
+src/**/*.js
+src/**/*.js.map
+src/**/*.jsx
+src/**/*.jsx.map
+tool/*.js
+public/index.js
+public/index.js.map
