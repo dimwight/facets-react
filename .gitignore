@@ -8,3 +8,4 @@ src/**/*.jsx.map
 tool/*.js
 public/index.js
 public/index.js.map
+public/index.css

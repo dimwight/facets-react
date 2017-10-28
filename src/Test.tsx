@@ -363,6 +363,6 @@ function buildSelectingPlus(facets){
 export function doTest(){
   let facets=newInstance(true);
   let surface=false?new SimpleSurface(Tests.AllSimples,facets)
-    :new SelectingSurface(true?Tests.SelectingBasic:Tests.SelectingPlus,facets);
+    :new SelectingSurface(false?Tests.SelectingBasic:Tests.SelectingPlus,facets);
   surface.buildSurface();
 }
