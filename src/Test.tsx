@@ -34,18 +34,11 @@ export namespace SimpleTitles{
     NUMERIC_FIELD='Number',NUMERIC_LABEL='Value',NUMERIC_START=123;
 }
 export namespace SelectingTitles {
-  export const FRAME='Selecting',
-    SELECT='Select Content',
-    ACTIONS='Actions',
-    LIVE='Live',
-    NEW='Duplicate',
-    UP='Move Up',
-    DOWN='Move Down',
-    DELETE='Delete',
-    EDIT='Edit Selection',
-    CHARS='Characters';
+  export const FRAME='Selecting',SELECT='Select Content',ACTIONS='Actions',
+    LIVE='Live',NEW='Duplicate',UP='Move Up',DOWN='Move Down',DELETE='Delete',
+    EDIT='Edit Selection',CHARS='Characters';
 }
-export class Test{
+class Test{
   constructor(readonly name:string,
               readonly id:number,
               readonly buildTest?:(Facets)=>void,
@@ -62,7 +55,7 @@ export const Tests={
   Next:new Test('Next',7)
 };
 interface TextContent {
-  text? : string;
+  text : string;
 }
 class SimpleSurface extends Surface{
   constructor(private test:Test,facets){
