@@ -215,6 +215,9 @@ function newSelectingTree(facets:Facets,test){
       )
       ]
   };
+  facets.supplement=(below:boolean)=>{
+    alert(below)
+  };
   facets.onRetargeted=()=>{
     if(basic){
       let live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
@@ -338,5 +341,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.AllSimples).buildSurface();
+  new TestSurface(Tests.SelectingPlus).buildSurface();
 }

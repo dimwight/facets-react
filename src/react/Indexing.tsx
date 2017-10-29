@@ -88,6 +88,7 @@ export function ListItem(p:ListItemProps){
     onKeyDown={p.onKeyDown}
   >{p.text}</div>;
 }
+export type IndexingOvershoot=(boolean)=>void;
 export class IndexingList extends IndexingFacet{
   private boxWidth=0;
   onClick=(e)=>{
@@ -95,11 +96,17 @@ export class IndexingList extends IndexingFacet{
   };
   onKeyDown=(e)=>{
     let indexThen=e.target.id.substr(0,1),indexNow=indexThen;
-    if(e.key==='ArrowDown')indexNow++;
-    else if(e.key==='ArrowUp')indexNow--;
-    if(indexNow!==indexThen&&indexNow>=0
-        &&indexNow<this.state.selectables.length)
-      this.indexChanged(indexNow)
+    if(e.key==='ArrowDown'){
+      indexNow++;
+    }
+    else if(e.key==='ArrowUp'){
+      indexNow--;
+    }
+    if(indexNow!==indexThen){
+      if(indexNow>=0&&indexNow<this.state.selectables.length)
+        this.indexChanged(indexNow);
+      else(this.props.facets.supplement as IndexingOvershoot)(indexNow<0)
+    }
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingList',props);
