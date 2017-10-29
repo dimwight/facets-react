@@ -67,7 +67,7 @@ interface TextContent {
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(false));
+    super(newInstance(true));
   }
   newTargetTree=()=>this.test.newTree(this.facets);
   buildLayout=()=>{
@@ -204,7 +204,7 @@ function newSelectingPlusTree(facets:Facets){
       if(belowShowZero&&thenFrom>0)this.showFrom--;
       else if(!belowShowZero&&thenStop<this.content.length)
         this.showFrom++;
-      traceThing('onOvershoot',{
+      traceThing('^onOvershoot',{
         belowShowZero:belowShowZero,
         thenFrom:thenFrom,
         thenStop:thenStop,
@@ -236,7 +236,7 @@ function newSelectingPlusTree(facets:Facets){
     title: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
-    content: content,
+    content: list.getShowables(),
     getUiSelectables: () => list.getShowables().map((item)=>item.text),
     newIndexedTargets: (indexed:TextContent,title:string) => [
       facets.newTextualTarget(SelectingTitles.EDIT, {
