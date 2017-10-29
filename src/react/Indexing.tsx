@@ -89,7 +89,7 @@ export function ListItem(p:ListItemProps){
   >{p.text}</div>;
 }
 export interface IndexingOvershoot{
-  overshot(below:boolean)
+  overshot(belowShowZero:boolean)
 }
 export class IndexingList extends IndexingFacet{
   private boxWidth=0;
@@ -107,7 +107,8 @@ export class IndexingList extends IndexingFacet{
     if(indexNow!==indexThen){
       if(indexNow>=0&&indexNow<this.state.selectables.length)
         this.indexChanged(indexNow);
-      else(this.props.facets.supplement as IndexingOvershoot).overshot(indexNow<0)
+      else(this.props.facets.supplement as IndexingOvershoot
+        ).overshot(indexNow<0)
     }
   };
   protected renderUi(props:IndexingUiProps){

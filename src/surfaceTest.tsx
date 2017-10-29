@@ -147,32 +147,45 @@ function newAllSimplesTree(facets){
     newTriggerTree(facets));
 }
 function newSelectingTree(facets:Facets,test){
+  let basic=test===Tests.SelectingBasic;
   class ShowList<T>{
-    private showStart=0;
+    private showFrom=0;
     constructor(private content:T[],private readonly showLength){}
     getShowables():T[]{
-      return this.content.slice(this.showStart, this.showStart+this.showLength);
+      return this.content.slice(this.showFrom, this.showFrom+this.showLength);
     }
-    shiftShowables(down){
-      if(down&&this.showStart>0)this.showStart--;
-      else if(!down&&this.showStart+this.showLength<this.content.length-1)
-        this.showStart++;
+    onOvershoot(belowShowZero){
+      let thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
+      if(belowShowZero&&thenFrom>0)this.showFrom--;
+      else if(!belowShowZero&&thenStop<this.content.length)
+        this.showFrom++;
+      traceThing('^onOvershoot',{
+        belowShowZero:belowShowZero,
+        thenFrom:thenFrom,
+        thenStop:thenStop,
+        nowFrom:this.showFrom
+      });
     }
     contentAt(showAt){
-      return showAt+this.showStart;
+      return showAt+this.showFrom;
     }
   }
+  facets.supplement={
+    overshot:belowShowZero=>{
+      list.onOvershoot(belowShowZero);
+      facets.notifyTargetUpdated(SelectingTitles.SELECT)
+    }
+  }as IndexingOvershoot;
   function showAt():number{
     return facets.getTargetState(frame.indexingTitle) as number;
   }
   let content=[
+    {text: 'Hello, good evening and welcome!'},
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
     {text: 'Hello, sailor!'},
-    {text: 'Hello, good evening and welcome!'},
   ];
   const list=new ShowList<TextContent>(content,3);
-  let basic=test===Tests.SelectingBasic;
   const frame:IndexingFramePolicy={
     title: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
@@ -234,9 +247,6 @@ function newSelectingTree(facets:Facets,test){
       )
       ]
   };
-  facets.supplement={
-    overshot:below=>list.shiftShowables(!below)
-  }as IndexingOvershoot;
   facets.onRetargeted=()=>{
     if(basic){
       let live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
