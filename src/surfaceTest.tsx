@@ -45,23 +45,21 @@ export namespace SelectingTitles {
     EDIT='Edit Selection',
     CHARS='Characters';
 }
-export class Test{
+class Test{
   constructor(
     readonly name,
-    readonly id,
     readonly newTree?: (Facets,Test?)=>Target,
     readonly buildLayout?:(Facets)=>void
   ){}
 }
-export const Tests={
-  Textual:new Test('Textual',0,newTextualTree,buildTextual),
-  TogglingLive:new Test('TogglingLive',1,newTogglingTree,buildToggling),
-  Indexing:new Test('Indexing',2,newIndexingTree,buildIndexing),
-  Trigger:new Test('Trigger',3,newTriggerTree,buildTrigger),
-  AllSimples:new Test('AllSimples',4,newAllSimplesTree,buildAllSimples),
-  SelectingBasic:new Test('SelectingBasic',5,newSelectingTree,buildSelectingBasic),
-  SelectingPlus:new Test('SelectingPlus',6,newSelectingTree,buildSelectingPlus),
-  Next:new Test('Next',7)
+const Tests={
+  Textual:new Test('Textual',newTextualTree,buildTextual),
+  TogglingLive:new Test('TogglingLive',newTogglingTree,buildToggling),
+  Indexing:new Test('Indexing',newIndexingTree,buildIndexing),
+  Trigger:new Test('Trigger',newTriggerTree,buildTrigger),
+  AllSimples:new Test('AllSimples',newAllSimplesTree,buildAllSimples),
+  SelectingBasic:new Test('SelectingBasic',newSelectingTree,buildSelectingBasic),
+  SelectingPlus:new Test('SelectingPlus',newSelectingTree,buildSelectingPlus)
 };
 interface TextContent {
   text? : string;

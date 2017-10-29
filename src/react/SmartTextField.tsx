@@ -5,7 +5,6 @@ import {
   FnGetBoolean,
 } from './local'
 import {traceThing} from '../Util/Bits';
-
 interface TextFieldProps{
   getStartText?:FnGetString
   onEnter:FnPassString
