@@ -15,6 +15,7 @@ import {
   TriggerButton,
   IndexingDropdown,
   IndexingList,
+  IndexingOvershoot,
 } from './react/export';
 import {
   traceThing,
@@ -66,7 +67,7 @@ interface TextContent {
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(true));
+    super(newInstance(false));
   }
   newTargetTree=()=>this.test.newTree(this.facets,this.test);
   buildLayout=()=>{
@@ -146,21 +147,38 @@ function newAllSimplesTree(facets){
     newTriggerTree(facets));
 }
 function newSelectingTree(facets:Facets,test){
-  function listAt():number{
+  class ShowList<T>{
+    private showStart=0;
+    constructor(private content:T[],private readonly showLength){}
+    getShowables():T[]{
+      return this.content.slice(this.showStart, this.showStart+this.showLength);
+    }
+    shiftShowables(down){
+      if(down&&this.showStart>0)this.showStart--;
+      else if(!down&&this.showStart+this.showLength<this.content.length-1)
+        this.showStart++;
+    }
+    contentAt(showAt){
+      return showAt+this.showStart;
+    }
+  }
+  function showAt():number{
     return facets.getTargetState(frame.indexingTitle) as number;
   }
-  const list : TextContent[]=[
+  let content=[
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
+    {text: 'Hello, sailor!'},
     {text: 'Hello, good evening and welcome!'},
   ];
+  const list=new ShowList<TextContent>(content,3);
   let basic=test===Tests.SelectingBasic;
   const frame:IndexingFramePolicy={
     title: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
-    content: list,
-    getUiSelectables: () => list.map((item)=>item.text),
+    content: content,
+    getUiSelectables: () => list.getShowables().map((item)=>item.text),
     newIndexedTargets: (indexed:TextContent,title:string) => [
       facets.newTextualTarget(SelectingTitles.EDIT, {
         passText: indexed.text,
@@ -174,7 +192,7 @@ function newSelectingTree(facets:Facets,test){
     ,
     newIndexingTargets:()=>basic?[
         facets.newTextualTarget(SimpleTitles.INDEXED,{
-          getText:titley=>{
+          getText:title=>{
             let index=facets.getTargetState(SelectingTitles.SELECT)as number;
             return false&&index===null?"No target yet":list[index].text;
           }
@@ -186,38 +204,39 @@ function newSelectingTree(facets:Facets,test){
       :[facets.newTargetGroup(SelectingTitles.ACTIONS,
         facets.newTriggerTarget(SelectingTitles.UP,{
           targetStateUpdated:(title,state)=>{
-            let at=listAt();
-            swapElement(list,at,true);
+            let at=list.contentAt(showAt());
+            swapElement(content,at,true);
             facets.updateTargetState(frame.indexingTitle,at-1)
           }
         }),
         facets.newTriggerTarget(SelectingTitles.DOWN,{
           targetStateUpdated:(title,state)=>{
-            let at=listAt();
-            swapElement(list,at,false );
+            let at=list.contentAt(showAt());
+            swapElement(content,at,false );
             facets.updateTargetState(frame.indexingTitle,at+1)
           }
         }),
         facets.newTriggerTarget(SelectingTitles.DELETE,{
           targetStateUpdated:(title,state)=>{
-            let at=listAt(),atEnd=removeElement(list,at);
+            let at=list.contentAt(showAt()),
+              atEnd=removeElement(content,at);
             if(atEnd)
               facets.updateTargetState(frame.indexingTitle,at-1)
           }
         }),
         facets.newTriggerTarget(SelectingTitles.NEW,{
           targetStateUpdated:(title,state)=>{
-            let at=listAt();
-            duplicateElement(list,at,src=>({text: (src as TextContent).text}));
+            let at=list.contentAt(showAt());
+            duplicateElement(content,at,src=>({text: (src as TextContent).text}));
             facets.updateTargetState(frame.indexingTitle,at+1)
           }
         })
       )
       ]
   };
-  facets.supplement=(below:boolean)=>{
-    alert(below)
-  };
+  facets.supplement={
+    overshot:below=>list.shiftShowables(!below)
+  }as IndexingOvershoot;
   facets.onRetargeted=()=>{
     if(basic){
       let live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
@@ -226,8 +245,8 @@ function newSelectingTree(facets:Facets,test){
         facets.setTargetLive(title_,live))
     }
     else{
-      let at=listAt();
-      facets.setTargetLive(SelectingTitles.DELETE,list.length>1);
+      let at=showAt();
+      facets.setTargetLive(SelectingTitles.DELETE,list.getShowables().length>1);
       facets.setTargetLive(SelectingTitles.UP,at>0);
       facets.setTargetLive(SelectingTitles.DOWN,
         at<frame.content.length-1);

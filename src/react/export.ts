@@ -8,5 +8,6 @@ export {
 export {
   IndexingDropdown,
   IndexingList,
+  IndexingOvershoot,
 } from './Indexing'
 
