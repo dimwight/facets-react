@@ -21,7 +21,7 @@ import {
   traceThing,
   swapElement,
   removeElement,
-  duplicateElement
+  addElement
 } from './util/export';
 import {Surface}from './facets/export';
 export namespace SimpleTitles{
@@ -39,7 +39,7 @@ export namespace SelectingTitles {
     SELECT='Select Content',
     ACTIONS='Actions',
     LIVE='Live',
-    NEW='Duplicate',
+    NEW='New',
     UP='Move Up',
     DOWN='Move Down',
     DELETE='Delete',
@@ -176,7 +176,7 @@ function newSelectingTree(facets:Facets,test){
       facets.notifyTargetUpdated(SelectingTitles.SELECT)
     }
   }as IndexingOvershoot;
-  function showAt():number{
+  function getShowAt():number{
     return facets.getTargetState(frame.indexingTitle) as number;
   }
   let content=[
@@ -186,6 +186,7 @@ function newSelectingTree(facets:Facets,test){
     {text: 'Hello, sailor!'},
   ];
   const list=new ShowList<TextContent>(content,3);
+  let contentIds=0;
   const frame:IndexingFramePolicy={
     title: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
@@ -217,31 +218,32 @@ function newSelectingTree(facets:Facets,test){
       :[facets.newTargetGroup(SelectingTitles.ACTIONS,
         facets.newTriggerTarget(SelectingTitles.UP,{
           targetStateUpdated:(title,state)=>{
-            let at=list.contentAt(showAt());
+            let at=list.contentAt(getShowAt());
             swapElement(content,at,true);
             facets.updateTargetState(frame.indexingTitle,at-1)
           }
         }),
         facets.newTriggerTarget(SelectingTitles.DOWN,{
           targetStateUpdated:(title,state)=>{
-            let at=list.contentAt(showAt());
+            let at=list.contentAt(getShowAt());
             swapElement(content,at,false );
             facets.updateTargetState(frame.indexingTitle,at+1)
           }
         }),
         facets.newTriggerTarget(SelectingTitles.DELETE,{
           targetStateUpdated:(title,state)=>{
-            let at=list.contentAt(showAt()),
+            let at=list.contentAt(getShowAt()),
               atEnd=removeElement(content,at);
             if(atEnd)
               facets.updateTargetState(frame.indexingTitle,at-1)
           }
         }),
         facets.newTriggerTarget(SelectingTitles.NEW,{
-          targetStateUpdated:(title,state)=>{
-            let at=list.contentAt(showAt());
-            duplicateElement(content,at,src=>({text: (src as TextContent).text}));
-            facets.updateTargetState(frame.indexingTitle,at+1)
+          targetStateUpdated:()=>{
+            let showAt=getShowAt(),contentAt=list.contentAt(showAt);
+            addElement(content,contentAt,
+                src=>({text: 'NewContent'+contentIds++}));
+            facets.updateTargetState(frame.indexingTitle,showAt)
           }
         })
       )
@@ -255,7 +257,7 @@ function newSelectingTree(facets:Facets,test){
         facets.setTargetLive(title_,live))
     }
     else{
-      let at=showAt();
+      let at=getShowAt();
       facets.setTargetLive(SelectingTitles.DELETE,list.getShowables().length>1);
       facets.setTargetLive(SelectingTitles.UP,at>0);
       facets.setTargetLive(SelectingTitles.DOWN,

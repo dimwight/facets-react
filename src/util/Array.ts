@@ -55,17 +55,17 @@ export function removeElement(list:any[],at:number){
   let length=list.length,atEnd=at===length-1;
   let top=list.slice(0,at),tail=atEnd?[]:list.slice(at+1);
   list.splice(0,length,...top,...tail);
-  traceThing('removeElement',{
+  traceThing('^removeElement',{
     at:at,
     atEnd:atEnd,
     list:list
   });
   return atEnd;
 }
-export function duplicateElement(list:any[],at:number,newDuplicate:(src)=>any){
+export function addElement(list:any[],at:number,newElement:(src)=>any){
   let length=list.length,atEnd=at===length-1;
   let top=list.slice(0,at),tail=atEnd?[]:list.slice(at),
-    add=newDuplicate(list[at]);
+    add=newElement(list[at]);
   if(!atEnd)
     list.splice(0,length,...top,add,...tail);
   else list.push(add);
