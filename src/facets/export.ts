@@ -1,2 +1,2 @@
-export * from './Surface'
+export {Surface} from './Surface'
 

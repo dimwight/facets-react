@@ -9,12 +9,12 @@ import {
 import {
   RowPanel,
   PanelRow,
-  IndexingDropdown,
-  IndexingList,
   TextualLabel,
   TextualField,
   TogglingCheckbox,
   TriggerButton,
+  IndexingDropdown,
+  IndexingList,
 } from './react/export';
 import {
   traceThing,
@@ -141,8 +141,8 @@ function newIndexingTree(facets){
 function newAllSimplesTree(facets){
   return facets.newTargetGroup('AllTest',
     newTextualTree(facets),
-    newIndexingTree(facets),
     newTogglingTree(facets),
+    newIndexingTree(facets),
     newTriggerTree(facets));
 }
 function newSelectingTree(facets:Facets,test){
@@ -283,14 +283,14 @@ function buildAllSimples(facets){
         <TextualField title={textual2} facets={facets} cols={40}/>
         <TextualLabel title={textual2} facets={facets}/>
       </RowPanel>
+      <RowPanel rubric={Tests.TogglingLive.name}>
+        <TogglingCheckbox title={SimpleTitles.TOGGLING} facets={facets}/>
+        <TextualLabel title={SimpleTitles.TOGGLED} facets={facets}/>
+      </RowPanel>
       <RowPanel rubric={Tests.Indexing.name}>
         <IndexingDropdown title={SimpleTitles.INDEXING} facets={facets}/>
         <TextualLabel title={SimpleTitles.INDEX} facets={facets}/>
         <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
-      </RowPanel>
-      <RowPanel rubric={Tests.TogglingLive.name}>
-        <TogglingCheckbox title={SimpleTitles.TOGGLING} facets={facets}/>
-        <TextualLabel title={SimpleTitles.TOGGLED} facets={facets}/>
       </RowPanel>
       <RowPanel rubric={Tests.Trigger.name}>
         <TriggerButton title={SimpleTitles.TRIGGER} facets={facets}/>
@@ -338,5 +338,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingPlus).buildSurface();
+  new TestSurface(Tests.AllSimples).buildSurface();
 }
