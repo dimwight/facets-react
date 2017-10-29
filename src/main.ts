@@ -1,3 +1,3 @@
-import {doTest} from './Test';
+import {doTest} from './surfaceTest';
 doTest();
 

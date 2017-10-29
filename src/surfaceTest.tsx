@@ -22,7 +22,7 @@ import {
   removeElement,
   duplicateElement
 } from './util/export';
-import {Surface,Layout}from './facets/local';
+import {Surface}from './facets/export';
 export namespace SimpleTitles{
   export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
     INDEXING=TEXTUAL_FIRST+' or '+TEXTUAL_SECOND,
@@ -34,38 +34,44 @@ export namespace SimpleTitles{
     NUMERIC_FIELD='Number',NUMERIC_LABEL='Value',NUMERIC_START=123;
 }
 export namespace SelectingTitles {
-  export const FRAME='Selecting',SELECT='Select Content',ACTIONS='Actions',
-    LIVE='Live',NEW='Duplicate',UP='Move Up',DOWN='Move Down',DELETE='Delete',
-    EDIT='Edit Selection',CHARS='Characters';
+  export const FRAME='Selecting',
+    SELECT='Select Content',
+    ACTIONS='Actions',
+    LIVE='Live',
+    NEW='Duplicate',
+    UP='Move Up',
+    DOWN='Move Down',
+    DELETE='Delete',
+    EDIT='Edit Selection',
+    CHARS='Characters';
 }
-class Test{
-  constructor(readonly name:string,
-              readonly id:number,
-              readonly buildTest?:(Facets)=>void,
-              readonly newTree?:(Facets,Test?)=>Target){}
+export class Test{
+  constructor(
+    readonly name,
+    readonly id,
+    readonly newTree?: (Facets,Test?)=>Target,
+    readonly buildLayout?:(Facets)=>void
+  ){}
 }
 export const Tests={
-  Textual:new Test('Textual',0,buildTextual,newTextualTree),
-  TogglingLive:new Test('TogglingLive',1,buildToggling,newTogglingTree),
-  Indexing:new Test('Indexing',2,buildIndexing,newIndexingTree),
-  Trigger:new Test('Trigger',3,buildTrigger,newTriggerTree),
-  AllSimples:new Test('AllSimples',4,buildAllSimples,newAllSimplesTree),
-  SelectingBasic:new Test('SelectingBasic',5,buildSelectingBasic),
-  SelectingPlus:new Test('SelectingPlus',6,buildSelectingPlus),
+  Textual:new Test('Textual',0,newTextualTree,buildTextual),
+  TogglingLive:new Test('TogglingLive',1,newTogglingTree,buildToggling),
+  Indexing:new Test('Indexing',2,newIndexingTree,buildIndexing),
+  Trigger:new Test('Trigger',3,newTriggerTree,buildTrigger),
+  AllSimples:new Test('AllSimples',4,newAllSimplesTree,buildAllSimples),
+  SelectingBasic:new Test('SelectingBasic',5,newSelectingTree,buildSelectingBasic),
+  SelectingPlus:new Test('SelectingPlus',6,newSelectingTree,buildSelectingPlus),
   Next:new Test('Next',7)
 };
 interface TextContent {
-  text : string;
+  text? : string;
 }
-class SimpleSurface extends Surface{
-  constructor(private test:Test,facets){
-    super(facets);
+class TestSurface extends Surface{
+  constructor(private test:Test){
+    super(newInstance(true));
   }
-  newTargetTree(){
-    return this.test.newTree(this.facets,this.test);
-  }
-  buildLayout(){
-    this.facets.getTargetState(SelectingTitles.SELECT);
+  newTargetTree=()=>this.test.newTree(this.facets,this.test);
+  buildLayout=()=>{
     if(false&&this.test===Tests.AllSimples)[
       SimpleTitles.TEXTUAL_FIRST,
       SimpleTitles.INDEXING,
@@ -73,116 +79,8 @@ class SimpleSurface extends Surface{
       SimpleTitles.TRIGGER,
       SimpleTitles.TRIGGEREDS]
       .forEach(title=>this.facets.setTargetLive(title,false));
-    new TestLayout(this.test).build(this.facets);
+    this.test.buildLayout(this.facets);
   }
-}
-class SelectingSurface extends Surface{
-  readonly frame:IndexingFramePolicy;
-  constructor(private test:Test,facets:Facets){
-    super(facets);
-    let list : TextContent[]=[
-      {text: 'Hello world!'},
-      {text: 'Hello Dolly!'},
-      {text: 'Hello, good evening and welcome!'},
-    ];
-    this.frame={
-      title: SelectingTitles.FRAME,
-      indexingTitle: SelectingTitles.SELECT,
-      newIndexedTitle:indexed=>SelectingTitles.FRAME,
-      content: list,
-      getUiSelectables: () => list.map((item)=>item.text),
-      newIndexedTargets: (indexed:TextContent,title:string) => [
-        facets.newTextualTarget(SelectingTitles.EDIT, {
-          passText: indexed.text,
-          targetStateUpdated: (title, state) => indexed.text = state as string
-        }),
-        facets.newTextualTarget(SelectingTitles.CHARS, {
-          getText: title => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
-          ).length
-        }),
-      ]
-      ,
-      newIndexingTargets:()=>this.test===Tests.SelectingBasic?[
-          facets.newTextualTarget(SimpleTitles.INDEXED,{
-            getText:titley=>{
-              let index=facets.getTargetState(SelectingTitles.SELECT)as number;
-              return false&&index===null?"No target yet":list[index].text;
-            }
-          }),
-          facets.newTogglingTarget(SelectingTitles.LIVE,{
-            passSet:true
-          })
-        ]
-        :[facets.newTargetGroup(SelectingTitles.ACTIONS,
-          facets.newTriggerTarget(SelectingTitles.UP,{
-            targetStateUpdated:(title,state)=>{
-              let at=this.listAt();
-              swapElement(list,at,true);
-              facets.updateTargetState(this.frame.indexingTitle,at-1)
-            }
-          }),
-          facets.newTriggerTarget(SelectingTitles.DOWN,{
-            targetStateUpdated:(title,state)=>{
-              let at=this.listAt();
-              swapElement(list,at,false );
-              facets.updateTargetState(this.frame.indexingTitle,at+1)
-            }
-          }),
-          facets.newTriggerTarget(SelectingTitles.DELETE,{
-            targetStateUpdated:(title,state)=>{
-              let at=this.listAt(),atEnd=removeElement(list,at);
-              if(atEnd)
-                facets.updateTargetState(this.frame.indexingTitle,at-1)
-            }
-          }),
-          facets.newTriggerTarget(SelectingTitles.NEW,{
-            targetStateUpdated:(title,state)=>{
-              let at=this.listAt();
-              duplicateElement(list,at,src=>({text: (src as TextContent).text}));
-              facets.updateTargetState(this.frame.indexingTitle,at+1)
-            }
-          })
-        )
-        ]
-    }
-  }
-  listAt():number{
-    return this.facets.getTargetState(this.frame.indexingTitle) as number;
-  }
-  newTargetTree(){
-    return this.facets.buildSelectingFrame(this.frame);
-  }
-  onRetargeted=()=>{
-    let facets=this.facets,frame=this.frame,list=this.frame.content;
-    if(this.test===Tests.SelectingPlus){
-      let at=this.listAt();
-      facets.setTargetLive(SelectingTitles.DELETE,list.length>1);
-      facets.setTargetLive(SelectingTitles.UP,at>0);
-      facets.setTargetLive(SelectingTitles.DOWN,
-        at<this.frame.content.length-1);
-    }
-    else{
-      let live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
-      [SelectingTitles.SELECT,SimpleTitles.INDEXED,SelectingTitles.EDIT,
-        SelectingTitles.CHARS].forEach(
-          title=>facets.setTargetLive(title,live))
-    }
-  };
-  buildLayout(){
-    this.facets.getTargetState(SelectingTitles.SELECT);
-    if(false&&this.test===Tests.AllSimples)[
-      SimpleTitles.TEXTUAL_FIRST,
-      SimpleTitles.INDEXING,
-      SimpleTitles.TOGGLING,
-      SimpleTitles.TRIGGER,
-      SimpleTitles.TRIGGEREDS]
-      .forEach(title=>this.facets.setTargetLive(title,false));
-    new TestLayout(this.test).build(this.facets);
-  }
-}
-class TestLayout implements Layout{
-  constructor(private test:Test){}
-  build=facets=>this.test.buildTest(facets);
 }
 function newTextualTree(facets){
   const first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
@@ -206,10 +104,10 @@ function newTogglingTree(facets){
         return facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set'
       },
     });
-  facets.attachOnRetargeted(()=>{
+  facets.onRetargeted=()=>{
     facets.setTargetLive(SimpleTitles.TOGGLED,
       facets.getTargetState(SimpleTitles.TOGGLING)as boolean);
-  });
+  };
   return facets.newTargetGroup('TogglingTest',toggling,toggled);
 }
 function newTriggerTree(facets){
@@ -248,6 +146,94 @@ function newAllSimplesTree(facets){
     newIndexingTree(facets),
     newTogglingTree(facets),
     newTriggerTree(facets));
+}
+function newSelectingTree(facets:Facets,test){
+  function listAt():number{
+    return facets.getTargetState(frame.indexingTitle) as number;
+  }
+  const list : TextContent[]=[
+    {text: 'Hello world!'},
+    {text: 'Hello Dolly!'},
+    {text: 'Hello, good evening and welcome!'},
+  ];
+  let basic=test===Tests.SelectingBasic;
+  const frame:IndexingFramePolicy={
+    title: SelectingTitles.FRAME,
+    indexingTitle: SelectingTitles.SELECT,
+    newIndexedTitle:indexed=>SelectingTitles.FRAME,
+    content: list,
+    getUiSelectables: () => list.map((item)=>item.text),
+    newIndexedTargets: (indexed:TextContent,title:string) => [
+      facets.newTextualTarget(SelectingTitles.EDIT, {
+        passText: indexed.text,
+        targetStateUpdated: (title, state) => indexed.text = state as string
+      }),
+      facets.newTextualTarget(SelectingTitles.CHARS, {
+        getText: title => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
+        ).length
+      }),
+    ]
+    ,
+    newIndexingTargets:()=>basic?[
+        facets.newTextualTarget(SimpleTitles.INDEXED,{
+          getText:titley=>{
+            let index=facets.getTargetState(SelectingTitles.SELECT)as number;
+            return false&&index===null?"No target yet":list[index].text;
+          }
+        }),
+        facets.newTogglingTarget(SelectingTitles.LIVE,{
+          passSet:true
+        })
+      ]
+      :[facets.newTargetGroup(SelectingTitles.ACTIONS,
+        facets.newTriggerTarget(SelectingTitles.UP,{
+          targetStateUpdated:(title,state)=>{
+            let at=listAt();
+            swapElement(list,at,true);
+            facets.updateTargetState(frame.indexingTitle,at-1)
+          }
+        }),
+        facets.newTriggerTarget(SelectingTitles.DOWN,{
+          targetStateUpdated:(title,state)=>{
+            let at=listAt();
+            swapElement(list,at,false );
+            facets.updateTargetState(frame.indexingTitle,at+1)
+          }
+        }),
+        facets.newTriggerTarget(SelectingTitles.DELETE,{
+          targetStateUpdated:(title,state)=>{
+            let at=listAt(),atEnd=removeElement(list,at);
+            if(atEnd)
+              facets.updateTargetState(frame.indexingTitle,at-1)
+          }
+        }),
+        facets.newTriggerTarget(SelectingTitles.NEW,{
+          targetStateUpdated:(title,state)=>{
+            let at=listAt();
+            duplicateElement(list,at,src=>({text: (src as TextContent).text}));
+            facets.updateTargetState(frame.indexingTitle,at+1)
+          }
+        })
+      )
+      ]
+  };
+  facets.onRetargeted=()=>{
+    if(basic){
+      let live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
+      [SelectingTitles.SELECT,SimpleTitles.INDEXED,SelectingTitles.EDIT,
+        SelectingTitles.CHARS].forEach(title_=>
+        facets.setTargetLive(title_,live))
+    }
+    else{
+      let at=listAt();
+      facets.setTargetLive(SelectingTitles.DELETE,list.length>1);
+      facets.setTargetLive(SelectingTitles.UP,at>0);
+      facets.setTargetLive(SelectingTitles.DOWN,
+        at<frame.content.length-1);
+      traceThing('^onRetargeted',list);
+    }
+  };
+  return facets.buildSelectingFrame(frame);
 }
 function buildTextual(facets){
   let first=SimpleTitles.TEXTUAL_FIRST,second=SimpleTitles.TEXTUAL_SECOND;
@@ -354,8 +340,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  let facets=newInstance(true);
-  let surface=false?new SimpleSurface(Tests.AllSimples,facets)
-    :new SelectingSurface(false?Tests.SelectingBasic:Tests.SelectingPlus,facets);
-  surface.buildSurface();
+  new TestSurface(Tests.SelectingPlus).buildSurface();
 }

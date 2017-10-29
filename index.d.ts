@@ -179,7 +179,7 @@ export interface Facets{
   buildSelectingFrame(policy: IndexingFramePolicy): Target;
   /**
    * Constructs a tree of targeters using the initial target tree.
-   * @param {Target} targets the root of the target tree
+   * @param {Target} targetTree the root of the target tree
    */
   buildTargeterTree(targetTree:Target):void;
   /**
@@ -207,5 +207,6 @@ export interface Facets{
   notifyTargetUpdated(title: string): void;
   setTargetLive(title: string, live: boolean): void;
   isTargetLive(title: string): boolean;
-  attachOnRetargeted(retargeted: ()=>void): void;
+  onRetargeted: ()=>void;
+  supplement:any;
 }

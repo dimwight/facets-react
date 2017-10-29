@@ -1702,17 +1702,14 @@ class Facets extends Tracer {
         /*private*/ this.titleTargeters = ({});
         /*private*/ this.notifiable = new Facets.Facets$0(this);
         this.doTrace = false;
+        this.__onRetargeted = null;
         this.targeterTree = null;
-        this.retargeted = null;
         this.doTrace = trace;
     }
-    attachOnRetargeted(retargeted) {
-        this.retargeted = (retargeted);
-    }
     onRetargeted() {
-        if (this.retargeted != null) {
+        if (this.__onRetargeted != null) {
             this.trace$java_lang_String("> Calling onRetargeted...");
-            (target => (typeof target === 'function') ? target(null) : target.accept(null))(this.retargeted);
+            (target => (typeof target === 'function') ? target(null) : target.accept(null))(this.__onRetargeted);
         }
     }
     /**
