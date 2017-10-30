@@ -195,16 +195,22 @@ export interface Facets{
    */
   updateTargetState(title:string,update:SimpleState):void;
   /**
+   * Notify the framework of an update and trigger a retargeting. 
+   * @param {string} title identifies the target
+   */
+  notifyTargetUpdated(title: string): void;
+  /**
+   * Update target and and trigger a retargeting. 
+   * @param {string} title identifies the target
+   * @param {SimpleState} update for target state
+   */
+  updateTargetWithNotify(title:string,update:SimpleState):void;
+  /**
    * Obtain the the state of the target identified.
    * @param {string} title identifies the target
    * @returns {SimpleState} the state
    */
   getTargetState(title:string):SimpleState;
-  /**
-   * Notify the framework of an update and trigger a retargeting. 
-   * @param {string} title identifies the target
-   */
-  notifyTargetUpdated(title: string): void;
   setTargetLive(title: string, live: boolean): void;
   isTargetLive(title: string): boolean;
   onRetargeted: ()=>void;

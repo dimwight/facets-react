@@ -3,9 +3,9 @@ import {traceThing} from '../util/export';
 import {Facets,SimpleState} from 'facets-js';
 import {SmartTextField} from './local';
 import './Facet.css';
-type FnGetBoolean=()=>boolean
-type FnPassString=(string)=>void
-type FnGetString=()=>string
+export type FnGetBoolean=()=>boolean
+export type FnPassString=(string)=>void
+export type FnGetString=()=>string
 export interface TargetValues{
   title:string
   facets?:Facets

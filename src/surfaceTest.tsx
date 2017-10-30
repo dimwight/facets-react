@@ -197,7 +197,9 @@ function newSelectingPlusTree(facets:Facets){
     private showFrom=0;
     constructor(private content:T[],readonly showLength){}
     getShowables():T[]{
-      return this.content.slice(this.showFrom, this.showFrom+this.showLength);
+      let showables=this.content.slice(this.showFrom, this.showFrom+this.showLength);
+      traceThing('showables:',showables);
+      return showables;
     }
     onOvershoot(belowShowZero){
       let thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
@@ -208,7 +210,7 @@ function newSelectingPlusTree(facets:Facets){
         belowShowZero:belowShowZero,
         thenFrom:thenFrom,
         thenStop:thenStop,
-        nowFrom:this.showFrom
+        offset:this.showFrom-thenFrom
       });
     }
     contentAt(showThen){
@@ -238,16 +240,19 @@ function newSelectingPlusTree(facets:Facets){
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
     content: list.getShowables(),
     getUiSelectables: () => list.getShowables().map((item)=>item.text),
-    newIndexedTargets: (indexed:TextContent,title:string) => [
-      facets.newTextualTarget(SelectingTitles.EDIT, {
-        passText: indexed.text,
-        targetStateUpdated: (title, state) => indexed.text = state as string
-      }),
-      facets.newTextualTarget(SelectingTitles.CHARS, {
-        getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
-        ).length
-      }),
-    ],
+    newIndexedTargets: (indexed:TextContent,title:string) => {
+      traceThing('newIndexedTargets',{indexed:indexed});
+      return [
+        facets.newTextualTarget(SelectingTitles.EDIT, {
+          passText: indexed.text,
+          targetStateUpdated: (title, state) => indexed.text = state as string
+        }),
+        facets.newTextualTarget(SelectingTitles.CHARS, {
+          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
+          ).length
+        }),
+      ]
+    },
     newIndexingTargets:()=>[
       facets.newTargetGroup(SelectingTitles.ACTIONS,
         facets.newTriggerTarget(SelectingTitles.UP,{
@@ -403,5 +408,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingPlus).buildSurface();
+  new TestSurface(Tests.SelectingBasic).buildSurface();
 }
