@@ -298,7 +298,7 @@ function newSelectingPlusTree(facets:Facets){
     facets.setTargetLive(SelectingTitles.DELETE,list.getShowables().length>1);
     facets.setTargetLive(SelectingTitles.UP,at>0);
     facets.setTargetLive(SelectingTitles.DOWN,
-      at<frame.content.length-1);
+      at<content.length-1);
     traceThing('^onRetargeted',list);
   };
   return facets.buildSelectingFrame(frame);
