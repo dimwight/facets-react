@@ -112,9 +112,9 @@ export interface IndexingFramePolicy {
    */
   title: string;
   /**
-   * Array of items to be indexed.
+   * Get current items to be indexed.
    */
-  content: any[];
+  getIndexables: () => any[];
   /**
    * Title for the wrapped indexing.
    */

@@ -159,7 +159,7 @@ function newSelectingBasicTree(facets:Facets){
     title: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
-    content: list,
+    getIndexables:()=>list,
     getUiSelectables: () => list.map((item)=>item.text),
     newIndexedTargets: (indexed:TextContent,title:string) => [
       facets.newTextualTarget(SelectingTitles.EDIT, {
@@ -238,7 +238,7 @@ function newSelectingPlusTree(facets:Facets){
     title: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
-    content: list.getShowables(),
+    getIndexables:()=>list.getShowables(),
     getUiSelectables: () => list.getShowables().map((item)=>item.text),
     newIndexedTargets: (indexed:TextContent,title:string) => {
       traceThing('newIndexedTargets',{indexed:indexed});
@@ -408,5 +408,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingBasic).buildSurface();
+  new TestSurface(Tests.SelectingPlus).buildSurface();
 }
