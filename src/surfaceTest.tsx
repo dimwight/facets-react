@@ -67,7 +67,7 @@ class TestSurface extends Surface{
 function newTextualTree(facets){
   let first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
       passText:'Some text for '+SimpleTitles.TEXTUAL_FIRST,
-      targetStateUpdated:(title,state)=>{
+      targetStateUpdated:state=>{
         facets.updateTargetState(SimpleTitles.TEXTUAL_SECOND,
           SimpleTitles.TEXTUAL_FIRST+' has changed to: '+state);
       },
@@ -326,5 +326,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingPlus).buildSurface();
+  new TestSurface(Tests.AllSimples).buildSurface();
 }
