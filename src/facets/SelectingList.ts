@@ -15,7 +15,7 @@ export namespace SelectingTitles {
     EDIT='Edit Selection',
     CHARS='Characters';
 }
-export interface IndexingOvershoot{
+export interface SelectingOvershoot{
   overshot(belowShowZero:boolean)
 }
 export class SelectingList<T>{
@@ -36,11 +36,8 @@ export class SelectingList<T>{
       traceThing('^onRetargeted',this.content);
     };
     facets.supplement={
-      overshot:belowShowZero=>{
-        this.onOvershoot(belowShowZero);
-        facets.notifyTargetUpdated(SelectingTitles.SELECT)
-      },
-    }as IndexingOvershoot;
+      overshot:belowShowZero=>this.onOvershoot(belowShowZero),
+    }as SelectingOvershoot;
   }
   getShowables():T[]{
     let showables=this.content.slice(this.showFrom, this.showFrom+this.showLength);
@@ -58,6 +55,7 @@ export class SelectingList<T>{
       thenStop:thenStop,
       offset:this.showFrom-thenFrom,
     });
+    this.facets.notifyTargetUpdated(SelectingTitles.SELECT)
   }
   contentAt(showThen){
     return showThen+this.showFrom;
