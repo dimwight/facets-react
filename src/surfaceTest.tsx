@@ -17,12 +17,8 @@ import {
   IndexingList,
   IndexingOvershoot,
 } from './react/export';
-import {
-  traceThing,
-  swapElement,
-  removeElement,
-  addElement
-} from './util/export';
+import * as Array from './util/Array';
+import {traceThing}from './util/export';
 import {Surface}from './facets/export';
 export namespace SimpleTitles{
   export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
@@ -50,7 +46,7 @@ class Test{
   constructor(
     readonly name,
     readonly newTree: (Facets)=>Target,
-    readonly buildLayout:(Facets)=>void
+    readonly buildLayout:(Facets)=>void,
   ){}
 }
 const Tests={
@@ -60,7 +56,7 @@ const Tests={
   Trigger:new Test('Trigger',newTriggerTree,buildTrigger),
   AllSimples:new Test('AllSimples',newAllSimplesTree,buildAllSimples),
   SelectingBasic:new Test('SelectingBasic',newSelectingBasicTree,buildSelectingBasic),
-  SelectingPlus:new Test('SelectingPlus',newSelectingPlusTree,buildSelectingPlus)
+  SelectingPlus:new Test('SelectingPlus',newSelectingPlusTree,buildSelectingPlus),
 };
 interface TextContent {
   text? : string;
@@ -114,14 +110,14 @@ function newTriggerTree(facets){
   const trigger=facets.newTriggerTarget(SimpleTitles.TRIGGER,{
       targetStateUpdated:(title)=>{
         if(++triggers>4)facets.setTargetLive(title,false);
-      }
+      },
     }),
     triggered=facets.newTextualTarget(SimpleTitles.TRIGGEREDS,{
       getText:(title)=>{
         const count=triggers.toString();
         return !facets.isTargetLive(SimpleTitles.TRIGGER)?
           `No more than ${count}!`:count
-      }
+      },
     });
   return facets.newTargetGroup('TriggerTest',trigger,triggered);
 }
@@ -164,11 +160,11 @@ function newSelectingBasicTree(facets:Facets){
     newIndexedTargets: (indexed:TextContent,title:string) => [
       facets.newTextualTarget(SelectingTitles.EDIT, {
         passText: indexed.text,
-        targetStateUpdated: (title, state) => indexed.text = state as string
+        targetStateUpdated: (title, state) => indexed.text = state as string,
       }),
       facets.newTextualTarget(SelectingTitles.CHARS, {
         getText: title => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
-        ).length
+        ).length,
       }),
     ]
     ,
@@ -177,12 +173,12 @@ function newSelectingBasicTree(facets:Facets){
         getText:titley=>{
           let index=facets.getTargetState(SelectingTitles.SELECT)as number;
           return false&&index===null?"No target yet":list[index].text;
-        }
+        },
       }),
       facets.newTogglingTarget(SelectingTitles.LIVE,{
-        passSet:true
-      })
-    ]
+        passSet:true,
+      }),
+    ],
   };
   facets.onRetargeted=()=>{
     let live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
@@ -210,29 +206,56 @@ function newSelectingPlusTree(facets:Facets){
         belowShowZero:belowShowZero,
         thenFrom:thenFrom,
         thenStop:thenStop,
-        offset:this.showFrom-thenFrom
+        offset:this.showFrom-thenFrom,
       });
     }
     contentAt(showThen){
       return showThen+this.showFrom;
+    }
+    getShowAt():number{
+      return facets.getTargetState(frame.indexingTitle) as number;
+    }
+    deleteElement(){
+      let showThen=this.getShowAt(),contentAt=list.contentAt(showThen);
+      let atEnd=Array.removeElement(content,contentAt);
+      if(atEnd)
+        facets.updateTargetState(frame.indexingTitle,showThen-1)
+    };
+    addElement(){
+      let showThen=this.getShowAt(),contentAt=list.contentAt(showThen);
+      Array.addElement(content,contentAt,
+        src=>({text:'NewContent'+contentIds++}));
+      facets.updateTargetState(frame.indexingTitle,showThen)
+    }
+    swapElementUp(){
+      let showThen=this.getShowAt(),contentAt=list.contentAt(showThen);
+      Array.swapElement(content,showThen,true);
+      facets.updateTargetState(frame.indexingTitle,showThen-1)
+    }
+    swapElementDown(){
+      let showThen=this.getShowAt(),contentAt=list.contentAt(showThen),
+        showNow=showThen+1;
+      Array.swapElement(content,contentAt,false);
+      if(showNow>=list.showLength){
+        list.onOvershoot(false);
+        showNow--;
+      }
+      facets.updateTargetState(frame.indexingTitle,showNow)
     }
   }
   facets.supplement={
     overshot:belowShowZero=>{
       list.onOvershoot(belowShowZero);
       facets.notifyTargetUpdated(SelectingTitles.SELECT)
-    }
+    },
   }as IndexingOvershoot;
-  function getShowAt():number{
-    return facets.getTargetState(frame.indexingTitle) as number;
-  }
-  let content=[
+  const content=[
     {text: 'Hello, good evening and welcome!'},
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
     {text: 'Hello, sailor!'},
-  ];
-  const list=new ShowList<TextContent>(content,3);
+  ],
+  list=new ShowList<TextContent>(content,3);
   let contentIds=0;
   const frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.FRAME,
@@ -245,56 +268,33 @@ function newSelectingPlusTree(facets:Facets){
       return [
         facets.newTextualTarget(SelectingTitles.EDIT, {
           passText: indexed.text,
-          targetStateUpdated: (title, state) => indexed.text = state as string
+          targetStateUpdated: (title, state) => indexed.text = state as string,
         }),
         facets.newTextualTarget(SelectingTitles.CHARS, {
           getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
-          ).length
+          ).length,
         }),
       ]
     },
     newIndexingTargets:()=>[
       facets.newTargetGroup(SelectingTitles.ACTIONS,
         facets.newTriggerTarget(SelectingTitles.UP,{
-          targetStateUpdated:()=>{
-            let at=list.contentAt(getShowAt());
-            swapElement(content,at,true);
-            facets.updateTargetState(frame.indexingTitle,at-1)
-          }
+          targetStateUpdated:()=>list.swapElementUp(),
         }),
         facets.newTriggerTarget(SelectingTitles.DOWN,{
-          targetStateUpdated:()=>{
-            let showThen=getShowAt(),contentAt=list.contentAt(showThen),
-              showNow=showThen+1;
-            swapElement(content,contentAt,false );
-            if(showNow>=list.showLength){
-              list.onOvershoot(false);
-              showNow--;
-            }
-            facets.updateTargetState(frame.indexingTitle,showNow)
-          }
+          targetStateUpdated:()=>list.swapElementDown,
         }),
         facets.newTriggerTarget(SelectingTitles.DELETE,{
-          targetStateUpdated:()=>{
-            let showThen=getShowAt(),contentAt=list.contentAt(showThen);
-            let atEnd=removeElement(content,contentAt);
-            if(atEnd)
-              facets.updateTargetState(frame.indexingTitle,showThen-1)
-          }
+          targetStateUpdated:()=>list.deleteElement(),
         }),
         facets.newTriggerTarget(SelectingTitles.NEW,{
-          targetStateUpdated:()=>{
-            let showThen=getShowAt(),contentAt=list.contentAt(showThen);
-            addElement(content,contentAt,
-                src=>({text: 'NewContent'+contentIds++}));
-            facets.updateTargetState(frame.indexingTitle,showThen)
-          }
-        })
-      )
-      ]
+          targetStateUpdated:()=>list.addElement(),
+        }),
+      ),
+      ],
   };
   facets.onRetargeted=()=>{
-    let at=getShowAt();
+    let at=list.getShowAt();
     facets.setTargetLive(SelectingTitles.DELETE,list.getShowables().length>1);
     facets.setTargetLive(SelectingTitles.UP,at>0);
     facets.setTargetLive(SelectingTitles.DOWN,
