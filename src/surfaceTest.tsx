@@ -82,7 +82,7 @@ function newTogglingTree(facets){
       passSet:SimpleTitles.TOGGLE_START,
     }),
     toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
-      getText:(title)=>{
+      getText:()=>{
         return facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set'
       },
     });
@@ -95,12 +95,12 @@ function newTogglingTree(facets){
 function newTriggerTree(facets){
   let triggers:number=0;
   let trigger=facets.newTriggerTarget(SimpleTitles.TRIGGER,{
-      targetStateUpdated:(title)=>{
+      targetStateUpdated:(state,title)=>{
         if(++triggers>4)facets.setTargetLive(title,false);
       },
     }),
     triggered=facets.newTextualTarget(SimpleTitles.TRIGGEREDS,{
-      getText:(title)=>{
+      getText:()=>{
         let count=triggers.toString();
         return !facets.isTargetLive(SimpleTitles.TRIGGER)?
           `No more than ${count}!`:count
@@ -115,10 +115,10 @@ function newIndexingTree(facets){
       getIndexables: (title)=> SimpleTitles.INDEXABLES,
     }),
     index=facets.newTextualTarget(SimpleTitles.INDEX,{
-      getText:(title)=>''+facets.getTargetState(SimpleTitles.INDEXING),
+      getText:()=>''+facets.getTargetState(SimpleTitles.INDEXING),
     }),
     indexed=facets.newTextualTarget(SimpleTitles.INDEXED,{
-      getText:(title)=>SimpleTitles.INDEXABLES[facets.getTargetState(SimpleTitles.INDEXING)as number],
+      getText:()=>SimpleTitles.INDEXABLES[facets.getTargetState(SimpleTitles.INDEXING)as number],
     });
   return facets.newTargetGroup('IndexingTest',indexing,index,indexed);
 }
@@ -147,7 +147,7 @@ function newSelectingBasicTree(facets:Facets){
     newIndexedTargets: (indexed:TextContent,title:string) => [
       facets.newTextualTarget(SelectingTitles.EDIT, {
         passText: indexed.text,
-        targetStateUpdated: (title, state) => indexed.text = state as string,
+        targetStateUpdated: state => indexed.text = state as string,
       }),
       facets.newTextualTarget(SelectingTitles.CHARS, {
         getText: title => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
@@ -193,7 +193,7 @@ function newSelectingPlusTree(facets:Facets){
       return [
         facets.newTextualTarget(SelectingTitles.EDIT, {
           passText: indexed.text,
-          targetStateUpdated: (title, state) => indexed.text = state as string,
+          targetStateUpdated: state => indexed.text = state as string,
         }),
         facets.newTextualTarget(SelectingTitles.CHARS, {
           getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
@@ -326,5 +326,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.AllSimples).buildSurface();
+  new TestSurface(Tests.SelectingPlus).buildSurface();
 }
