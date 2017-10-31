@@ -135,17 +135,16 @@ export class IndexingList extends IndexingFacet{
       >{items}</div>
       </span>)
   }
-  componentDidMount(){
-    let box=document.getElementById('listBox'+this.unique);
+  componentDidUpdate(){
+    let selected=this.state.index+this.unique,
+      listBox='listBox'+this.unique;
+    document.getElementById(selected).focus();
+    let box=document.getElementById(listBox);
     let renderWidth=Number(box.offsetWidth),borderWidth=Number(box.style.borderWidth);
     traceThing('^componentDidUpdate',{
       renderWidth:renderWidth,
       borderWidth:borderWidth,
       boxWidth:this.boxWidth});
     if(this.boxWidth===0)this.boxWidth=renderWidth
-  }
-  componentDidUpdate(){
-    let selected=this.state.index+this.unique;
-    document.getElementById(selected).focus();
   }
 }
