@@ -1,9 +1,6 @@
 import {
   Facets,
 } from 'facets-js';
-import {
-  IndexingOvershoot,
-} from '../react/export';
 import * as Array from '../util/Array';
 import {traceThing}from '../util/export';
 export namespace SelectingTitles {
@@ -17,6 +14,9 @@ export namespace SelectingTitles {
     DELETE='Delete',
     EDIT='Edit Selection',
     CHARS='Characters';
+}
+export interface IndexingOvershoot{
+  overshot(belowShowZero:boolean)
 }
 export class SelectingList<T>{
   private showFrom=0;

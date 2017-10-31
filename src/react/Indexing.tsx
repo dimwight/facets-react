@@ -5,6 +5,7 @@ import {
   Facet,
   LabelRubric,
 } from './local';
+import {IndexingOvershoot} from "../facets/export";
 interface IndexingValues extends TargetValues{
   selectables?:string[]
   index?:number
@@ -13,7 +14,7 @@ abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>{
   protected readUpdate(update){
     return {
       index:Number(update),
-      selectables:this.props.facets.getIndexingState(this.props.title).uiSelectables
+      selectables:this.props.facets.getIndexingState(this.props.title).uiSelectables,
     }
   }
   indexChanged(index){
@@ -25,7 +26,7 @@ abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>{
       selectables:state.selectables,
       selectedAt:(state as IndexingValues).index,
       disabled:!state.live,
-      rubric:this.props.title
+      rubric:this.props.title,
     });
   }
   protected abstract renderUi(props:IndexingUiProps);
@@ -56,7 +57,7 @@ export class IndexingDropdown extends IndexingFacet{
         text={s}
         key={s+(++Facet.ids)}
         value={at}
-      />
+      />,
     );
     return (<span>
       <LabelRubric text={props.rubric} disabled={props.disabled}/>
@@ -87,9 +88,6 @@ export function ListItem(p:ListItemProps){
     onClick={p.onClick}
     onKeyDown={p.onKeyDown}
   >{p.text}</div>;
-}
-export interface IndexingOvershoot{
-  overshot(belowShowZero:boolean)
 }
 export class IndexingList extends IndexingFacet{
   private boxWidth=0;
