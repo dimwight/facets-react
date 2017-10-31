@@ -15,13 +15,12 @@ import {
   TriggerButton,
   IndexingDropdown,
   IndexingList,
-  IndexingOvershoot,
 } from './react/export';
-import * as Array from './util/Array';
 import {traceThing}from './util/export';
 import {Surface}from './facets/export';
+import {SelectingList,SelectingTitles} from './facets/SelectingList';
 export namespace SimpleTitles{
-  export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
+  export let TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
     INDEXING=TEXTUAL_FIRST+' or '+TEXTUAL_SECOND,
     INDEX='Index',INDEXED='Indexed',INDEX_START=0,
     INDEXABLES=[TEXTUAL_FIRST,TEXTUAL_SECOND],
@@ -30,18 +29,6 @@ export namespace SimpleTitles{
     TOGGLE_START=false,
     NUMERIC_FIELD='Number',NUMERIC_LABEL='Value',NUMERIC_START=123;
 }
-export namespace SelectingTitles {
-  export const FRAME='Selecting',
-    SELECT='Select Content',
-    ACTIONS='Actions',
-    LIVE='Live',
-    NEW='New',
-    UP='Move Up',
-    DOWN='Move Down',
-    DELETE='Delete',
-    EDIT='Edit Selection',
-    CHARS='Characters';
-}
 class Test{
   constructor(
     readonly name,
@@ -49,7 +36,7 @@ class Test{
     readonly buildLayout:(Facets)=>void,
   ){}
 }
-const Tests={
+let Tests={
   Textual:new Test('Textual',newTextualTree,buildTextual),
   TogglingLive:new Test('TogglingLive',newTogglingTree,buildToggling),
   Indexing:new Test('Indexing',newIndexingTree,buildIndexing),
@@ -78,7 +65,7 @@ class TestSurface extends Surface{
   }
 }
 function newTextualTree(facets){
-  const first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
+  let first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
       passText:'Some text for '+SimpleTitles.TEXTUAL_FIRST,
       targetStateUpdated:(title,state)=>{
         facets.updateTargetState(SimpleTitles.TEXTUAL_SECOND,
@@ -91,7 +78,7 @@ function newTextualTree(facets){
   return facets.newTargetGroup('TextualTest',first,second);
 }
 function newTogglingTree(facets){
-  const toggling=facets.newTogglingTarget(SimpleTitles.TOGGLING,{
+  let toggling=facets.newTogglingTarget(SimpleTitles.TOGGLING,{
       passSet:SimpleTitles.TOGGLE_START,
     }),
     toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
@@ -107,14 +94,14 @@ function newTogglingTree(facets){
 }
 function newTriggerTree(facets){
   let triggers:number=0;
-  const trigger=facets.newTriggerTarget(SimpleTitles.TRIGGER,{
+  let trigger=facets.newTriggerTarget(SimpleTitles.TRIGGER,{
       targetStateUpdated:(title)=>{
         if(++triggers>4)facets.setTargetLive(title,false);
       },
     }),
     triggered=facets.newTextualTarget(SimpleTitles.TRIGGEREDS,{
       getText:(title)=>{
-        const count=triggers.toString();
+        let count=triggers.toString();
         return !facets.isTargetLive(SimpleTitles.TRIGGER)?
           `No more than ${count}!`:count
       },
@@ -122,7 +109,7 @@ function newTriggerTree(facets){
   return facets.newTargetGroup('TriggerTest',trigger,triggered);
 }
 function newIndexingTree(facets){
-  const indexing=facets.newIndexingTarget(SimpleTitles.INDEXING,{
+  let indexing=facets.newIndexingTarget(SimpleTitles.INDEXING,{
       passIndex:0,
       getUiSelectables:(title)=> SimpleTitles.INDEXABLES,
       getIndexables: (title)=> SimpleTitles.INDEXABLES,
@@ -146,12 +133,12 @@ function newSelectingBasicTree(facets:Facets){
   function listAt():number{
     return facets.getTargetState(frame.indexingTitle) as number;
   }
-  const list : TextContent[]=[
+  let list : TextContent[]=[
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
     {text: 'Hello, good evening and welcome!'},
   ];
-  const frame:IndexingFramePolicy={
+  let frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
@@ -189,75 +176,13 @@ function newSelectingBasicTree(facets:Facets){
   return facets.newIndexingFrame(frame);
 }
 function newSelectingPlusTree(facets:Facets){
-  class ShowList<T>{
-    private showFrom=0;
-    constructor(private content:T[],readonly showLength){}
-    getShowables():T[]{
-      let showables=this.content.slice(this.showFrom, this.showFrom+this.showLength);
-      traceThing('showables:',showables);
-      return showables;
-    }
-    onOvershoot(belowShowZero){
-      let thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
-      if(belowShowZero&&thenFrom>0)this.showFrom--;
-      else if(!belowShowZero&&thenStop<this.content.length)
-        this.showFrom++;
-      traceThing('^onOvershoot',{
-        belowShowZero:belowShowZero,
-        thenFrom:thenFrom,
-        thenStop:thenStop,
-        offset:this.showFrom-thenFrom,
-      });
-    }
-    contentAt(showThen){
-      return showThen+this.showFrom;
-    }
-    getShowAt():number{
-      return facets.getTargetState(frame.indexingTitle) as number;
-    }
-    deleteElement(){
-      let showThen=this.getShowAt(),contentAt=list.contentAt(showThen);
-      let atEnd=Array.removeElement(content,contentAt);
-      if(atEnd)
-        facets.updateTargetState(frame.indexingTitle,showThen-1)
-    };
-    addElement(){
-      let showThen=this.getShowAt(),contentAt=list.contentAt(showThen);
-      Array.addElement(content,contentAt,
-        src=>({text:'NewContent'+contentIds++}));
-      facets.updateTargetState(frame.indexingTitle,showThen)
-    }
-    swapElementUp(){
-      let showThen=this.getShowAt(),contentAt=list.contentAt(showThen);
-      Array.swapElement(content,showThen,true);
-      facets.updateTargetState(frame.indexingTitle,showThen-1)
-    }
-    swapElementDown(){
-      let showThen=this.getShowAt(),contentAt=list.contentAt(showThen),
-        showNow=showThen+1;
-      Array.swapElement(content,contentAt,false);
-      if(showNow>=list.showLength){
-        list.onOvershoot(false);
-        showNow--;
-      }
-      facets.updateTargetState(frame.indexingTitle,showNow)
-    }
-  }
-  facets.supplement={
-    overshot:belowShowZero=>{
-      list.onOvershoot(belowShowZero);
-      facets.notifyTargetUpdated(SelectingTitles.SELECT)
-    },
-  }as IndexingOvershoot;
-  const content=[
+  let content=[
     {text: 'Hello, good evening and welcome!'},
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
     {text: 'Hello, sailor!'},
-  ],
-  list=new ShowList<TextContent>(content,3);
-  let contentIds=0;
-  const frame:IndexingFramePolicy={
+  ];
+  let frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
@@ -293,14 +218,7 @@ function newSelectingPlusTree(facets:Facets){
       ),
       ],
   };
-  facets.onRetargeted=()=>{
-    let at=list.getShowAt();
-    facets.setTargetLive(SelectingTitles.DELETE,list.getShowables().length>1);
-    facets.setTargetLive(SelectingTitles.UP,at>0);
-    facets.setTargetLive(SelectingTitles.DOWN,
-      at<content.length-1);
-    traceThing('^onRetargeted',list);
-  };
+  let list=new SelectingList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildTextual(facets){
