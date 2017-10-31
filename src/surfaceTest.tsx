@@ -50,7 +50,7 @@ interface TextContent {
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(true));
+    super(newInstance(false));
   }
   newTargetTree=()=>this.test.newTree(this.facets);
   buildLayout=()=>{
@@ -189,7 +189,7 @@ function newSelectingPlusTree(facets:Facets){
     getIndexables:()=>list.getShowables(),
     getUiSelectables: () => list.getShowables().map((item)=>item.text),
     newIndexedTargets: (indexed:TextContent,title:string) => {
-      traceThing('newIndexedTargets',{indexed:indexed});
+      traceThing('^newIndexedTargets',{indexed:indexed});
       return [
         facets.newTextualTarget(SelectingTitles.EDIT, {
           passText: indexed.text,
@@ -201,22 +201,7 @@ function newSelectingPlusTree(facets:Facets){
         }),
       ]
     },
-    newIndexingTargets:()=>[
-      facets.newTargetGroup(SelectingTitles.ACTIONS,
-        facets.newTriggerTarget(SelectingTitles.UP,{
-          targetStateUpdated:()=>list.swapElementDown(),
-        }),
-        facets.newTriggerTarget(SelectingTitles.DOWN,{
-          targetStateUpdated:()=>list.swapElementUp,
-        }),
-        facets.newTriggerTarget(SelectingTitles.DELETE,{
-          targetStateUpdated:()=>list.deleteElement(),
-        }),
-        facets.newTriggerTarget(SelectingTitles.NEW,{
-          targetStateUpdated:()=>list.addElement(),
-        }),
-      ),
-      ],
+    newIndexingTargets:()=>list.newIndexingTargets(),
   };
   let list=new SelectingList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);

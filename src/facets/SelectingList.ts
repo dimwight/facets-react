@@ -41,7 +41,7 @@ export class SelectingList<T>{
   }
   getShowables():T[]{
     let showables=this.content.slice(this.showFrom, this.showFrom+this.showLength);
-    traceThing('showables:',showables);
+    traceThing('^showables:',showables);
     return showables;
   }
   onOvershoot(belowShowZero){
@@ -92,6 +92,25 @@ export class SelectingList<T>{
       showNow--;
     }
     this.setShowAt(showNow)
+  }
+  newIndexingTargets(){
+    let f=this.facets;
+    return[
+      f.newTargetGroup(SelectingTitles.ACTIONS,
+        f.newTriggerTarget(SelectingTitles.UP,{
+          targetStateUpdated:()=>this.swapElementDown(),
+        }),
+        f.newTriggerTarget(SelectingTitles.DOWN,{
+          targetStateUpdated:()=>this.swapElementUp,
+        }),
+        f.newTriggerTarget(SelectingTitles.DELETE,{
+          targetStateUpdated:()=>this.deleteElement(),
+        }),
+        f.newTriggerTarget(SelectingTitles.NEW,{
+          targetStateUpdated:()=>this.addElement(),
+        }),
+      ),
+    ]
   }
 }
 
