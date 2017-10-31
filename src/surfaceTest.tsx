@@ -204,10 +204,10 @@ function newSelectingPlusTree(facets:Facets){
     newIndexingTargets:()=>[
       facets.newTargetGroup(SelectingTitles.ACTIONS,
         facets.newTriggerTarget(SelectingTitles.UP,{
-          targetStateUpdated:()=>list.swapElementUp(),
+          targetStateUpdated:()=>list.swapElementDown(),
         }),
         facets.newTriggerTarget(SelectingTitles.DOWN,{
-          targetStateUpdated:()=>list.swapElementDown,
+          targetStateUpdated:()=>list.swapElementUp,
         }),
         facets.newTriggerTarget(SelectingTitles.DELETE,{
           targetStateUpdated:()=>list.deleteElement(),

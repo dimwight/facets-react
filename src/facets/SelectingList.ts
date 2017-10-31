@@ -15,7 +15,7 @@ export namespace SelectingTitles {
     EDIT='Edit Selection',
     CHARS='Characters';
 }
-export interface SelectingOvershoot{
+export interface ShowAtOvershoot{
   overshot(belowShowZero:boolean)
 }
 export class SelectingList<T>{
@@ -28,16 +28,16 @@ export class SelectingList<T>{
     private readonly indexingTitle,
   ){
     facets.onRetargeted=()=>{
-      let at=this.getShowAt();
-      facets.setTargetLive(SelectingTitles.DELETE,this.getShowables().length>1);
-      facets.setTargetLive(SelectingTitles.UP,at>0);
+      let contentAt=this.contentAt(this.getShowAt());
+      facets.setTargetLive(SelectingTitles.DELETE,this.content.length>1);
+      facets.setTargetLive(SelectingTitles.UP,contentAt>0);
       facets.setTargetLive(SelectingTitles.DOWN,
-        at<content.length-1);
+        contentAt<content.length-1);
       traceThing('^onRetargeted',this.content);
     };
     facets.supplement={
       overshot:belowShowZero=>this.onOvershoot(belowShowZero),
-    }as SelectingOvershoot;
+    }as ShowAtOvershoot;
   }
   getShowables():T[]{
     let showables=this.content.slice(this.showFrom, this.showFrom+this.showLength);
@@ -57,8 +57,8 @@ export class SelectingList<T>{
     });
     this.facets.notifyTargetUpdated(SelectingTitles.SELECT)
   }
-  contentAt(showThen){
-    return showThen+this.showFrom;
+  contentAt(showAt){
+    return showAt+this.showFrom;
   }
   getShowAt():number{
     return this.facets.getTargetState(this.indexingTitle) as number;
@@ -78,12 +78,12 @@ export class SelectingList<T>{
       src=>({text:'NewContent'+this.contentIds++}));
     this.setShowAt(showThen);
   }
-  swapElementUp(){
+  swapElementDown(){
     let showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
-    Array.swapElement(this.content,showThen,true);
+    Array.swapElement(this.content,contentAt,true);
     this.setShowAt(showThen-1)
   }
-  swapElementDown(){
+  swapElementUp(){
     let showThen=this.getShowAt(),contentAt=this.contentAt(showThen),
       showNow=showThen+1;
     Array.swapElement(this.content,contentAt,false);

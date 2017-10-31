@@ -5,7 +5,7 @@ import {
   Facet,
   LabelRubric,
 } from './local';
-import {SelectingOvershoot} from "../facets/export";
+import {ShowAtOvershoot} from "../facets/export";
 interface IndexingValues extends TargetValues{
   selectables?:string[]
   index?:number
@@ -105,7 +105,7 @@ export class IndexingList extends IndexingFacet{
     if(indexNow!==indexThen){
       if(indexNow>=0&&indexNow<this.state.selectables.length)
         this.indexChanged(indexNow);
-      else(this.props.facets.supplement as SelectingOvershoot
+      else(this.props.facets.supplement as ShowAtOvershoot
         ).overshot(indexNow<0)
     }
   };
