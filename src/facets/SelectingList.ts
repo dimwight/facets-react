@@ -18,7 +18,7 @@ export namespace SelectingTitles {
 export interface ShowAtOvershoot{
   overshot(belowShowZero:boolean)
 }
-export class SelectingList<T>{
+export class IndexableList<T>{
   private showFrom=0;
   private contentIds=0;
   constructor(

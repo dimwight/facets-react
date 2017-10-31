@@ -18,7 +18,7 @@ import {
 } from './react/export';
 import {traceThing}from './util/export';
 import {Surface}from './facets/export';
-import {SelectingList,SelectingTitles} from './facets/SelectingList';
+import {IndexableList,SelectingTitles} from './facets/SelectingList';
 export namespace SimpleTitles{
   export let TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
     INDEXING=TEXTUAL_FIRST+' or '+TEXTUAL_SECOND,
@@ -203,7 +203,7 @@ function newSelectingPlusTree(facets:Facets){
     },
     newIndexingTargets:()=>list.newIndexingTargets(),
   };
-  let list=new SelectingList<TextContent>(content,3,facets,frame.indexingTitle);
+  let list=new IndexableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildTextual(facets){
