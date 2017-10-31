@@ -156,7 +156,7 @@ function newSelectingBasicTree(facets:Facets){
     {text: 'Hello, good evening and welcome!'},
   ];
   const frame:IndexingFramePolicy={
-    title: SelectingTitles.FRAME,
+    frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
     getIndexables:()=>list,
@@ -190,7 +190,7 @@ function newSelectingBasicTree(facets:Facets){
       SelectingTitles.CHARS].forEach(title_=>
       facets.setTargetLive(title_,live))
   };
-  return facets.buildSelectingFrame(frame);
+  return facets.newIndexingFrame(frame);
 }
 function newSelectingPlusTree(facets:Facets){
   class ShowList<T>{
@@ -235,7 +235,7 @@ function newSelectingPlusTree(facets:Facets){
   const list=new ShowList<TextContent>(content,3);
   let contentIds=0;
   const frame:IndexingFramePolicy={
-    title: SelectingTitles.FRAME,
+    frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newIndexedTitle:indexed=>SelectingTitles.FRAME,
     getIndexables:()=>list.getShowables(),
@@ -301,7 +301,7 @@ function newSelectingPlusTree(facets:Facets){
       at<content.length-1);
     traceThing('^onRetargeted',list);
   };
-  return facets.buildSelectingFrame(frame);
+  return facets.newIndexingFrame(frame);
 }
 function buildTextual(facets){
   let first=SimpleTitles.TEXTUAL_FIRST,second=SimpleTitles.TEXTUAL_SECOND;
