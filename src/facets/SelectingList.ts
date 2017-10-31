@@ -81,7 +81,8 @@ export class IndexableList<T>{
   swapElementDown(){
     let showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
     Array.swapElement(this.content,contentAt,true);
-    this.setShowAt(showThen-1)
+    if(showThen>0)this.setShowAt(showThen-1);
+    else this.onOvershoot(true)
   }
   swapElementUp(){
     let showThen=this.getShowAt(),contentAt=this.contentAt(showThen),
@@ -98,10 +99,12 @@ export class IndexableList<T>{
     return[
       f.newTargetGroup(SelectingTitles.ACTIONS,
         f.newTriggerTarget(SelectingTitles.UP,{
-          targetStateUpdated:()=>this.swapElementDown(),
+          targetStateUpdated:()=>{
+            this.swapElementDown()
+          },
         }),
         f.newTriggerTarget(SelectingTitles.DOWN,{
-          targetStateUpdated:()=>this.swapElementUp,
+          targetStateUpdated:()=>this.swapElementUp(),
         }),
         f.newTriggerTarget(SelectingTitles.DELETE,{
           targetStateUpdated:()=>this.deleteElement(),

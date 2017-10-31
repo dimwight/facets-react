@@ -13,7 +13,7 @@ export function swapElement(src: any[],index,down) {
     */
 
   //  Debug?
-  traceThing('swapElement', { index: index, down: down,src:src });
+  traceThing('^swapElement', { index: index, down: down,src:src });
 
   //  Guard against string!
   const indexNum=Number(index);
@@ -33,7 +33,7 @@ export function swapElement(src: any[],index,down) {
   });
 
   //  Debug?
-  traceThing('swapElement', { lowerSrc: lowerSrc, upperSrc: upperSrc,
+  traceThing('^swapElement', { lowerSrc: lowerSrc, upperSrc: upperSrc,
     lowerDest: lowerDest, upperDest:upperDest });
 
   //  Define unaffected regions
@@ -43,13 +43,13 @@ export function swapElement(src: any[],index,down) {
   const dest = top.concat(src[lowerSrc],src[upperSrc],tail);
 
   //  Debug?
-  traceThing('swapElement~', false?{top:top,tail:tail}:{dest:dest});
+  traceThing('^swapElement~', false?{top:top,tail:tail}:{dest:dest});
 
   // Rebuild source
   src.splice(0,src.length,...dest);
 
   // Final check?
-  traceThing('swapElement~~', {src:src});
+  traceThing('^swapElement~~', {src:src});
 }
 export function removeElement(list:any[],at:number){
   let length=list.length,atEnd=at===length-1;
@@ -62,10 +62,10 @@ export function removeElement(list:any[],at:number){
   });
   return atEnd;
 }
-export function addElement(list:any[],at:number,newElement:(src)=>any){
+export function addElement(list:any[],at:number,newDuplicate:(src)=>any){
   let length=list.length,atEnd=at===length-1;
   let top=list.slice(0,at),tail=atEnd?[]:list.slice(at),
-    add=newElement(list[at]);
+    add=newDuplicate(list[at]);
   if(!atEnd)
     list.splice(0,length,...top,add,...tail);
   else list.push(add);
