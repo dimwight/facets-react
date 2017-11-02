@@ -177,10 +177,10 @@ function newSelectingBasicTree(facets:Facets){
 }
 function newSelectingPlusTree(facets:Facets){
   let content=[
-    {text: 'Hello, good evening and welcome!'},
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
     {text: 'Hello, sailor!'},
+    {text: 'Hello, good evening and welcome!'},
   ];
   let frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.FRAME,
@@ -299,7 +299,7 @@ function buildSelectingPlus(facets){
         <IndexingList
           title={SelectingTitles.SELECT}
           facets={facets}
-          listWidth={false?null:200}/>}
+          listWidth={false?null:100}/>}
       <PanelRow>
         <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
       </PanelRow>

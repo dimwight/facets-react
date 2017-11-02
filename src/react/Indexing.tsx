@@ -86,7 +86,8 @@ export function ListItem(p:ListItemProps){
     className={p.className}
     style={{
       cursor:'default',
-      overflow:'auto',
+      whiteSpace: 'nowrap',
+      overflow:'hidden',
     }}
     tabIndex={p.tabIndex}
     onClick={p.onClick}
