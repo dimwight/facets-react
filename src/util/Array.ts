@@ -62,10 +62,10 @@ export function removeElement(list:any[],at:number){
   });
   return atEnd;
 }
-export function addElement(list:any[],at:number,newDuplicate:(src)=>any){
+export function addElement(list:any[],at:number,createNew:(selected)=>any){
   let length=list.length,atEnd=at===length-1;
   let top=list.slice(0,at),tail=atEnd?[]:list.slice(at),
-    add=newDuplicate(list[at]);
+    add=createNew(list[at]);
   if(!atEnd)
     list.splice(0,length,...top,add,...tail);
   else list.push(add);

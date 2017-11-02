@@ -74,9 +74,10 @@ export class IndexableList<T>{
   };
   addElement(){
     let showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
-    Array.addElement(this.content,contentAt,
-      src=>({text:'NewContent'+this.contentIds++}));
-    this.setShowAt(showThen);
+    Array.addElement(this.content,contentAt+1,
+      selected=>({text:'NewContent'+this.contentIds++}));
+    if(++showThen<this.showLength)this.setShowAt(showThen);
+    else this.onOvershoot(false);
   }
   swapElementDown(){
     let showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
