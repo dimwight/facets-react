@@ -9,6 +9,7 @@ import {ShowAtOvershoot} from "../facets/export";
 interface IndexingValues extends TargetValues{
   selectables?:string[]
   index?:number
+  listWidth?:number
 }
 abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>{
   protected readUpdate(update){
@@ -83,7 +84,10 @@ export function ListItem(p:ListItemProps){
   return <div
     id={p.id}
     className={p.className}
-    style={{cursor:'default'}}
+    style={{
+      cursor:'default',
+      overflow:'auto',
+    }}
     tabIndex={p.tabIndex}
     onClick={p.onClick}
     onKeyDown={p.onKeyDown}
@@ -129,7 +133,7 @@ export class IndexingList extends IndexingFacet{
       <div className={'listBox'}
            style={{
              display:'table',
-             width:this.boxWidth===0?null:this.boxWidth,
+             width:this.boxWidth||null,
            }}
            id={'listBox'+this.unique}
       >{items}</div>
@@ -137,17 +141,19 @@ export class IndexingList extends IndexingFacet{
   }
   private fixBoxWidth(){
     let box=document.getElementById('listBox'+this.unique);
-    let renderWidth=Number(box.offsetWidth),borderWidth=Number(box.style.borderWidth);
+    let renderWidth=Number(box.offsetWidth);
     traceThing('^componentDidUpdate',{
       renderWidth:renderWidth,
-      borderWidth:borderWidth,
       boxWidth:this.boxWidth
     });
-    if(this.boxWidth===0) this.boxWidth=renderWidth;
+    if(this.boxWidth===0)this.boxWidth=renderWidth;
   }
   private setSelectedFocus(){
     let selected=this.state.index+this.unique;
     document.getElementById(selected).focus();
+  }
+  componentWillMount(){
+    this.boxWidth=0|this.props.listWidth;
   }
   componentDidMount(){
     super.componentDidMount();
