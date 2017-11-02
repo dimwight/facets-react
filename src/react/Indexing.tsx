@@ -149,10 +149,11 @@ export class IndexingList extends IndexingFacet{
     let selected=this.state.index+this.unique;
     document.getElementById(selected).focus();
   }
-  // componentDidMount(){
-  // }
-  componentDidUpdate(){
+  componentDidMount(){
+    super.componentDidMount();
     this.fixBoxWidth();
+  }
+  componentDidUpdate(){
     this.setSelectedFocus();
   }
 }
