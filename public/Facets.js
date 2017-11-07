@@ -130,8 +130,8 @@ class Objects {
             return o1 === o2;
         } })(spacer, "\n");
         let at = 0;
-        for (let index245 = 0; index245 < items.length; index245++) {
-            let item = items[index245];
+        for (let index371 = 0; index371 < items.length; index371++) {
+            let item = items[index371];
             /* add */ (list.push((item == null ? "null" : trim ? item.toString().trim() : item) + (++at === items.length ? "" : spacer)) > 0);
         }
         return ('[' + list.join(', ') + ']');
@@ -324,8 +324,8 @@ class Tracer {
     }
     traceArrayText(array) {
         let lines = new String("[\n");
-        for (let index246 = 0; index246 < array.length; index246++) {
-            let o = array[index246];
+        for (let index372 = 0; index372 < array.length; index372++) {
+            let o = array[index372];
             lines += ("  " + (o.toString()) + "\n");
         }
         lines += ("]");
@@ -479,8 +479,8 @@ class TargeterCore extends NotifyingCore {
             throw Object.defineProperty(new Error("Null targets in " + Debug.info(this)), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
         if (this.__elements == null) {
             let list = ([]);
-            for (let index239 = 0; index239 < targets.length; index239++) {
-                let t = targets[index239];
+            for (let index365 = 0; index365 < targets.length; index365++) {
+                let t = targets[index365];
                 {
                     let add = t.newTargeter();
                     add.setNotifiable(this);
@@ -515,12 +515,12 @@ class TargeterCore extends NotifyingCore {
             Debug.traceEvent("Attached facet " + Debug.info(facet) + " to " + Debug.info(this));
     }
     retargetFacets() {
-        for (let index240 = 0; index240 < this.__elements.length; index240++) {
-            let e = this.__elements[index240];
+        for (let index366 = 0; index366 < this.__elements.length; index366++) {
+            let e = this.__elements[index366];
             e.retargetFacets();
         }
-        for (let index241 = 0; index241 < this.facets.length; index241++) {
-            let f = this.facets[index241];
+        for (let index367 = 0; index367 < this.facets.length; index367++) {
+            let f = this.facets[index367];
             {
                 f.retarget(this.__target);
                 if (Debug.trace)
@@ -651,8 +651,8 @@ class TargetCore extends NotifyingCore {
             let lazy = this.lazyElements();
             this.setElements(lazy);
         }
-        for (let index238 = 0; index238 < this.__elements.length; index238++) {
-            let e = this.__elements[index238];
+        for (let index364 = 0; index364 < this.__elements.length; index364++) {
+            let e = this.__elements[index364];
             if (!e.notifiesTargeter())
                 e.setNotifiable(this);
         }
@@ -777,9 +777,9 @@ class IndexingFrameTargeter extends TargeterCore {
         super.retargetFacets();
         this.indexing.retargetFacets();
         {
-            let array235 = (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters);
-            for (let index234 = 0; index234 < array235.length; index234++) {
-                let t = array235[index234];
+            let array361 = (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters);
+            for (let index360 = 0; index360 < array361.length; index360++) {
+                let t = array361[index360];
                 t.retargetFacets();
             }
         }
@@ -788,9 +788,9 @@ class IndexingFrameTargeter extends TargeterCore {
         let list = (this.__elements.slice(0).slice(0));
         /* add */ (list.push(this.indexing) > 0);
         {
-            let array237 = (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters);
-            for (let index236 = 0; index236 < array237.length; index236++) {
-                let t = array237[index236];
+            let array363 = (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters);
+            for (let index362 = 0; index362 < array363.length; index362++) {
+                let t = array363[index362];
                 /* add */ (list.push(t) > 0);
             }
         }
@@ -1818,8 +1818,8 @@ class Facets extends Tracer {
         let elements = t.titleElements();
         if (then == null)
             this.trace$java_lang_String("> Added targeter: title=" + title + (": titleTargeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length));
-        for (let index242 = 0; index242 < elements.length; index242++) {
-            let e = elements[index242];
+        for (let index368 = 0; index368 < elements.length; index368++) {
+            let e = elements[index368];
             this.putTitleTargeters(e);
         }
     }
@@ -2180,9 +2180,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array244 = i.indexables();
-                for (let index243 = 0; index243 < array244.length; index243++) {
-                    let each = array244[index243];
+                let array370 = i.indexables();
+                for (let index369 = 0; index369 < array370.length; index369++) {
+                    let each = array370[index369];
                     /* add */ (selectables.push(getter != null ? (target => (typeof target === 'function') ? target(each) : target.apply(each))(getter) : "Selectable" + new String(at++).toString()) > 0);
                 }
             }

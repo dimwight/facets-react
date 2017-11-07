@@ -125,7 +125,7 @@ export interface IndexingFramePolicy {
    * Create Targets to be attached to the frame Target
    * @returns {Target[]}
    */
-  newFrameTargets?: () => Target[];
+  newIndexingFrameTargets?: () => Target[];
   /**
    * Provides for supplying different targets
    * @param indexed selected with the indexing
