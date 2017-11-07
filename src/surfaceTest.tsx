@@ -196,16 +196,14 @@ function newSelectingPlusTree(facets:Facets){
     newUiSelectable: item=>item.text,
     newIndexedTargets: (indexed:TextContent,title:string) => {
       traceThing('^newIndexedTargets',{indexed:indexed});
-      return [
-        facets.newTextualTarget(SelectingTitles.EDIT, {
+      return facets.newTargetGroup(title,facets.newTextualTarget(SelectingTitles.EDIT, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
         facets.newTextualTarget(SelectingTitles.CHARS, {
           getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
           ).length,
-        }),
-      ]
+        }))
     },
     newIndexingFrameTargets:()=>list.newIndexingFrameTargets(),
   };
@@ -320,5 +318,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingBasic).buildSurface();
+  new TestSurface(Tests.SelectingPlus).buildSurface();
 }
