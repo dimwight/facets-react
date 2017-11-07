@@ -130,8 +130,8 @@ class Objects {
             return o1 === o2;
         } })(spacer, "\n");
         let at = 0;
-        for (let index260 = 0; index260 < items.length; index260++) {
-            let item = items[index260];
+        for (let index245 = 0; index245 < items.length; index245++) {
+            let item = items[index245];
             /* add */ (list.push((item == null ? "null" : trim ? item.toString().trim() : item) + (++at === items.length ? "" : spacer)) > 0);
         }
         return ('[' + list.join(', ') + ']');
@@ -324,8 +324,8 @@ class Tracer {
     }
     traceArrayText(array) {
         let lines = new String("[\n");
-        for (let index261 = 0; index261 < array.length; index261++) {
-            let o = array[index261];
+        for (let index246 = 0; index246 < array.length; index246++) {
+            let o = array[index246];
             lines += ("  " + (o.toString()) + "\n");
         }
         lines += ("]");
@@ -442,19 +442,20 @@ NotifyingCore["__interfaces"] = ["fjs.util.Identified", "fjs.core.Notifying", "f
 
 /* Generated from Java with JSweet 2.0.0-rc1 - http://www.jsweet.org */
 /**
- * Construct a {@link TargeterCore} to match <code>target</code>.
- * @param {*} targetType set as {@link #targetType}.
+ * Implements {@link STargeter}.
+ * <p>{@link TargeterCore} is a public implementation of {@link STargeter}
+ * to provide for extension in other packages; instances are generally
+ * created by an implementation of {@link fjs.core.TargetCore#newTargeter()}.
  * @class
  * @extends NotifyingCore
  */
 class TargeterCore extends NotifyingCore {
-    constructor(targetType) {
+    constructor() {
         super("Untargeted");
         /*private*/ this.facets = ([]);
         this.__elements = null;
         this.__target = null;
-        this.targetType = null;
-        this.targetType = targetType;
+        this.targetTitle = null;
         if (Debug.trace)
             Debug.traceEvent("Created " + this);
     }
@@ -463,6 +464,14 @@ class TargeterCore extends NotifyingCore {
             throw Object.defineProperty(new Error("Null target in " + Debug.info(this)), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.IllegalArgumentException', 'java.lang.Exception'] });
         else
             this.__target = target;
+        let checkTitle = target.title();
+        if (this.targetTitle != null && !((o1, o2) => { if (o1 && o1.equals) {
+            return o1.equals(o2);
+        }
+        else {
+            return o1 === o2;
+        } })(checkTitle, this.targetTitle))
+            throw Object.defineProperty(new Error("Bad target title=" + this.targetTitle), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
         if (target.notifiesTargeter())
             target.setNotifiable(this);
         let targets = target.elements();
@@ -470,8 +479,8 @@ class TargeterCore extends NotifyingCore {
             throw Object.defineProperty(new Error("Null targets in " + Debug.info(this)), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
         if (this.__elements == null) {
             let list = ([]);
-            for (let index252 = 0; index252 < targets.length; index252++) {
-                let t = targets[index252];
+            for (let index239 = 0; index239 < targets.length; index239++) {
+                let t = targets[index239];
                 {
                     let add = t.newTargeter();
                     add.setNotifiable(this);
@@ -506,12 +515,12 @@ class TargeterCore extends NotifyingCore {
             Debug.traceEvent("Attached facet " + Debug.info(facet) + " to " + Debug.info(this));
     }
     retargetFacets() {
-        for (let index253 = 0; index253 < this.__elements.length; index253++) {
-            let e = this.__elements[index253];
+        for (let index240 = 0; index240 < this.__elements.length; index240++) {
+            let e = this.__elements[index240];
             e.retargetFacets();
         }
-        for (let index254 = 0; index254 < this.facets.length; index254++) {
-            let f = this.facets[index254];
+        for (let index241 = 0; index241 < this.facets.length; index241++) {
+            let f = this.facets[index241];
             {
                 f.retarget(this.__target);
                 if (Debug.trace)
@@ -642,8 +651,8 @@ class TargetCore extends NotifyingCore {
             let lazy = this.lazyElements();
             this.setElements(lazy);
         }
-        for (let index251 = 0; index251 < this.__elements.length; index251++) {
-            let e = this.__elements[index251];
+        for (let index238 = 0; index238 < this.__elements.length; index238++) {
+            let e = this.__elements[index238];
             if (!e.notifiesTargeter())
                 e.setNotifiable(this);
         }
@@ -681,7 +690,7 @@ class TargetCore extends NotifyingCore {
      * @return {*}
      */
     newTargeter() {
-        return new TargeterCore(this.constructor);
+        return new TargeterCore();
     }
     isLive() {
         let n = this.notifiable();
@@ -721,6 +730,132 @@ TargetCore.targets = 0;
 TargetCore["__class"] = "fjs.core.TargetCore";
 TargetCore["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core.Notifying", "fjs.core.Notifiable", "fjs.util.Titled"];
 
+class IndexingFrameTargeter extends TargeterCore {
+    constructor() {
+        super();
+        /*private*/ this.titleTargeters = ({});
+        this.indexing = null;
+        this.indexed = null;
+        this.indexingTarget = null;
+        this.indexedTarget = null;
+        this.indexedTitle = null;
+    }
+    retarget(target) {
+        super.retarget(target);
+        this.updateToTarget();
+        if (this.indexing == null) {
+            this.indexing = this.indexingTarget.newTargeter();
+            this.indexing.setNotifiable(this);
+        }
+        if ((Object.keys(this.titleTargeters).length == 0)) {
+            let atThen = this.indexingTarget.index();
+            for (let at = 0; at < this.indexingTarget.indexables().length; at++) {
+                this.indexingTarget.setIndex(at);
+                this.updateToTarget();
+                this.indexed = this.indexedTarget.newTargeter();
+                this.indexed.setNotifiable(this);
+                this.indexed.retarget(this.indexedTarget);
+                /* put */ (this.titleTargeters[this.indexedTitle] = this.indexed);
+            }
+            
+            this.indexingTarget.setIndex(atThen);
+            this.updateToTarget();
+        }
+        this.indexing.retarget(this.indexingTarget);
+        this.indexed = ((m, k) => m[k] ? m[k] : null)(this.titleTargeters, this.indexedTitle);
+        if (this.indexed == null)
+            throw Object.defineProperty(new Error("Null indexed in " + this), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+        this.indexed.retarget(this.indexedTarget);
+    }
+    /*private*/ updateToTarget() {
+        let frame = this.target();
+        this.indexingTarget = frame.indexing();
+        this.indexedTarget = frame.indexedTarget();
+        this.indexedTitle = this.indexedTarget.title();
+    }
+    retargetFacets() {
+        super.retargetFacets();
+        this.indexing.retargetFacets();
+        {
+            let array235 = (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters);
+            for (let index234 = 0; index234 < array235.length; index234++) {
+                let t = array235[index234];
+                t.retargetFacets();
+            }
+        }
+    }
+    titleElements() {
+        let list = (this.__elements.slice(0).slice(0));
+        /* add */ (list.push(this.indexing) > 0);
+        {
+            let array237 = (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters);
+            for (let index236 = 0; index236 < array237.length; index236++) {
+                let t = array237[index236];
+                /* add */ (list.push(t) > 0);
+            }
+        }
+        return ((a1, a2) => { if (a1.length >= a2.length) {
+            a1.length = 0;
+            a1.push.apply(a1, a2);
+            return a1;
+        }
+        else {
+            return a2.slice(0);
+        } })([], list);
+    }
+}
+IndexingFrameTargeter["__class"] = "fjs.core.IndexingFrameTargeter";
+IndexingFrameTargeter["__interfaces"] = ["fjs.util.Identified", "fjs.core.Notifying", "fjs.core.SRetargetable", "fjs.core.Notifiable", "fjs.util.Titled", "fjs.core.Facetable", "fjs.core.STargeter"];
+
+/* Generated from Java with JSweet 2.0.0-rc1 - http://www.jsweet.org */
+/**
+ * {@link TargetCore} that enables editing of the contents of an {@link SIndexing}.
+ * @extends TargetCore
+ * @class
+ */
+class IndexingFrame extends TargetCore {
+    constructor(title, indexing) {
+        super(title);
+        this.__indexing = null;
+        if (indexing == null)
+            throw Object.defineProperty(new Error("Null indexing in " + Debug.info(this)), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.IllegalArgumentException', 'java.lang.Exception'] });
+        this.__indexing = indexing;
+        indexing.setNotifiable(this);
+    }
+    /**
+     * <p>Returns the {@link STarget} created in {@link #newIndexedTargets(Object)}.
+     * @return {*}
+     */
+    indexedTarget() {
+        let indexed = this.__indexing.indexed();
+        return (indexed != null && (indexed["__interfaces"] != null && indexed["__interfaces"].indexOf("fjs.core.STarget") >= 0 || indexed.constructor != null && indexed.constructor["__interfaces"] != null && indexed.constructor["__interfaces"].indexOf("fjs.core.STarget") >= 0)) ? indexed : this.newIndexedTargets(indexed);
+    }
+    /**
+     * The indexing passed to the constructor.
+     * @return {SIndexing}
+     */
+    indexing() {
+        return this.__indexing;
+    }
+    /**
+     * Overrides superclass method.
+     * <p>Returns an {@link IndexingFrameTargeter}.
+     * @return {*}
+     */
+    newTargeter() {
+        return new IndexingFrameTargeter();
+    }
+    /**
+     * Re-implementation returning <code>true</code>.
+     * @return {boolean}
+     */
+    notifiesTargeter() {
+        return true;
+    }
+}
+IndexingFrame["__class"] = "fjs.core.IndexingFrame";
+IndexingFrame["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core.Notifying", "fjs.core.Notifiable", "fjs.util.Titled"];
+
 /* Generated from Java with JSweet 2.0.0-rc1 - http://www.jsweet.org */
 /**
  * Core constructor.
@@ -749,16 +884,17 @@ class SFrameTarget extends TargetCore {
         this.framed = null;
         if (toFrame == null)
             throw Object.defineProperty(new Error("Null framed in " + Debug.info(this)), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.IllegalArgumentException', 'java.lang.Exception'] });
-        this.framed = toFrame;
+        else
+            this.framed = toFrame;
     }
+    /**
+     *
+     * @return {boolean}
+     */
     notifiesTargeter() {
         return true;
     }
-    title() {
-        return this.framed == null || !(this.framed != null && (this.framed["__interfaces"] != null && this.framed["__interfaces"].indexOf("fjs.util.Titled") >= 0 || this.framed.constructor != null && this.framed.constructor["__interfaces"] != null && this.framed.constructor["__interfaces"].indexOf("fjs.util.Titled") >= 0)) ? super.title() : this.framed.title();
-    }
 }
-SFrameTarget.frames = 0;
 SFrameTarget["__class"] = "fjs.core.SFrameTarget";
 SFrameTarget["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core.Notifying", "fjs.core.Notifiable", "fjs.util.Titled"];
 
@@ -1563,135 +1699,7 @@ STrigger["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core
     Coupler["__class"] = "fjs.core.STrigger.Coupler";
 })(STrigger || (STrigger = {}));
 
-/**
- * Unique constructor.
- * @param {IndexingFrame} indexed will be the first target of this instance
- * @class
- * @extends TargeterCore
- */
-class IndexingFrameTargeter extends TargeterCore {
-    constructor(indexed) {
-        super(indexed.constructor);
-        /*private*/ this.cache = ({});
-        this.__indexing = null;
-    }
-    /**
-     * Retargeted to the {@link SIndexing} wrapped by the current target.
-     * @return {*}
-     */
-    indexing() {
-        if (this.__indexing == null)
-            throw Object.defineProperty(new Error("No indexingLink in " + Debug.info(this)), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
-        else
-            return this.__indexing;
-    }
-    /**
-     * Overrides superclass method.
-     * @param {*} target
-     */
-    retarget(target) {
-        let frame = target;
-        let ix = frame.indexing();
-        let indexedFrame = frame.indexedFrame();
-        let indexedTitle = indexedFrame.title();
-        super.retarget(frame);
-        if (this.__indexing == null) {
-            this.__indexing = ix.newTargeter();
-            this.__indexing.setNotifiable(this);
-        }
-        let indexed = ((m, k) => m[k] ? m[k] : null)(this.cache, indexedTitle);
-        if (indexed == null) {
-            indexed = indexedFrame.newTargeter();
-            /* put */ (this.cache[indexedTitle] = indexed);
-            indexed.setNotifiable(this);
-        }
-        this.__indexing.retarget(ix);
-        indexed.retarget(indexedFrame);
-    }
-    /**
-     * Overrides superclass method.
-     */
-    retargetFacets() {
-        super.retargetFacets();
-        this.__indexing.retargetFacets();
-        {
-            let array256 = (obj => Object.keys(obj).map(key => obj[key]))(this.cache);
-            for (let index255 = 0; index255 < array256.length; index255++) {
-                let t = array256[index255];
-                t.retargetFacets();
-            }
-        }
-    }
-    titleElements() {
-        let list = (this.__elements.slice(0).slice(0));
-        /* add */ (list.push(this.__indexing) > 0);
-        {
-            let array258 = (obj => Object.keys(obj).map(key => obj[key]))(this.cache);
-            for (let index257 = 0; index257 < array258.length; index257++) {
-                let t = array258[index257];
-                /* add */ (list.push(t) > 0);
-            }
-        }
-        return ((a1, a2) => { if (a1.length >= a2.length) {
-            a1.length = 0;
-            a1.push.apply(a1, a2);
-            return a1;
-        }
-        else {
-            return a2.slice(0);
-        } })([], list);
-    }
-}
-IndexingFrameTargeter["__class"] = "fjs.core.select.IndexingFrameTargeter";
-IndexingFrameTargeter["__interfaces"] = ["fjs.util.Identified", "fjs.core.Notifying", "fjs.core.SRetargetable", "fjs.core.Notifiable", "fjs.util.Titled", "fjs.core.Facetable", "fjs.core.STargeter"];
-
-/**
- * {@link TargetCore} that enables editing of the contents of an {@link SIndexing}.
- * @extends TargetCore
- * @class
- */
-class IndexingFrame extends TargetCore {
-    constructor(title, indexing) {
-        super(title);
-        this.__indexing = null;
-        if (indexing == null)
-            throw Object.defineProperty(new Error("Null indexing in " + Debug.info(this)), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.IllegalArgumentException', 'java.lang.Exception'] });
-        this.__indexing = indexing;
-        indexing.setNotifiable(this);
-    }
-    /**
-     * <p>Returns the {@link SFrameTarget} created in {@link #newIndexedFrame(Object)}.
-     * @return {SFrameTarget}
-     */
-    indexedFrame() {
-        return this.newIndexedFrame(this.__indexing.indexed());
-    }
-    /**
-     * The indexing passed to the constructor.
-     * @return {SIndexing}
-     */
-    indexing() {
-        return this.__indexing;
-    }
-    /**
-     * Overrides superclass method.
-     * <p>Returns an {@link IndexingFrameTargeter}.
-     * @return {*}
-     */
-    newTargeter() {
-        return new IndexingFrameTargeter(this);
-    }
-    /**
-     * Re-implementation returning <code>true</code>.
-     * @return {boolean}
-     */
-    notifiesTargeter() {
-        return true;
-    }
-}
-IndexingFrame["__class"] = "fjs.core.select.IndexingFrame";
-IndexingFrame["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core.Notifying", "fjs.core.Notifiable", "fjs.util.Titled"];
-
+/* Generated from Java with JSweet 2.0.0-rc1 - http://www.jsweet.org */
 class Facets extends Tracer {
     constructor(top, trace) {
         super(top);
@@ -1701,6 +1709,7 @@ class Facets extends Tracer {
         this.doTrace = false;
         this.__onRetargeted = null;
         this.targeterTree = null;
+        this.indexingFrames = 0;
         this.doTrace = trace;
     }
     onRetargeted() {
@@ -1778,9 +1787,20 @@ class Facets extends Tracer {
         let indexing = new SIndexing(p.indexingTitle, new Facets.Facets$6(this, p));
         indexing.setIndex(0);
         this.trace$java_lang_String$java_lang_Object(" > Created indexing ", indexing);
-        let frame = new Facets.Facets$7(this, p.frameTitle, indexing, p);
+        let title = p.indexingFrameTitle != null ? p.indexingFrameTitle : "IndexingFrame" + this.indexingFrames++;
+        let frame = new Facets.LocalIndexingFrame(title, indexing, p);
         this.trace$java_lang_String$java_lang_Object(" > Created indexing frame ", frame);
         return frame;
+    }
+    getTargetFramed(title) {
+        let frame = this.titleTarget(title);
+        if (frame == null)
+            throw Object.defineProperty(new Error("Null frame for " + title), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+        return frame.framed;
+    }
+    newFrameTarget(title, toFrame, editTargets) {
+        let asTargets = STarget.newTargets(editTargets);
+        return new Facets.Facets$7(this, title, toFrame, asTargets);
     }
     buildTargeterTree(targetTree) {
         this.trace$java_lang_String$java_lang_Object(" > Retargeting on ", targetTree);
@@ -1788,24 +1808,19 @@ class Facets extends Tracer {
             this.targeterTree = targetTree.newTargeter();
         this.targeterTree.setNotifiable(this.notifiable);
         this.targeterTree.retarget(targetTree);
-        this.updateTitleTargeters(this.targeterTree);
+        this.putTitleTargeters(this.targeterTree);
         this.onRetargeted();
     }
-    updateTargeterTree() {
-        if (this.targeterTree == null)
-            throw Object.defineProperty(new Error("Null targeterTree in " + this), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
-        this.buildTargeterTree(this.targeterTree.target());
-    }
-    updateTitleTargeters(t) {
+    putTitleTargeters(t) {
         let title = t.title();
         let then = ((m, k) => m[k] ? m[k] : null)(this.titleTargeters, title);
         /* put */ (this.titleTargeters[title] = t);
         let elements = t.titleElements();
         if (then == null)
             this.trace$java_lang_String("> Added targeter: title=" + title + (": titleTargeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length));
-        for (let index259 = 0; index259 < elements.length; index259++) {
-            let e = elements[index259];
-            this.updateTitleTargeters(e);
+        for (let index242 = 0; index242 < elements.length; index242++) {
+            let e = elements[index242];
+            this.putTitleTargeters(e);
         }
     }
     titleTarget(title) {
@@ -1882,12 +1897,12 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             this.start = 0;
             this.restarted = false;
         }
-        setResetWait(wait) {
+        setResetWait(millis) {
             if (this.debug)
-                Util.printOut$java_lang_String$java_lang_Object("Times.setResetWait: wait=", wait);
+                Util.printOut$java_lang_String$java_lang_Object("Times.setResetWait: wait=", millis);
             this.start = this.newMillis();
             this.doTime = true;
-            this.resetWait = wait;
+            this.resetWait = millis;
         }
         /**
          * The time since the last auto-reset.
@@ -1930,19 +1945,43 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
     }
     Facets.Times = Times;
     Times["__class"] = "fjs.globals.Facets.Times";
+    class LocalIndexingFrame extends IndexingFrame {
+        constructor(title, indexing, p) {
+            super(title, indexing);
+            this.p = null;
+            this.p = p;
+        }
+        lazyElements() {
+            let getter = (this.p.newIndexingFrameTargets);
+            let got = getter != null ? (target => (typeof target === 'function') ? target() : target.get())(getter) : [];
+            return got == null ? [] : STarget.newTargets(got);
+        }
+        /**
+         *
+         * @param {*} indexed
+         * @return {*}
+         */
+        newIndexedTargets(indexed) {
+            let titler = (this.p.newIndexedTargetsTitle);
+            let indexedTargetsTitle = titler == null ? this.title() + "|indexed" : (target => (typeof target === 'function') ? target(indexed) : target.apply(indexed))(titler);
+            return this.p.newIndexedTargets == null ? new TargetCore(indexedTargetsTitle) : (target => (typeof target === 'function') ? target(indexed, indexedTargetsTitle) : target.apply(indexed, indexedTargetsTitle))(this.p.newIndexedTargets);
+        }
+    }
+    Facets.LocalIndexingFrame = LocalIndexingFrame;
+    LocalIndexingFrame["__class"] = "fjs.globals.Facets.LocalIndexingFrame";
+    LocalIndexingFrame["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core.Notifying", "fjs.core.Notifiable", "fjs.util.Titled"];
     class LocalFrameTarget extends SFrameTarget {
-        constructor(title, toFrame, newEditTargets) {
+        constructor(title, toFrame, newIndexedTargets) {
             super(title, toFrame);
-            this.newEditTargets = null;
-            this.newEditTargets = (newEditTargets);
+            this.newIndexedTargets = null;
+            this.newIndexedTargets = newIndexedTargets;
         }
         /**
          *
          * @return {Array}
          */
         lazyElements() {
-            let targets = (target => (typeof target === 'function') ? target(this.framed, this.title()) : target.apply(this.framed, this.title()))(this.newEditTargets);
-            return STarget.newTargets(targets);
+            return this.newIndexedTargets;
         }
     }
     Facets.LocalFrameTarget = LocalFrameTarget;
@@ -1965,7 +2004,7 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let targets = this.__parent.targeterTree.target();
             this.__parent.targeterTree.retarget(targets);
             this.__parent.trace("> Targeters retargeted on ", targets);
-            this.__parent.updateTitleTargeters(this.__parent.targeterTree);
+            this.__parent.putTitleTargeters(this.__parent.targeterTree);
             this.__parent.onRetargeted();
             this.__parent.targeterTree.retargetFacets();
             msg = "> Facets retargeted in " + Debug.info(this.__parent.targeterTree);
@@ -2124,7 +2163,7 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
         getIndexables(i) {
             let got = (target => (typeof target === 'function') ? target() : target.get())(this.p.getIndexables);
             if (got == null)
-                throw Object.defineProperty(new Error("Null indexables for " + i.title()), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+                throw Object.defineProperty(new Error("Null getIndexables for " + i.title()), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
             let equal = Util.longEquals(got, this.thenIndexables);
             if (!equal)
                 this.__parent.trace("> Got new indexables: ", got.length);
@@ -2137,9 +2176,24 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
          * @return {Array}
          */
         getFacetSelectables(i) {
-            let got = (target => (typeof target === 'function') ? target() : target.get())(this.p.getUiSelectables);
-            if (got == null)
-                throw Object.defineProperty(new Error("Null selectables for " + i.title()), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
+            let getter = (this.p.newUiSelectable);
+            let selectables = ([]);
+            let at = 0;
+            {
+                let array244 = i.indexables();
+                for (let index243 = 0; index243 < array244.length; index243++) {
+                    let each = array244[index243];
+                    /* add */ (selectables.push(getter != null ? (target => (typeof target === 'function') ? target(each) : target.apply(each))(getter) : "Selectable" + new String(at++).toString()) > 0);
+                }
+            }
+            let got = ((a1, a2) => { if (a1.length >= a2.length) {
+                a1.length = 0;
+                a1.push.apply(a1, a2);
+                return a1;
+            }
+            else {
+                return a2.slice(0);
+            } })([], selectables);
             let equal = Util.longEquals(got, this.thenSelectables);
             if (!equal)
                 this.__parent.trace("> Got new selectables: ", got.length);
@@ -2148,31 +2202,18 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
         }
     }
     Facets.Facets$6 = Facets$6;
-    class Facets$7 extends IndexingFrame {
-        constructor(__parent, __arg0, __arg1, p) {
+    class Facets$7 extends SFrameTarget {
+        constructor(__parent, __arg0, __arg1, asTargets) {
             super(__arg0, __arg1);
-            this.p = p;
+            this.asTargets = asTargets;
             this.__parent = __parent;
-        }
-        lazyElements() {
-            let s = (this.p.newIndexingTargets);
-            let got = s != null ? (target => (typeof target === 'function') ? target() : target.get())(s) : [];
-            if (false && this.__parent.doTrace)
-                this.trace$java_lang_String$java_lang_Object(".lazyElements: ", got);
-            return got == null ? [] : STarget.newTargets(got);
         }
         /**
          *
-         * @param {*} indexed
-         * @return {SFrameTarget}
+         * @return {Array}
          */
-        newIndexedFrame(indexed) {
-            if (false && this.__parent.doTrace)
-                this.trace$java_lang_String(".newIndexedFrame: indexed=" + (indexed != null));
-            let editTargets = (this.p.newIndexedTargets);
-            let newIndexedTitle = (this.p.newIndexedTitle);
-            let title = newIndexedTitle == null ? this.p.frameTitle + "|indexed" : (target => (typeof target === 'function') ? target(indexed) : target.apply(indexed))(newIndexedTitle);
-            return new Facets.LocalFrameTarget(title, indexed, (this.p.newIndexedTargets));
+        lazyElements() {
+            return this.asTargets;
         }
     }
     Facets.Facets$7 = Facets$7;

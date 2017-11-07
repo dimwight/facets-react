@@ -139,11 +139,11 @@ function newSelectingBasicTree(facets:Facets){
     {text: 'Hello, good evening and welcome!'},
   ];
   let frame:IndexingFramePolicy={
-    frameTitle: SelectingTitles.FRAME,
+    indexingFrameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
-    newIndexedTitle:indexed=>SelectingTitles.FRAME,
+    newIndexedTargetsTitle:indexed=>SelectingTitles.FRAME,
     getIndexables:()=>list,
-    getUiSelectables: () => list.map((item)=>item.text),
+    newUiSelectable: item=>item.text,
     newIndexedTargets: (indexed:TextContent,title:string) => [
       facets.newTextualTarget(SelectingTitles.EDIT, {
         passText: indexed.text,
@@ -153,9 +153,8 @@ function newSelectingBasicTree(facets:Facets){
         getText: title => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
         ).length,
       }),
-    ]
-    ,
-    newIndexingTargets:()=>[
+    ],
+    newFrameTargets:()=>[
       facets.newTextualTarget(SimpleTitles.INDEXED,{
         getText:titley=>{
           let index=facets.getTargetState(SelectingTitles.SELECT)as number;
@@ -183,11 +182,11 @@ function newSelectingPlusTree(facets:Facets){
     {text: 'Hello, good evening and welcome!'},
   ];
   let frame:IndexingFramePolicy={
-    frameTitle: SelectingTitles.FRAME,
+    indexingFrameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
-    newIndexedTitle:indexed=>SelectingTitles.FRAME,
+    newIndexedTargetsTitle:indexed=>SelectingTitles.FRAME,
     getIndexables:()=>list.getShowables(),
-    getUiSelectables: () => list.getShowables().map((item)=>item.text),
+    newUiSelectable: item=>item.text,
     newIndexedTargets: (indexed:TextContent,title:string) => {
       traceThing('^newIndexedTargets',{indexed:indexed});
       return [
@@ -201,7 +200,7 @@ function newSelectingPlusTree(facets:Facets){
         }),
       ]
     },
-    newIndexingTargets:()=>list.newIndexingTargets(),
+    newFrameTargets:()=>list.newIndexingFrameTargets(),
   };
   let list=new IndexableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
@@ -314,5 +313,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingPlus).buildSurface();
+  new TestSurface(Tests.SelectingBasic).buildSurface();
 }

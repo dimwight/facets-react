@@ -95,7 +95,7 @@ export class IndexableList<T>{
     }
     this.setShowAt(showNow)
   }
-  newIndexingTargets(){
+  newIndexingFrameTargets(){
     let f=this.facets;
     return[
       f.newTargetGroup(SelectingTitles.ACTIONS,
