@@ -99,7 +99,7 @@ export class IndexableList<T>{
     let f=this.facets;
     return[
       f.newTargetGroup(SelectingTitles.ACTIONS,
-        f.newTriggerTarget(SelectingTitles.UP,{
+        [f.newTriggerTarget(SelectingTitles.UP,{
           targetStateUpdated:()=>{
             this.swapElementDown()
           },
@@ -112,7 +112,7 @@ export class IndexableList<T>{
         }),
         f.newTriggerTarget(SelectingTitles.NEW,{
           targetStateUpdated:()=>this.addElement(),
-        }),
+        }),]
       ),
     ]
   }

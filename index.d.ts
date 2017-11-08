@@ -79,11 +79,11 @@ export interface IndexingCoupler extends TargetCoupler {
    */
   getIndexables: (title: string) => any[];
   /**
-   * Get strings to represent the indexable contents in the UI
+   * Get string to represent indexable content in the UI
    * @param {string} title identifies the target
    * @returns {string[]}
    */
-  getUiSelectables: (title: string) => string[];
+  newUiSelectable?: (indexable: any) => string;  
 }
 /**
  * Current values exposed by the indexing
@@ -105,7 +105,7 @@ export interface IndexingFramePolicy {
   /**
    * Title for the wrapping target.
    */
-  indexingFrameTitle?: string;
+  frameTitle?: string;
   /**
    * Title for the wrapped indexing.
    */
@@ -125,19 +125,19 @@ export interface IndexingFramePolicy {
    * Create Targets to be attached to the frame Target
    * @returns {Target[]}
    */
-  newIndexingFrameTargets?: () => Target[];
+  newFrameTargets?: () => Target[];
   /**
    * Provides for supplying different targets
    * @param indexed selected with the indexing
    */
-  newIndexedTargetsTitle?: (indexed: any) => string;
+  newIndexedTreeTitle?: (indexed: any) => string;
   /**
    * Create Targets exposing the indexed content
    * @param indexed selected with the indexing
    * @param title from {newIndexedTitle} or created by framework
    * @returns {Target} root of tree
    */
-  newIndexedTargets?: (indexed: any, indexedTitle: string) => Target;
+  newIndexedTree?: (indexed: any, indexedTreeTitle: string) => Target;
 }
 /**
 * Constructs a new Superficial application core.
@@ -184,7 +184,7 @@ export interface Facets {
   * @param {Target} members of the group
   * @returns group of {Target}s
   */
-  newTargetGroup(title: string, ...members: Target[]): Target;
+  newTargetGroup(title: string, members: Target[]): Target;
   /** */
   newIndexingTarget(title: string, coupler: IndexingCoupler): Target;
   /** */

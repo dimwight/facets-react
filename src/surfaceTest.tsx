@@ -75,7 +75,7 @@ function newTextualTree(facets){
     second=facets.newTextualTarget(SimpleTitles.TEXTUAL_SECOND,{
       passText:'Some text for '+SimpleTitles.TEXTUAL_SECOND,
     });
-  return facets.newTargetGroup('TextualTest',first,second);
+  return facets.newTargetGroup('TextualTest',[first,second]);
 }
 function newTogglingTree(facets){
   let toggling=facets.newTogglingTarget(SimpleTitles.TOGGLING,{
@@ -90,7 +90,7 @@ function newTogglingTree(facets){
     facets.setTargetLive(SimpleTitles.TOGGLED,
       facets.getTargetState(SimpleTitles.TOGGLING)as boolean);
   };
-  return facets.newTargetGroup('TogglingTest',toggling,toggled);
+  return facets.newTargetGroup('TogglingTest',[toggling,toggled]);
 }
 function newTriggerTree(facets){
   let triggers:number=0;
@@ -106,7 +106,7 @@ function newTriggerTree(facets){
           `No more than ${count}!`:count
       },
     });
-  return facets.newTargetGroup('TriggerTest',trigger,triggered);
+  return facets.newTargetGroup('TriggerTest',[trigger,triggered]);
 }
 function newIndexingTree(facets){
   let indexing=facets.newIndexingTarget(SimpleTitles.INDEXING,{
@@ -120,14 +120,14 @@ function newIndexingTree(facets){
     indexed=facets.newTextualTarget(SimpleTitles.INDEXED,{
       getText:()=>SimpleTitles.INDEXABLES[facets.getTargetState(SimpleTitles.INDEXING)as number],
     });
-  return facets.newTargetGroup('IndexingTest',indexing,index,indexed);
+  return facets.newTargetGroup('IndexingTest',[indexing,index,indexed]);
 }
-function newAllSimplesTree(facets){
-  return facets.newTargetGroup('AllTest',
+function newAllSimplesTree(facets):Target{
+  return facets.newTargetGroup('AllTest',[
     newTextualTree(facets),
     newTogglingTree(facets),
     newIndexingTree(facets),
-    newTriggerTree(facets));
+    newTriggerTree(facets)]);
 }
 function newSelectingBasicTree(facets:Facets){
   function listAt():number{
@@ -139,27 +139,11 @@ function newSelectingBasicTree(facets:Facets){
     {text: 'Hello, good evening and welcome!'},
   ];
   let frame:IndexingFramePolicy={
-    indexingFrameTitle: SelectingTitles.FRAME,
+    frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
-    newIndexedTargetsTitle:indexed=>SelectingTitles.FRAME,
     getIndexables:()=>list,
-    newUiSelectable: item=>item.text,
-    newIndexedTargets: (indexed:TextContent,title:string) =>{
-      let members:Target[]=[
-        facets.newTextualTarget(SelectingTitles.EDIT, {
-          passText: indexed.text,
-          targetStateUpdated: state => indexed.text = state as string,
-        }),
-        facets.newTextualTarget(SelectingTitles.CHARS, {
-          getText: title => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
-          ).length,
-        }),
-      ];
-      traceThing('IndexingFramePolicy',{title:title});
-      let group:Target=facets.newTargetGroup(title,members[0],members[1]);
-      return group
-    },
-    newIndexingFrameTargets:()=>{
+    newUiSelectable:(item:TextContent)=>item.text,
+    newFrameTargets:()=>{
       return [
         facets.newTextualTarget(SimpleTitles.INDEXED,{
           getText:titley=>{
@@ -171,6 +155,20 @@ function newSelectingBasicTree(facets:Facets){
           passSet:true,
         }),
       ]
+    },
+    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME,
+    newIndexedTree: (indexed:TextContent,title:string) =>{
+      traceThing('^IndexingFramePolicy',{title:title});
+      return facets.newTargetGroup(title,[
+        facets.newTextualTarget(SelectingTitles.EDIT, {
+          passText: indexed.text,
+          targetStateUpdated: state => indexed.text = state as string,
+        }),
+        facets.newTextualTarget(SelectingTitles.CHARS, {
+          getText: title => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
+          ).length,
+        }),
+      ])
     },
   };
   facets.onRetargeted=()=>{
@@ -189,23 +187,25 @@ function newSelectingPlusTree(facets:Facets){
     {text: 'Hello, good evening and welcome!'},
   ];
   let frame:IndexingFramePolicy={
-    indexingFrameTitle: SelectingTitles.FRAME,
+    frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
-    newIndexedTargetsTitle:indexed=>SelectingTitles.FRAME,
+    newFrameTargets:()=>list.newIndexingFrameTargets(),
     getIndexables:()=>list.getShowables(),
-    newUiSelectable: item=>item.text,
-    newIndexedTargets: (indexed:TextContent,title:string) => {
+    newUiSelectable: (item:TextContent)=>item.text,
+    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME,
+    newIndexedTree: (indexed:TextContent,title:string) => {
       traceThing('^newIndexedTargets',{indexed:indexed});
-      return facets.newTargetGroup(title,facets.newTextualTarget(SelectingTitles.EDIT, {
+      return facets.newTargetGroup(title,[
+        facets.newTextualTarget(SelectingTitles.EDIT, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
         facets.newTextualTarget(SelectingTitles.CHARS, {
           getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
           ).length,
-        }))
+        })
+      ])
     },
-    newIndexingFrameTargets:()=>list.newIndexingFrameTargets(),
   };
   let list=new IndexableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
