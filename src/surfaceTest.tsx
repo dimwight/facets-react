@@ -138,7 +138,7 @@ function newSelectingBasicTree(facets:Facets){
     {text: 'Hello Dolly!'},
     {text: 'Hello, good evening and welcome!'},
   ];
-  let frame:IndexingFramePolicy={
+  let frame:IndexingFramePolicy<TextContent>={
     frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     getIndexables:()=>list,
@@ -186,7 +186,7 @@ function newSelectingPlusTree(facets:Facets){
     {text: 'Hello, sailor!'},
     {text: 'Hello, good evening and welcome!'},
   ];
-  let frame:IndexingFramePolicy={
+  let frame:IndexingFramePolicy<TextContent>={
     frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newFrameTargets:()=>list.newIndexingFrameTargets(),

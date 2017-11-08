@@ -100,9 +100,7 @@ export class IndexableList<T>{
     return[
       f.newTargetGroup(SelectingTitles.ACTIONS,
         [f.newTriggerTarget(SelectingTitles.UP,{
-          targetStateUpdated:()=>{
-            this.swapElementDown()
-          },
+          targetStateUpdated:()=>this.swapElementDown(),
         }),
         f.newTriggerTarget(SelectingTitles.DOWN,{
           targetStateUpdated:()=>this.swapElementUp(),

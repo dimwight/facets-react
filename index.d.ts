@@ -67,7 +67,7 @@ export interface NumericCoupler extends TargetCoupler {
 /**
  Connects an indexing (list-type) target with client code.
  */
-export interface IndexingCoupler extends TargetCoupler {
+export interface IndexingCoupler<C> extends TargetCoupler {
   /**
    Sets initial state of the indexing (the index into its contents).
    */
@@ -77,18 +77,18 @@ export interface IndexingCoupler extends TargetCoupler {
    * @param {string} title identifies the target
    * @returns {any[]}
    */
-  getIndexables: (title: string) => any[];
+  getIndexables: (title: string) => C[];
   /**
    * Get string to represent indexable content in the UI
    * @param {string} title identifies the target
    * @returns {string[]}
    */
-  newUiSelectable?: (indexable: any) => string;  
+  newUiSelectable?: (indexable: C) => string;
 }
 /**
  * Current values exposed by the indexing
  */
-interface IndexingState {
+interface IndexingState<C> {
   /**
    * As last created by IndexingCoupler.getUiSelectables
    */
@@ -96,12 +96,12 @@ interface IndexingState {
   /**
    * The result of the current index into the indexables.
    */
-  indexed: any;
+  indexed: C;
 }
 /**
  * Defines a target that wraps content selected with an indexing.
  */
-export interface IndexingFramePolicy {
+export interface IndexingFramePolicy<C> {
   /**
    * Title for the wrapping target.
    */
@@ -113,14 +113,14 @@ export interface IndexingFramePolicy {
   /**
    * Get current items to be indexed.
    */
-  getIndexables: () => any[];
+  getIndexables: () => C[];
   /**
    * Supply  string to expose content item in the UI.
    * Analogue of IndexingCoupler function. 
    * @param {any} content item
    * @returns {string}
    */
-  newUiSelectable?: (indexable: any) => string;
+  newUiSelectable?: (indexable: C) => string;
   /**
    * Create Targets to be attached to the frame Target
    * @returns {Target[]}
@@ -130,14 +130,14 @@ export interface IndexingFramePolicy {
    * Provides for supplying different targets
    * @param indexed selected with the indexing
    */
-  newIndexedTreeTitle?: (indexed: any) => string;
+  newIndexedTreeTitle?: (indexed: C) => string;
   /**
    * Create Targets exposing the indexed content
    * @param indexed selected with the indexing
    * @param title from {newIndexedTitle} or created by framework
    * @returns {Target} root of tree
    */
-  newIndexedTree?: (indexed: any, indexedTreeTitle: string) => Target;
+  newIndexedTree?: (indexed: C, indexedTreeTitle: string) => Target;
 }
 /**
 * Constructs a new Superficial application core.
@@ -186,11 +186,11 @@ export interface Facets {
   */
   newTargetGroup(title: string, members: Target[]): Target;
   /** */
-  newIndexingTarget(title: string, coupler: IndexingCoupler): Target;
+  newIndexingTarget(title: string, coupler: IndexingCoupler<any>): Target;
   /** */
-  getIndexingState(title: string): IndexingState;
+  getIndexingState(title: string): IndexingState<any>;
   /** */
-  newIndexingFrame(policy: IndexingFramePolicy): Target;
+  newIndexingFrame(policy: IndexingFramePolicy<any>): Target;
   /**
    * Constructs a tree of targeters using the initial target tree.
    * @param {Target} targetTree the root of the target tree

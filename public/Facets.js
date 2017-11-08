@@ -1959,8 +1959,11 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
                 this.__parent.trace(msg);
             let targets = this.__parent.targeterTree.target();
             this.__parent.targeterTree.retarget(targets);
-            this.__parent.trace("> Targeters retargeted on ", targets);
-            this.__parent.putTitleTargeters(this.__parent.targeterTree);
+            msg = "> Targeters retargeted on " + Debug.info(targets);
+            if (this.__parent.times.doTime)
+                this.__parent.times.traceElapsed(msg);
+            else
+                this.__parent.trace(msg);
             this.__parent.onRetargeted();
             this.__parent.targeterTree.retargetFacets();
             msg = "> Facets retargeted in " + Debug.info(this.__parent.targeterTree);
