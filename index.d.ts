@@ -67,7 +67,7 @@ export interface NumericCoupler extends TargetCoupler {
 /**
  Connects an indexing (list-type) target with client code.
  */
-export interface IndexingCoupler<C> extends TargetCoupler {
+export interface IndexingCoupler extends TargetCoupler {
   /**
    Sets initial state of the indexing (the index into its contents).
    */
@@ -77,18 +77,18 @@ export interface IndexingCoupler<C> extends TargetCoupler {
    * @param {string} title identifies the target
    * @returns {any[]}
    */
-  getIndexables: (title: string) => C[];
+  getIndexables: (title: string) => any[];
   /**
    * Get string to represent indexable content in the UI
    * @param {string} title identifies the target
    * @returns {string[]}
    */
-  newUiSelectable?: (indexable: C) => string;
+  newUiSelectable?: (indexable: any) => string;  
 }
 /**
  * Current values exposed by the indexing
  */
-interface IndexingState<C> {
+interface IndexingState {
   /**
    * As last created by IndexingCoupler.getUiSelectables
    */
@@ -96,12 +96,12 @@ interface IndexingState<C> {
   /**
    * The result of the current index into the indexables.
    */
-  indexed: C;
+  indexed: any;
 }
 /**
  * Defines a target that wraps content selected with an indexing.
  */
-export interface IndexingFramePolicy<C> {
+export interface IndexingFramePolicy {
   /**
    * Title for the wrapping target.
    */
@@ -113,14 +113,14 @@ export interface IndexingFramePolicy<C> {
   /**
    * Get current items to be indexed.
    */
-  getIndexables: () => C[];
+  getIndexables: () => any[];
   /**
    * Supply  string to expose content item in the UI.
    * Analogue of IndexingCoupler function. 
    * @param {any} content item
    * @returns {string}
    */
-  newUiSelectable?: (indexable: C) => string;
+  newUiSelectable?: (indexable: any) => string;
   /**
    * Create Targets to be attached to the frame Target
    * @returns {Target[]}
@@ -130,14 +130,14 @@ export interface IndexingFramePolicy<C> {
    * Provides for supplying different targets
    * @param indexed selected with the indexing
    */
-  newIndexedTreeTitle?: (indexed: C) => string;
+  newIndexedTreeTitle?: (indexed: any) => string;
   /**
    * Create Targets exposing the indexed content
    * @param indexed selected with the indexing
    * @param title from {newIndexedTitle} or created by framework
    * @returns {Target} root of tree
    */
-  newIndexedTree?: (indexed: C, indexedTreeTitle: string) => Target;
+  newIndexedTree?: (indexed: any, indexedTreeTitle: string) => Target;
 }
 /**
 * Constructs a new Superficial application core.
@@ -186,16 +186,27 @@ export interface Facets {
   */
   newTargetGroup(title: string, members: Target[]): Target;
   /** */
-  newIndexingTarget(title: string, coupler: IndexingCoupler<any>): Target;
+  newIndexingTarget(title: string, coupler: IndexingCoupler): Target;
   /** */
-  getIndexingState(title: string): IndexingState<any>;
+  getIndexingState(title: string): IndexingState;
   /** */
-  newIndexingFrame(policy: IndexingFramePolicy<any>): Target;
+  newIndexingFrame(policy: IndexingFramePolicy): Target;
+  /**
+   * Add a content tree to the application. 
+   * The tree added becomes the active tree
+   * @param {Target} add to be added
+   */
+  addContentTree(add: Target): void;
+  /**
+   * Activate an existing content tree. 
+   * @param {string} title identifies the tree
+   */
+  activateContentTree(title: string): void;
   /**
    * Constructs a tree of targeters using the initial target tree.
    * @param {Target} targetTree the root of the target tree
    */
-  buildTargeterTree(targetTree: Target): void;
+  buildTargeterTree(): void;
   /**
    * Attach an internal facet to the targeter with the target title passed.
    * @param {string} title identifies the targeter
@@ -229,8 +240,11 @@ export interface Facets {
   setTargetLive(title: string, live: boolean): void;
   /** */
   isTargetLive(title: string): boolean;
-  /** */
-  onRetargeted: () => void;
+  /**
+   * Called by the application after retargeting the target tree but
+   * before retargeting facets. 
+   */
+  onRetargeted: (activeTitle:string) => void;
   /** */
   identity(): any;
   /** */
