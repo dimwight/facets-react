@@ -299,6 +299,7 @@ function buildSelectingBasic(facets){
 }
 function buildSelectingPlus(facets){
   ReactDOM.render(<RowPanel rubric={Tests.SelectingPlus.name}>
+    <RowPanel rubric={'Chooser'}>
       {false?<IndexingDropdown title={SelectingTitles.SELECT} facets={facets}/>:
         <IndexingList
           title={SelectingTitles.SELECT}
@@ -313,6 +314,7 @@ function buildSelectingPlus(facets){
         <TriggerButton title={SelectingTitles.DELETE} facets={facets}/>
         <TriggerButton title={SelectingTitles.NEW} facets={facets}/>
       </PanelRow>
+    </RowPanel>
     </RowPanel>,
     document.getElementById('root'),
   );
