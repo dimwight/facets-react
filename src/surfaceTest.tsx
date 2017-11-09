@@ -303,7 +303,7 @@ function buildSelectingPlus(facets){
         <IndexingList
           title={SelectingTitles.SELECT}
           facets={facets}
-          listWidth={false?null:100}/>}
+          listWidth={false?null:200}/>}
       <PanelRow>
         <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
       </PanelRow>

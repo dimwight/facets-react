@@ -86,7 +86,7 @@ export function ListItem(p:ListItemProps){
     className={p.className}
     style={{
       cursor:'default',
-      whiteSpace: 'nowrap',
+      whiteSpace: false?null:'nowrap',
       overflow:'hidden',
     }}
     tabIndex={p.tabIndex}
@@ -127,7 +127,7 @@ export class IndexingList extends IndexingFacet{
         onKeyDown={disabled?null:this.onKeyDown}
         id={at+this.unique}
         text={s}
-        key={s+(++Facet.ids)}
+        key={s+(Facet.ids++)}
       />)});
     return (<span>
       <LabelRubric text={props.rubric} disabled={disabled}/>
@@ -135,6 +135,7 @@ export class IndexingList extends IndexingFacet{
            style={{
              display:'table',
              width:this.boxWidth||null,
+             overflow:true?null:'scroll',
            }}
            id={'listBox'+this.unique}
       >{items}</div>
