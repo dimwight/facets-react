@@ -88,14 +88,21 @@ function newTextualTree(facets){
     });
   return facets.newTargetGroup('TextualTest',[first,second]);
 }
+function setSimplesLive(facets,state){
+  [SimpleTitles.TEXTUAL_FIRST,SimpleTitles.TEXTUAL_SECOND,
+    SimpleTitles.INDEXED,SimpleTitles.INDEXING,SimpleTitles.INDEX,
+    SimpleTitles.TRIGGER,SimpleTitles.TRIGGEREDS,
+  ].forEach(title=>{
+    facets.setTargetLive(title,state);
+  })
+}
 function newTogglingTree(facets){
   const toggling=facets.newTogglingTarget(SimpleTitles.TOGGLING,{
-      passSet:SimpleTitles.TOGGLE_START,
-    }),
-    toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
-      getText:()=>{
-        return facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set'
-      },
+    passSet:SimpleTitles.TOGGLE_START,
+    targetStateUpdated:state=>setSimplesLive(facets,state),
+  }),
+  toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
+      getText:()=>facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set'
     });
   facets.onRetargeted=()=>{
     facets.setTargetLive(SimpleTitles.TOGGLED,
@@ -167,17 +174,6 @@ function newSelectingBasicTree(facets:Facets){
         }),
         facets.newTogglingTarget(SelectingTitles.LIVE,{
           passSet:true,
-          targetStateUpdated:state=>{
-            [SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>{
-                ["",TextContentType.ShowChars.titleTail].forEach(tail=>{
-                  traceThing('^newTogglingTarget',{
-                    title:title+tail,
-                    state:state
-                  });
-                    facets.setTargetLive(title+tail,state as boolean)
-                  })
-              })
-          }
         }),
       ]
     },
@@ -190,7 +186,7 @@ function newSelectingBasicTree(facets:Facets){
           targetStateUpdated: state => indexed.text = state as string,
         }),
         facets.newTextualTarget(SelectingTitles.CHARS+tail, {
-          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT
+          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT,
             )as string).length,
         }),
       ])
@@ -198,9 +194,9 @@ function newSelectingBasicTree(facets:Facets){
   };
   facets.onRetargeted=()=>{
     const live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
-    if(false)[SelectingTitles.SELECT,SimpleTitles.INDEXED,SelectingTitles.EDIT,
-      SelectingTitles.CHARS].forEach(title_=>
-      facets.setTargetLive(title_,live))
+    [SelectingTitles.SELECT,SimpleTitles.INDEXED,SelectingTitles.EDIT,
+      SelectingTitles.CHARS].forEach(title=>
+      facets.setTargetLive(title,live))
   };
   return facets.newIndexingFrame(frame);
 }
@@ -228,7 +224,7 @@ function newSelectingPlusTree(facets:Facets){
         facets.newTextualTarget(SelectingTitles.CHARS, {
           getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
           ).length,
-        })
+        }),
       ])
     },
   };
@@ -278,12 +274,6 @@ function buildIndexing(facets){
 }
 function buildAllSimples(facets){
   const textual1=SimpleTitles.TEXTUAL_FIRST,textual2=SimpleTitles.TEXTUAL_SECOND;
-  if(false)[textual1,textual2,SimpleTitles.TOGGLING,
-    SimpleTitles.INDEXED,SimpleTitles.INDEXING,SimpleTitles.INDEX,
-    SimpleTitles.TRIGGER,SimpleTitles.TRIGGEREDS,
-  ].forEach(title=>{
-    facets.setTargetLive(title,false);
-  })
   ReactDOM.render(<div>
       <RowPanel rubric={Tests.Textual.name}>
         <TextualField title={textual1} facets={facets}/>
@@ -351,5 +341,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.AllSimples).buildSurface();
+  new TestSurface(Tests.SelectingBasic).buildSurface();
 }

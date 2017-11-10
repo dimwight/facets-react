@@ -4,7 +4,7 @@ import {
 } from 'facets-js';
 export abstract class Surface{
   constructor(readonly facets:Facets){
-    facets.times.doTime=true;
+    facets.times.doTime=false;
   }
   trace(text){
     if(this.facets.doTrace)console.info('Surface > '+text);

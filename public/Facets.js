@@ -2012,21 +2012,21 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
          */
         notify(notice) {
             let msg = "> Surface for " + Debug.info(this.__parent.rootTargeter) + " notified by " + notice;
-            if (this.__parent.times.doTime && this.__parent.doTrace)
+            if (this.__parent.times.doTime)
                 this.__parent.times.traceElapsed(msg);
             else
                 this.__parent.trace(msg);
             let target = this.__parent.rootTargeter.target();
             this.__parent.rootTargeter.retarget(target);
             msg = "> Targeters retargeted on " + Debug.info(target);
-            if (this.__parent.times.doTime && this.__parent.doTrace)
+            if (this.__parent.times.doTime)
                 this.__parent.times.traceElapsed(msg);
             else
                 this.__parent.trace(msg);
             this.__parent.onRetargeted();
             this.__parent.rootTargeter.retargetFacets();
             msg = "> Facets retargeted in " + Debug.info(this.__parent.rootTargeter);
-            if (this.__parent.times.doTime && this.__parent.doTrace)
+            if (this.__parent.times.doTime)
                 this.__parent.times.traceElapsed(msg);
             else
                 this.__parent.trace(msg);
