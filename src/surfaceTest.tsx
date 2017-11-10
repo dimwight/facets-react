@@ -58,7 +58,6 @@ class TextContentType{
   static getContentType(content:TextContent){
     return content.text.length>20?TextContentType.ShowChars:TextContentType.Standard;
   }
-
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
@@ -158,9 +157,9 @@ function newSelectingBasicTree(facets:Facets){
     newFrameTargets:()=>{
       return [
         facets.newTextualTarget(SimpleTitles.INDEXED,{
-          getText:titley=>{
-            let index=facets.getTargetState(SelectingTitles.SELECT)as number;
-            return false&&index===null?"No target yet":list[index].text;
+          getText:()=>{
+            let indexed:TextContent=facets.getIndexingState(SelectingTitles.SELECT).indexed;
+            return TextContentType.getContentType(indexed).name;
           },
         }),
         facets.newTogglingTarget(SelectingTitles.LIVE,{
