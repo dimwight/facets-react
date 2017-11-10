@@ -48,6 +48,18 @@ let Tests={
 interface TextContent {
   text? : string;
 }
+class TextContentType{
+  constructor(
+    readonly name,
+    readonly titleTail,
+  ){}
+  static Standard=new TextContentType('Standard','');
+  static ShowChars=new TextContentType('ShowChars','|ShowChars');
+  static getContentType(content:TextContent){
+    return content.text.length>20?TextContentType.ShowChars:TextContentType.Standard;
+  }
+
+}
 class TestSurface extends Surface{
   constructor(private test:Test){
     super(newInstance(true));
@@ -320,5 +332,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingPlus).buildSurface();
+  new TestSurface(Tests.SelectingBasic).buildSurface();
 }

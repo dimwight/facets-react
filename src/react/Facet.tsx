@@ -144,6 +144,19 @@ export class TextualLabel extends Facet<TextualValues,TextualValues>{
         </span>)
   }
 }
+export class TextualSwitchPanel extends Facet<TextualValues,TextualValues>{
+  protected readUpdate(update):{}{
+    return {text:String(update)}
+  }
+  render(){
+    let disabled=!this.state.live;
+    return (<span>
+      <LabelRubric text={this.props.title} disabled={disabled}/>
+      &nbsp;
+      <LabelText text={this.state.text} disabled={disabled}/>
+        </span>)
+  }
+}
 function PanelRubric (props:LabelValues){
   let text=props.text,
     className=props.classes+' '+(props.disabled?'rubricDisabled':'rubric');
