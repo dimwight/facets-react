@@ -20,7 +20,7 @@ import {traceThing}from './util/export';
 import {Surface}from './facets/export';
 import {IndexableList,SelectingTitles} from './facets/SelectingList';
 export namespace SimpleTitles{
-  export let TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
+  export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
     INDEXING=TEXTUAL_FIRST+' or '+TEXTUAL_SECOND,
     INDEX='Index',INDEXED='Indexed',INDEX_START=0,
     INDEXABLES=[TEXTUAL_FIRST,TEXTUAL_SECOND],
@@ -36,7 +36,7 @@ class Test{
     readonly buildLayout:(Facets)=>void,
   ){}
 }
-let Tests={
+const Tests={
   Textual:new Test('Textual',newTextualTree,buildTextual),
   TogglingLive:new Test('TogglingLive',newTogglingTree,buildToggling),
   Indexing:new Test('Indexing',newIndexingTree,buildIndexing),
@@ -61,7 +61,7 @@ class TextContentType{
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(true));
+    super(newInstance(false));
   }
   newTargetTree=()=>this.test.newTree(this.facets);
   buildLayout=()=>{
@@ -76,7 +76,7 @@ class TestSurface extends Surface{
   }
 }
 function newTextualTree(facets){
-  let first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
+  const first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
       passText:'Some text for '+SimpleTitles.TEXTUAL_FIRST,
       targetStateUpdated:state=>{
         facets.updateTargetState(SimpleTitles.TEXTUAL_SECOND,
@@ -89,7 +89,7 @@ function newTextualTree(facets){
   return facets.newTargetGroup('TextualTest',[first,second]);
 }
 function newTogglingTree(facets){
-  let toggling=facets.newTogglingTarget(SimpleTitles.TOGGLING,{
+  const toggling=facets.newTogglingTarget(SimpleTitles.TOGGLING,{
       passSet:SimpleTitles.TOGGLE_START,
     }),
     toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
@@ -105,14 +105,14 @@ function newTogglingTree(facets){
 }
 function newTriggerTree(facets){
   let triggers:number=0;
-  let trigger=facets.newTriggerTarget(SimpleTitles.TRIGGER,{
+  const trigger=facets.newTriggerTarget(SimpleTitles.TRIGGER,{
       targetStateUpdated:(state,title)=>{
         if(++triggers>4)facets.setTargetLive(title,false);
       },
     }),
     triggered=facets.newTextualTarget(SimpleTitles.TRIGGEREDS,{
       getText:()=>{
-        let count=triggers.toString();
+        const count=triggers.toString();
         return !facets.isTargetLive(SimpleTitles.TRIGGER)?
           `No more than ${count}!`:count
       },
@@ -120,7 +120,7 @@ function newTriggerTree(facets){
   return facets.newTargetGroup('TriggerTest',[trigger,triggered]);
 }
 function newIndexingTree(facets){
-  let indexing=facets.newIndexingTarget(SimpleTitles.INDEXING,{
+  const indexing=facets.newIndexingTarget(SimpleTitles.INDEXING,{
       passIndex:0,
       getUiSelectables:(title)=> SimpleTitles.INDEXABLES,
       getIndexables: (title)=> SimpleTitles.INDEXABLES,
@@ -144,12 +144,15 @@ function newSelectingBasicTree(facets:Facets){
   function listAt():number{
     return facets.getTargetState(frame.indexingTitle) as number;
   }
-  let list : TextContent[]=[
+  const list : TextContent[]=[
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
     {text: 'Hello, good evening and welcome!'},
   ];
-  let frame:IndexingFramePolicy={
+  function getType(indexed:TextContent){
+    return TextContentType.getContentType(indexed);
+  }
+  const frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     getIndexables:()=>list,
@@ -158,8 +161,8 @@ function newSelectingBasicTree(facets:Facets){
       return [
         facets.newTextualTarget(SimpleTitles.INDEXED,{
           getText:()=>{
-            let indexed:TextContent=facets.getIndexingState(SelectingTitles.SELECT).indexed;
-            return TextContentType.getContentType(indexed).name;
+            return getType(facets.getIndexingState(
+              SelectingTitles.SELECT).indexed).name;
           },
         }),
         facets.newTogglingTarget(SelectingTitles.LIVE,{
@@ -167,23 +170,23 @@ function newSelectingBasicTree(facets:Facets){
         }),
       ]
     },
-    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME,
+    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME+getType(indexed).titleTail,
     newIndexedTree: (indexed:TextContent,title:string) =>{
-      traceThing('^IndexingFramePolicy',{title:title});
+      const tail=getType(indexed).titleTail;
       return facets.newTargetGroup(title,[
-        facets.newTextualTarget(SelectingTitles.EDIT, {
+        facets.newTextualTarget(SelectingTitles.EDIT+tail, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
-        facets.newTextualTarget(SelectingTitles.CHARS, {
-          getText: title => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
-          ).length,
+        facets.newTextualTarget(SelectingTitles.CHARS+tail, {
+          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT
+            )as string).length,
         }),
       ])
     },
   };
   facets.onRetargeted=()=>{
-    let live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
+    const live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
     if(false)[SelectingTitles.SELECT,SimpleTitles.INDEXED,SelectingTitles.EDIT,
       SelectingTitles.CHARS].forEach(title_=>
       facets.setTargetLive(title_,live))
@@ -191,13 +194,13 @@ function newSelectingBasicTree(facets:Facets){
   return facets.newIndexingFrame(frame);
 }
 function newSelectingPlusTree(facets:Facets){
-  let content=[
+  const content=[
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
     {text: 'Hello, sailor!'},
     {text: 'Hello, good evening and welcome!'},
   ];
-  let frame:IndexingFramePolicy={
+  const frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.SELECT,
     newFrameTargets:()=>list.newIndexingFrameTargets(),
@@ -218,11 +221,11 @@ function newSelectingPlusTree(facets:Facets){
       ])
     },
   };
-  let list=new IndexableList<TextContent>(content,3,facets,frame.indexingTitle);
+  const list=new IndexableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildTextual(facets){
-  let first=SimpleTitles.TEXTUAL_FIRST,second=SimpleTitles.TEXTUAL_SECOND;
+  const first=SimpleTitles.TEXTUAL_FIRST,second=SimpleTitles.TEXTUAL_SECOND;
   ReactDOM.render(
     <RowPanel rubric={Tests.Textual.name}>
       <TextualField title={first} facets={facets}/>
@@ -263,7 +266,7 @@ function buildIndexing(facets){
   );
 }
 function buildAllSimples(facets){
-  let textual1=SimpleTitles.TEXTUAL_FIRST,textual2=SimpleTitles.TEXTUAL_SECOND;
+  const textual1=SimpleTitles.TEXTUAL_FIRST,textual2=SimpleTitles.TEXTUAL_SECOND;
   ReactDOM.render(<div>
       <RowPanel rubric={Tests.Textual.name}>
         <TextualField title={textual1} facets={facets}/>
