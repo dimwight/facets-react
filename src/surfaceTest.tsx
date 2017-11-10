@@ -278,6 +278,12 @@ function buildIndexing(facets){
 }
 function buildAllSimples(facets){
   const textual1=SimpleTitles.TEXTUAL_FIRST,textual2=SimpleTitles.TEXTUAL_SECOND;
+  if(false)[textual1,textual2,SimpleTitles.TOGGLING,
+    SimpleTitles.INDEXED,SimpleTitles.INDEXING,SimpleTitles.INDEX,
+    SimpleTitles.TRIGGER,SimpleTitles.TRIGGEREDS,
+  ].forEach(title=>{
+    facets.setTargetLive(title,false);
+  })
   ReactDOM.render(<div>
       <RowPanel rubric={Tests.Textual.name}>
         <TextualField title={textual1} facets={facets}/>
@@ -345,5 +351,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingBasic).buildSurface();
+  new TestSurface(Tests.AllSimples).buildSurface();
 }
