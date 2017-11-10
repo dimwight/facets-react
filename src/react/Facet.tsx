@@ -167,7 +167,8 @@ export function RowPanel(props){
     return <div className={'panelMount'}>{child}</div>
   });
   return <div className={'panel'}>
-    <PanelRubric text={props.rubric} disabled={false} classes={'panelRubric'}/>
+    {props.rubric?<PanelRubric text={props.rubric} disabled={false} classes={'panelRubric'}/>
+    :null}
     {children}
   </div>
 }

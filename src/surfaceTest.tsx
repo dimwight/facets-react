@@ -296,10 +296,10 @@ function buildSelectingBasic(facets){
       {false?<IndexingDropdown title={SelectingTitles.SELECT} facets={facets}/>
         :<IndexingList title={SelectingTitles.SELECT} facets={facets}/>}
       <PanelRow>
-        <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
+        <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
       </PanelRow>
       <PanelRow>
-        <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
+        <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
       </PanelRow>
       <PanelRow>
         <TextualLabel title={SelectingTitles.CHARS} facets={facets}/>
