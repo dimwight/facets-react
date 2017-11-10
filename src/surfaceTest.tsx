@@ -167,6 +167,17 @@ function newSelectingBasicTree(facets:Facets){
         }),
         facets.newTogglingTarget(SelectingTitles.LIVE,{
           passSet:true,
+          targetStateUpdated:state=>{
+            [SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>{
+                ["",TextContentType.ShowChars.titleTail].forEach(tail=>{
+                  traceThing('^newTogglingTarget',{
+                    title:title+tail,
+                    state:state
+                  });
+                    facets.setTargetLive(title+tail,state as boolean)
+                  })
+              })
+          }
         }),
       ]
     },
