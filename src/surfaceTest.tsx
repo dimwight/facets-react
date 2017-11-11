@@ -19,7 +19,7 @@ import {
 import {traceThing}from './util/export';
 import {Surface}from './facets/export';
 import {IndexableList,SelectingTitles} from './facets/SelectingList';
-import {SwitchPanel} from './react/Facet';
+import {ShowPanel} from './react/Facet';
 export namespace SimpleTitles{
   export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
     INDEXING=TEXTUAL_FIRST+' or '+TEXTUAL_SECOND,
@@ -189,21 +189,20 @@ function newSelectingBasicTree(facets:Facets){
     newIndexedTree: (indexed:TextContent,title:string) =>{
       const tail=getType(indexed).titleTail;
       traceThing('^newIndexedTree',{tail:tail,text:indexed.text})
-      return facets.newTargetGroup(title,false?[
+      return facets.newTargetGroup(title,tail===''?[
+        facets.newTextualTarget(SelectingTitles.EDIT, {
+          passText: indexed.text,
+          targetStateUpdated: state => indexed.text = state as string,
+        }),
+      ]:[
         facets.newTextualTarget(SelectingTitles.EDIT+tail, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
         facets.newTextualTarget(SelectingTitles.CHARS+tail, {
-          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT+tail,
-            )as string).length,
+          getText: () =>''+indexed.text.length,
         }),
-      ]
-      :[
-          facets.newTextualTarget(SelectingTitles.CHARS+tail, {
-            getText: () =>''+indexed.text.length,
-          }),
-        ])
+      ])
     },
   };
   facets.onRetargeted=()=>{
@@ -316,7 +315,7 @@ function buildAllSimples(facets){
 }
 function buildSelectingBasic(facets){
   function newEditField(tail){
-    return true?null:<PanelRow>
+    return false?null:<PanelRow>
       <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
     </PanelRow>;
   }
@@ -330,12 +329,9 @@ function buildSelectingBasic(facets){
       <PanelRow>
         <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
       </PanelRow>
-      <SwitchPanel title={SimpleTitles.INDEXED} facets={facets}>
+      <ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
         <RowPanel rubric={TextContentType.Standard.name}>
-          {newEditField(tail)}
-          <PanelRow>
-            <TextualLabel title={SelectingTitles.CHARS} facets={facets}/>
-          </PanelRow>
+          {newEditField('')}
           {liveCheckbox}
         </RowPanel>
         <RowPanel rubric={TextContentType.ShowChars.name}>
@@ -345,7 +341,7 @@ function buildSelectingBasic(facets){
           </PanelRow>
           {liveCheckbox}
         </RowPanel>
-      </SwitchPanel>
+      </ShowPanel>
 
     </RowPanel>,
     document.getElementById('root'),

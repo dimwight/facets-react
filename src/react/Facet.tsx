@@ -132,10 +132,15 @@ export class TextualField extends Facet<TextualValues,TextualValues>{
   }
 }
 export class TextualLabel extends Facet<TextualValues,TextualValues>{
+  constructor(props){
+    super(props);
+    traceThing('TextualLabel.constructor',this.props);
+  }
   protected readUpdate(update):{}{
     return {text:String(update)}
   }
   render(){
+    traceThing('TextualLabel',this.state);
     let disabled=!this.state.live;
     return (<span>
       <LabelRubric text={this.props.title} disabled={disabled}/>
@@ -144,17 +149,17 @@ export class TextualLabel extends Facet<TextualValues,TextualValues>{
         </span>)
   }
 }
-export class SwitchPanel extends Facet<TextualValues,TextualValues>{
+export class ShowPanel extends Facet<TextualValues,TextualValues>{
   protected readUpdate(update):{}{
     return {text:String(update)}
   }
   render(){
-    traceThing('^SwitchPanel',this.state.text);
+    traceThing('^ShowPanel',this.state.text);
     let all=this.props.children as any[],show;
     all.forEach(each=>{
         if(each.props.rubric===this.state.text)show=each;
       });
-    let children=React.Children.map(false?all:show,child=>{
+    let children=React.Children.map(true?all:show,child=>{
       return <div className={'panelMount'}>{child}</div>
     });
     return <div className={'panel'}>{children}</div>
