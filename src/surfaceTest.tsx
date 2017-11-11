@@ -18,7 +18,7 @@ import {
 } from './react/export';
 import {traceThing}from './util/export';
 import {Surface}from './facets/export';
-import {IndexableList,SelectingTitles} from './facets/SelectingList';
+import {ShowableList,SelectingTitles} from './facets/ShowableList';
 import {ShowPanel} from './react/Facet';
 export namespace SimpleTitles{
   export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
@@ -43,8 +43,8 @@ const Tests={
   Indexing:new Test('Indexing',newIndexingTree,buildIndexing),
   Trigger:new Test('Trigger',newTriggerTree,buildTrigger),
   AllSimples:new Test('AllSimples',newAllSimplesTree,buildAllSimples),
-  SelectingBasic:new Test('SelectingBasic',newSelectingBasicTree,buildSelectingBasic),
-  SelectingPlus:new Test('SelectingPlus',newSelectingPlusTree,buildSelectingPlus),
+  SelectingTyped:new Test('SelectingTyped',newSelectingTypedTree,buildSelectingTyped),
+  SelectingShowable:new Test('SelectingShowable',newSelectingPlusTree,buildSelectingShowable),
 };
 interface TextContent {
   text? : string;
@@ -148,7 +148,7 @@ function newAllSimplesTree(facets):Target{
     newIndexingTree(facets),
     newTriggerTree(facets)]);
 }
-function newSelectingBasicTree(facets:Facets){
+function newSelectingTypedTree(facets:Facets){
   function listAt():number{
     return facets.getTargetState(frame.indexingTitle) as number;
   }
@@ -243,7 +243,7 @@ function newSelectingPlusTree(facets:Facets){
       ])
     },
   };
-  const list=new IndexableList<TextContent>(content,3,facets,frame.indexingTitle);
+  const list=new ShowableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildTextual(facets){
@@ -313,7 +313,7 @@ function buildAllSimples(facets){
     document.getElementById('root'),
   );
 }
-function buildSelectingBasic(facets){
+function buildSelectingTyped(facets){
   function newEditField(tail){
     return false?null:<PanelRow>
       <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
@@ -323,7 +323,7 @@ function buildSelectingBasic(facets){
   let liveCheckbox=true?null:<PanelRow>
     <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
   </PanelRow>;
-  ReactDOM.render(<RowPanel title={Tests.SelectingBasic.name} withRubric={true}>
+  ReactDOM.render(<RowPanel title={Tests.SelectingTyped.name} withRubric={true}>
       {false?<IndexingDropdown title={SelectingTitles.SELECT} facets={facets}/>
         :<IndexingList title={SelectingTitles.SELECT} facets={facets}/>}
       {true?null:<PanelRow>
@@ -347,8 +347,8 @@ function buildSelectingBasic(facets){
     document.getElementById('root'),
   );
 }
-function buildSelectingPlus(facets){
-  ReactDOM.render(<RowPanel title={Tests.SelectingPlus.name} withRubric={true}>
+function buildSelectingShowable(facets){
+  ReactDOM.render(<RowPanel title={Tests.SelectingShowable.name} withRubric={true}>
     <RowPanel title={'Chooser'}>
       {false?<IndexingDropdown title={SelectingTitles.SELECT} facets={facets}/>:
         <IndexingList
@@ -356,13 +356,13 @@ function buildSelectingPlus(facets){
           facets={facets}
           listWidth={false?null:200}/>}
       <PanelRow>
-        <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
-      </PanelRow>
-      <PanelRow>
         <TriggerButton title={SelectingTitles.UP} facets={facets}/>
         <TriggerButton title={SelectingTitles.DOWN} facets={facets}/>
         <TriggerButton title={SelectingTitles.DELETE} facets={facets}/>
         <TriggerButton title={SelectingTitles.NEW} facets={facets}/>
+      </PanelRow>
+      <PanelRow>
+        <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
       </PanelRow>
     </RowPanel>
     </RowPanel>,
@@ -370,5 +370,5 @@ function buildSelectingPlus(facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.SelectingBasic).buildSurface();
+  new TestSurface(Tests.SelectingShowable).buildSurface();
 }
