@@ -163,7 +163,7 @@ export class ShowPanel extends Facet<TextualValues,TextualValues>{
     let all=this.props.children as any[],show;
     all.forEach((each,at)=>{
       traceThing('ShowPanel',each.props.key);
-      if(each.props.rubric===this.state.text)show=each;
+      if(each.props.title===this.state.text)show=each;
     });
     let children=React.Children.map(false?all:show,child=>{
       return <div className={'panelMount'}>{child}</div>
@@ -172,7 +172,8 @@ export class ShowPanel extends Facet<TextualValues,TextualValues>{
   }
 }
 interface RowPanelProps{
-  rubric?:string
+  title?:string
+  withRubric?:boolean
   key?:string
   children
 }
@@ -185,9 +186,10 @@ export function RowPanel(props:RowPanelProps){
   let children=React.Children.map(props.children,child=>{
     return <div className={'panelMount'}>{child}</div>
   });
-  return <div className={'panel'} key={false?null:props.rubric}>
-    {props.rubric?<PanelRubric text={props.rubric} disabled={false} classes={'panelRubric'}/>
-    :null}
+  const title=props.title;
+  return <div className={'panel'} key={false?null:title}>
+    {title&&props.withRubric?
+      <PanelRubric text={title} disabled={false} classes={'panelRubric'}/>:null}
     {children}
   </div>
 }
