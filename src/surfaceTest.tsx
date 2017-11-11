@@ -64,7 +64,7 @@ class TestSurface extends Surface{
   constructor(private test:Test){
     super(newInstance(true));
   }
-  newTargetTree=()=>this.test.newTree(this.facets);
+  defineContent=()=>this.test.newTree(this.facets);
   buildLayout=()=>{
     if(false&&this.test===Tests.AllSimples)[
       SimpleTitles.TEXTUAL_FIRST,
