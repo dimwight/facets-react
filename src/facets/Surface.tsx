@@ -12,7 +12,11 @@ export abstract class Surface{
   buildSurface(){
     let times=this.facets.times;
     this.trace('Building surface '+times.elapsed());
-    this.facets.addContentTree(this.defineContent());
+    const content=this.defineContent();
+    if(content instanceof Array)
+      (content as [Target]).forEach(each=>
+        this.facets.addContentTree(content));
+    else this.facets.addContentTree(content);
     this.facets.buildTargeterTree();
     this.trace('Built targets, created targeters');
     this.buildLayout();

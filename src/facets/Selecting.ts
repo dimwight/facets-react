@@ -3,9 +3,10 @@ import {
 } from 'facets-js';
 import * as Array from '../util/Array';
 import {traceThing}from '../util/export';
+import {SimpleTitles} from '../surfaceTest';
 export namespace SelectingTitles {
   export let FRAME='Selecting',
-    SELECT='Select Content',
+    CHOOSER='Select Content',
     ACTIONS='Actions',
     LIVE='Live',
     NEW='New',
@@ -55,7 +56,7 @@ export class ShowableList<T>{
       thenStop:thenStop,
       offset:this.showFrom-thenFrom,
     });
-    this.facets.notifyTargetUpdated(SelectingTitles.SELECT)
+    this.facets.notifyTargetUpdated(SelectingTitles.CHOOSER)
   }
   contentAt(showAt){
     return showAt+this.showFrom;
@@ -95,11 +96,9 @@ export class ShowableList<T>{
     }
     this.setShowAt(showNow)
   }
-  newIndexingFrameTargets(){
+  newActionTargets(){
     let f=this.facets;
-    return[
-      f.newTargetGroup(SelectingTitles.ACTIONS,
-        [f.newTriggerTarget(SelectingTitles.UP,{
+    return[f.newTriggerTarget(SelectingTitles.UP,{
           targetStateUpdated:()=>this.swapElementDown(),
         }),
         f.newTriggerTarget(SelectingTitles.DOWN,{
@@ -110,9 +109,8 @@ export class ShowableList<T>{
         }),
         f.newTriggerTarget(SelectingTitles.NEW,{
           targetStateUpdated:()=>this.addElement(),
-        }),]
-      ),
-    ]
+        }),
+        ]
   }
 }
 
