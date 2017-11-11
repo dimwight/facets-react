@@ -8,13 +8,14 @@ export type FnPassString=(string)=>void
 export type FnGetString=()=>string
 export interface TargetValues{
   title:string
+  showTitle?:string;
   facets:Facets
   state?:SimpleState
   live?:boolean
 }
 export class Facet<I extends TargetValues,K extends TargetValues>
   extends React.Component<I,K>{
-  private didMount:boolean;
+  private canSetState:boolean;
   public static ids=0;
   protected readonly unique:string;
   constructor(props){
@@ -23,10 +24,12 @@ export class Facet<I extends TargetValues,K extends TargetValues>
     props.facets.attachFacet(props.title,this.facetUpdated);
   }
   facetUpdated=(update)=>{
-    let updateWithLive:{}=Object.assign({},this.readUpdate(update),{
-      live:this.props.facets.isTargetLive(this.props.title)
+    let updateWithLive:{}=Object.assign({},
+      this.readUpdate(update),{
+        live:this.props.facets.isTargetLive(this.props.title),
+        showTitle:this.props.title.replace(/\|.*/,'')
     });
-    if(!this.didMount)
+    if(!this.canSetState)
       this.state=Object.assign({}as K,this.props,updateWithLive,);
     else this.setState(updateWithLive);
   };
@@ -36,7 +39,10 @@ export class Facet<I extends TargetValues,K extends TargetValues>
     facets.notifyTargetUpdated(title);
   }
   componentDidMount(){
-    this.didMount=true;
+    this.canSetState=true;
+  }
+  componentWillUnmount(){
+    this.canSetState=false;
   }
   protected readUpdate(update):{}{
     return {state:update}
@@ -53,7 +59,7 @@ export class TriggerButton extends Facet<TargetValues,TargetValues>{
     return (<button
       onClick={this.onClick}
       disabled={!this.state.live}
-    >{this.props.title}
+    >{this.state.showTitle}
     </button>)
   }
 }
@@ -92,7 +98,7 @@ export class TogglingCheckbox extends Facet<TogglingValues,TogglingValues>{
   };
   render(){
     return (<span>
-      <LabelRubric text={this.props.title} disabled={!this.state.live} target={this.props.title}/>
+      <LabelRubric text={this.state.showTitle} disabled={!this.state.live} target={this.state.showTitle}/>
         <input
           id={this.props.title}
           type="checkbox"
@@ -119,7 +125,7 @@ export class TextualField extends Facet<TextualValues,TextualValues>{
   isDisabled=()=>!this.state.live;
   render(){
     return (<div  className={'textualField'}>
-        <LabelRubric text={this.props.title} disabled={!this.state.live}/>
+        <LabelRubric text={this.state.showTitle} disabled={!this.state.live}/>
         <SmartTextField
           getStartText={this.getStateText}
           onEnter={this.onFieldEnter}
@@ -143,7 +149,7 @@ export class TextualLabel extends Facet<TextualValues,TextualValues>{
     traceThing('^TextualLabel',this.state);
     let disabled=!this.state.live;
     return (<span>
-      <LabelRubric text={this.props.title} disabled={disabled}/>
+      <LabelRubric text={this.state.showTitle} disabled={disabled}/>
       &nbsp;
       <LabelText text={this.state.text} disabled={disabled}/>
         </span>)
@@ -168,7 +174,7 @@ export class ShowPanel extends Facet<TextualValues,TextualValues>{
 interface RowPanelProps{
   rubric?:string
   key?:string
-  children:any[]
+  children
 }
 function PanelRubric (props:LabelValues){
   let text=props.text,
@@ -179,7 +185,7 @@ export function RowPanel(props:RowPanelProps){
   let children=React.Children.map(props.children,child=>{
     return <div className={'panelMount'}>{child}</div>
   });
-  return <div className={'panel'} key={props.rubric}>
+  return <div className={'panel'} key={false?null:props.rubric}>
     {props.rubric?<PanelRubric text={props.rubric} disabled={false} classes={'panelRubric'}/>
     :null}
     {children}
