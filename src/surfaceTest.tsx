@@ -187,7 +187,7 @@ function newSelectingBasicTree(facets:Facets){
           targetStateUpdated: state => indexed.text = state as string,
         }),
         facets.newTextualTarget(SelectingTitles.CHARS+tail, {
-          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT,
+          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT+tail,
             )as string).length,
         }),
       ])
