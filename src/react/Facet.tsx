@@ -154,7 +154,7 @@ export class SwitchPanel extends Facet<TextualValues,TextualValues>{
     all.forEach(each=>{
         if(each.props.rubric===this.state.text)show=each;
       });
-    let children=React.Children.map(true?all:show,child=>{
+    let children=React.Children.map(false?all:show,child=>{
       return <div className={'panelMount'}>{child}</div>
     });
     return <div className={'panel'}>{children}</div>

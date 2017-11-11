@@ -62,7 +62,7 @@ class TextContentType{
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(false));
+    super(newInstance(true));
   }
   newTargetTree=()=>this.test.newTree(this.facets);
   buildLayout=()=>{
@@ -165,8 +165,15 @@ function newSelectingBasicTree(facets:Facets){
     indexingTitle: SelectingTitles.SELECT,
     getIndexables:()=>list,
     newUiSelectable:(item:TextContent)=>item.text,
-    newFrameTargets:()=>{
-      return [
+    newFrameTargets:()=>true?[
+      facets.newTextualTarget(SimpleTitles.INDEXED,{
+        getText:()=>{
+          return getType(facets.getIndexingState(
+            SelectingTitles.SELECT).indexed).name;
+        },
+      }),
+    ]
+    :[
         facets.newTextualTarget(SimpleTitles.INDEXED,{
           getText:()=>{
             return getType(facets.getIndexingState(
@@ -177,11 +184,12 @@ function newSelectingBasicTree(facets:Facets){
           passSet:true,
         }),
       ]
-    },
+    ,
     newIndexedTreeTitle:indexed=>SelectingTitles.FRAME+getType(indexed).titleTail,
     newIndexedTree: (indexed:TextContent,title:string) =>{
       const tail=getType(indexed).titleTail;
-      return facets.newTargetGroup(title,[
+      traceThing('^newIndexedTree',{tail:tail,text:indexed.text})
+      return facets.newTargetGroup(title,false?[
         facets.newTextualTarget(SelectingTitles.EDIT+tail, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
@@ -190,12 +198,17 @@ function newSelectingBasicTree(facets:Facets){
           getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT+tail,
             )as string).length,
         }),
-      ])
+      ]
+      :[
+          facets.newTextualTarget(SelectingTitles.CHARS+tail, {
+            getText: () =>''+indexed.text.length,
+          }),
+        ])
     },
   };
   facets.onRetargeted=()=>{
     const live=facets.getTargetState(SelectingTitles.LIVE) as boolean;
-    [SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>
+    if(false)[SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
       facets.setTargetLive(title+tail,live),
       ),
@@ -302,7 +315,15 @@ function buildAllSimples(facets){
   );
 }
 function buildSelectingBasic(facets){
+  function newEditField(tail){
+    return true?null:<PanelRow>
+      <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
+    </PanelRow>;
+  }
   let tail=TextContentType.ShowChars.titleTail;
+  let liveCheckbox=true?null:<PanelRow>
+    <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
+  </PanelRow>;
   ReactDOM.render(<RowPanel rubric={Tests.SelectingBasic.name}>
       {false?<IndexingDropdown title={SelectingTitles.SELECT} facets={facets}/>
         :<IndexingList title={SelectingTitles.SELECT} facets={facets}/>}
@@ -311,26 +332,18 @@ function buildSelectingBasic(facets){
       </PanelRow>
       <SwitchPanel title={SimpleTitles.INDEXED} facets={facets}>
         <RowPanel rubric={TextContentType.Standard.name}>
-          <PanelRow>
-            <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
-          </PanelRow>
+          {newEditField(tail)}
           <PanelRow>
             <TextualLabel title={SelectingTitles.CHARS} facets={facets}/>
           </PanelRow>
-          <PanelRow>
-            <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
-          </PanelRow>
+          {liveCheckbox}
         </RowPanel>
         <RowPanel rubric={TextContentType.ShowChars.name}>
-          <PanelRow>
-            <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
-          </PanelRow>
+          {newEditField(tail)}
           <PanelRow>
             <TextualLabel title={SelectingTitles.CHARS+tail} facets={facets}/>
           </PanelRow>
-          <PanelRow>
-            <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
-          </PanelRow>
+          {liveCheckbox}
         </RowPanel>
       </SwitchPanel>
 
