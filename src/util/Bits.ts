@@ -3,10 +3,10 @@ import fn from 'date-fns/format';
 export function traceThing(top,thing?){
   if(top.charAt(0)==='^')return;
   if(!thing)console.log(top);
-  else console.info((true?'':'Facets') + top,
-    JSON.stringify(thing, true ? null : (key, value) => {
-      console.log(key)
-      return value
+  else console.info(top,
+    JSON.stringify(thing, false ? null : (key, value) => {
+      if(false)console.log(key)
+      return key=='facets'?key: value
     }, 1))
 }
 function format(time:Date,style:string){

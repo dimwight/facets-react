@@ -8,7 +8,7 @@ export type FnPassString=(string)=>void
 export type FnGetString=()=>string
 export interface TargetValues{
   title:string
-  facets?:Facets
+  facets:Facets
   state?:SimpleState
   live?:boolean
 }
@@ -144,17 +144,20 @@ export class TextualLabel extends Facet<TextualValues,TextualValues>{
         </span>)
   }
 }
-export class TextualSwitchPanel extends Facet<TextualValues,TextualValues>{
+export class SwitchPanel extends Facet<TextualValues,TextualValues>{
   protected readUpdate(update):{}{
     return {text:String(update)}
   }
   render(){
-    let disabled=!this.state.live;
-    return (<span>
-      <LabelRubric text={this.props.title} disabled={disabled}/>
-      &nbsp;
-      <LabelText text={this.state.text} disabled={disabled}/>
-        </span>)
+    traceThing('^SwitchPanel',this.state.text);
+    let all=this.props.children as any[],show;
+    all.forEach(each=>{
+        if(each.props.rubric===this.state.text)show=each;
+      });
+    let children=React.Children.map(true?all:show,child=>{
+      return <div className={'panelMount'}>{child}</div>
+    });
+    return <div className={'panel'}>{children}</div>
   }
 }
 function PanelRubric (props:LabelValues){

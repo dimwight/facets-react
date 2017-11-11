@@ -19,6 +19,7 @@ import {
 import {traceThing}from './util/export';
 import {Surface}from './facets/export';
 import {IndexableList,SelectingTitles} from './facets/SelectingList';
+import {SwitchPanel} from './react/Facet';
 export namespace SimpleTitles{
   export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
     INDEXING=TEXTUAL_FIRST+' or '+TEXTUAL_SECOND,
@@ -102,7 +103,7 @@ function newTogglingTree(facets){
     targetStateUpdated:state=>setSimplesLive(facets,state),
   }),
   toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
-      getText:()=>facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set'
+      getText:()=>facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set',
     });
   facets.onRetargeted=()=>{
     facets.setTargetLive(SimpleTitles.TOGGLED,
@@ -193,10 +194,12 @@ function newSelectingBasicTree(facets:Facets){
     },
   };
   facets.onRetargeted=()=>{
-    const live=facets.getTargetState(SelectingTitles.LIVE)as boolean;
-    [SelectingTitles.SELECT,SimpleTitles.INDEXED,SelectingTitles.EDIT,
-      SelectingTitles.CHARS].forEach(title=>
-      facets.setTargetLive(title,live))
+    const live=facets.getTargetState(SelectingTitles.LIVE) as boolean;
+    [SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>
+        ['',TextContentType.ShowChars.titleTail].forEach(tail=>
+      facets.setTargetLive(title+tail,live),
+      ),
+    );
   };
   return facets.newIndexingFrame(frame);
 }
@@ -299,21 +302,38 @@ function buildAllSimples(facets){
   );
 }
 function buildSelectingBasic(facets){
+  let tail=TextContentType.ShowChars.titleTail;
   ReactDOM.render(<RowPanel rubric={Tests.SelectingBasic.name}>
       {false?<IndexingDropdown title={SelectingTitles.SELECT} facets={facets}/>
         :<IndexingList title={SelectingTitles.SELECT} facets={facets}/>}
       <PanelRow>
         <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
       </PanelRow>
-      <PanelRow>
-        <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
-      </PanelRow>
-      <PanelRow>
-        <TextualLabel title={SelectingTitles.CHARS} facets={facets}/>
-      </PanelRow>
-      <PanelRow>
-        <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
-      </PanelRow>
+      <SwitchPanel title={SimpleTitles.INDEXED} facets={facets}>
+        <RowPanel rubric={TextContentType.Standard.name}>
+          <PanelRow>
+            <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
+          </PanelRow>
+          <PanelRow>
+            <TextualLabel title={SelectingTitles.CHARS} facets={facets}/>
+          </PanelRow>
+          <PanelRow>
+            <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
+          </PanelRow>
+        </RowPanel>
+        <RowPanel rubric={TextContentType.ShowChars.name}>
+          <PanelRow>
+            <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
+          </PanelRow>
+          <PanelRow>
+            <TextualLabel title={SelectingTitles.CHARS+tail} facets={facets}/>
+          </PanelRow>
+          <PanelRow>
+            <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
+          </PanelRow>
+        </RowPanel>
+      </SwitchPanel>
+
     </RowPanel>,
     document.getElementById('root'),
   );
