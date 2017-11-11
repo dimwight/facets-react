@@ -15,7 +15,7 @@ export abstract class Surface{
     const content=this.defineContent();
     if(content instanceof Array)
       (content as [Target]).forEach(each=>
-        this.facets.addContentTree(content));
+        this.facets.addContentTree(each));
     else this.facets.addContentTree(content);
     this.facets.buildTargeterTree();
     this.trace('Built targets, created targeters');

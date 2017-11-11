@@ -64,7 +64,7 @@ class TextContentType{
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(false));
+    super(newInstance(true));
   }
   defineContent=()=>this.test.newTree(this.facets);
   buildLayout=()=>this.test.buildLayout(this.facets);
@@ -359,13 +359,15 @@ function newContentingTrees(facets:Facets){
   ];
   const indexingTitle=SelectingTitles.CHOOSER;
   const list=new ShowableList<TextContent>(content,3,facets,indexingTitle);
-  const actions=list.newActionTargets();
+  const actions=true?[]:list.newActionTargets();
   actions.push(
     facets.newTextualTarget(SimpleTitles.INDEXED,{
     passText:'For onRetargeted'
   }),
   facets.newTriggerTarget(SelectingTitles.EDIT,{
-    targetStateUpdated:()=>facets.activateContentTree(SimpleTitles.INDEXED)
+    targetStateUpdated:()=>{
+      facets.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
+    }
   }));
   let trees=[];
   const frame=facets.newIndexingFrame({
@@ -376,12 +378,14 @@ function newContentingTrees(facets:Facets){
     newUiSelectable: (item:TextContent)=>item.text,
     newIndexedTreeTitle:indexed=>SelectingTitles.FRAME,
   });
-  trees.push(frame);
+  trees.push(facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
+    passText:'More content!'
+  }),frame);
   facets.onRetargeted=activeTitle=>{
     traceThing('onRetargeted',activeTitle);
     facets.updateTargetState(SimpleTitles.INDEXED,activeTitle);
   };
-  return false?trees:frame;
+  return true?trees:frame;
 }
 function buildContenting(facets:Facets){
   ReactDOM.render(<ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
@@ -390,16 +394,20 @@ function buildContenting(facets:Facets){
             title={SelectingTitles.CHOOSER}
             facets={facets}
             listWidth={200}/>
-        <PanelRow>
+      {false?<PanelRow>
           <TriggerButton title={SelectingTitles.UP} facets={facets}/>
           <TriggerButton title={SelectingTitles.DOWN} facets={facets}/>
           <TriggerButton title={SelectingTitles.DELETE} facets={facets}/>
           <TriggerButton title={SelectingTitles.NEW} facets={facets}/>
           <TriggerButton title={SelectingTitles.EDIT} facets={facets}/>
         </PanelRow>
+        :<PanelRow>
+          <TriggerButton title={SelectingTitles.EDIT} facets={facets}/>
+        </PanelRow>
+      }
       </RowPanel>
-    <RowPanel title={SimpleTitles.INDEXED}>
-      <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
+    <RowPanel title={SimpleTitles.TEXTUAL_FIRST}>
+      <TextualLabel title={SimpleTitles.TEXTUAL_FIRST} facets={facets}/>
     </RowPanel>
     </ShowPanel>,
     document.getElementById('root'),
