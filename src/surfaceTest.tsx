@@ -249,7 +249,7 @@ function newSelectingPlusTree(facets:Facets){
 function buildTextual(facets){
   const first=SimpleTitles.TEXTUAL_FIRST,second=SimpleTitles.TEXTUAL_SECOND;
   ReactDOM.render(
-    <RowPanel title={Tests.Textual.name}>
+    <RowPanel title={Tests.Textual.name} withRubric={true}>
       <TextualField title={first} facets={facets}/>
       <TextualLabel title={first} facets={facets}/>
       <TextualField title={second} facets={facets} cols={40}/>
@@ -260,7 +260,7 @@ function buildTextual(facets){
 }
 function buildToggling(facets){
   ReactDOM.render(
-    <RowPanel title={Tests.TogglingLive.name}>
+    <RowPanel title={Tests.TogglingLive.name} withRubric={true}>
       <TogglingCheckbox title={SimpleTitles.TOGGLING} facets={facets}/>
       <TextualLabel title={SimpleTitles.TOGGLED} facets={facets}/>
     </RowPanel>,
@@ -270,7 +270,7 @@ function buildToggling(facets){
 }
 function buildTrigger(facets){
   ReactDOM.render(
-    <RowPanel title={Tests.Trigger.name}>
+    <RowPanel title={Tests.Trigger.name} withRubric={true}>
       <TriggerButton title={SimpleTitles.TRIGGER} facets={facets}/>
       <TextualLabel title={SimpleTitles.TRIGGEREDS} facets={facets}/>
     </RowPanel>,
@@ -279,7 +279,7 @@ function buildTrigger(facets){
 }
 function buildIndexing(facets){
   ReactDOM.render(
-    <RowPanel title={Tests.Indexing.name}>
+    <RowPanel title={Tests.Indexing.name} withRubric={true}>
       <IndexingDropdown title={SimpleTitles.INDEXING} facets={facets}/>
       <TextualLabel title={SimpleTitles.INDEX} facets={facets}/>
       <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
@@ -290,22 +290,22 @@ function buildIndexing(facets){
 function buildAllSimples(facets){
   const textual1=SimpleTitles.TEXTUAL_FIRST,textual2=SimpleTitles.TEXTUAL_SECOND;
   ReactDOM.render(<div>
-      <RowPanel title={Tests.Textual.name}>
+      <RowPanel title={Tests.Textual.name} withRubric={true}>
         <TextualField title={textual1} facets={facets}/>
         <TextualLabel title={textual1} facets={facets}/>
         <TextualField title={textual2} facets={facets} cols={40}/>
         <TextualLabel title={textual2} facets={facets}/>
       </RowPanel>
-      <RowPanel title={Tests.TogglingLive.name}>
+      <RowPanel title={Tests.TogglingLive.name} withRubric={true}>
         <TogglingCheckbox title={SimpleTitles.TOGGLING} facets={facets}/>
         <TextualLabel title={SimpleTitles.TOGGLED} facets={facets}/>
       </RowPanel>
-      <RowPanel title={Tests.Indexing.name}>
+      <RowPanel title={Tests.Indexing.name} withRubric={true}>
         <IndexingDropdown title={SimpleTitles.INDEXING} facets={facets}/>
         <TextualLabel title={SimpleTitles.INDEX} facets={facets}/>
         <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
       </RowPanel>
-      <RowPanel title={Tests.Trigger.name}>
+      <RowPanel title={Tests.Trigger.name} withRubric={true}>
         <TriggerButton title={SimpleTitles.TRIGGER} facets={facets}/>
         <TextualLabel title={SimpleTitles.TRIGGEREDS} facets={facets}/>
       </RowPanel>
@@ -326,9 +326,9 @@ function buildSelectingBasic(facets){
   ReactDOM.render(<RowPanel title={Tests.SelectingBasic.name} withRubric={true}>
       {false?<IndexingDropdown title={SelectingTitles.SELECT} facets={facets}/>
         :<IndexingList title={SelectingTitles.SELECT} facets={facets}/>}
-      <PanelRow>
+      {true?null:<PanelRow>
         <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
-      </PanelRow>
+      </PanelRow>}
       <ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
         <RowPanel title={TextContentType.Standard.name}>
           {newEditField('')}
@@ -348,7 +348,7 @@ function buildSelectingBasic(facets){
   );
 }
 function buildSelectingPlus(facets){
-  ReactDOM.render(<RowPanel title={Tests.SelectingPlus.name}>
+  ReactDOM.render(<RowPanel title={Tests.SelectingPlus.name} withRubric={true}>
     <RowPanel title={'Chooser'}>
       {false?<IndexingDropdown title={SelectingTitles.SELECT} facets={facets}/>:
         <IndexingList
