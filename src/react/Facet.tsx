@@ -162,9 +162,9 @@ export class ShowPanel extends Facet<TextualValues,TextualValues>{
   render(){
     let all=this.props.children as any[],show;
     all.forEach((each,at)=>{
-      traceThing('ShowPanel',each.props.key);
       if(each.props.title===this.state.text)show=each;
     });
+    traceThing('ShowPanel',this.state.text);
     let children=React.Children.map(false?all:show,child=>{
       return <div className={'panelMount'}>{child}</div>
     });

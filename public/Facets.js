@@ -1710,7 +1710,7 @@ class Facets extends Tracer {
         this.doTrace = false;
         this.root = null;
         this.rootTargeter = null;
-        this.__onRetargeted = null;
+        this.onRetargeted = null;
         this.indexingFrames = 0;
         this.doTrace = trace;
         let indexing = new SIndexing("RootIndexing", new Facets.Facets$1(this));
@@ -1742,7 +1742,7 @@ class Facets extends Tracer {
         this.rootTargeter.retarget(this.root);
         this.putTitleTargeters(this.rootTargeter);
         this.trace$java_lang_String(" > Created targeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length);
-        this.onRetargeted();
+        this.callOnRetargeted();
     }
     putTitleTargeters(t) {
         let title = t.title();
@@ -1756,12 +1756,12 @@ class Facets extends Tracer {
             this.putTitleTargeters(e);
         }
     }
-    onRetargeted() {
-        if (this.__onRetargeted == null)
+    callOnRetargeted() {
+        if (this.onRetargeted == null)
             return;
-        let title = (Object.keys(this.titleTrees).length == 0) ? "No trees set" : this.root.indexedTarget().title();
+        let title = this.root.indexedTarget().title();
         this.trace$java_lang_String("> Calling onRetargeted with active=" + title);
-        (target => (typeof target === 'function') ? target(title) : target.accept(title))(this.__onRetargeted);
+        this.onRetargeted(title);
     }
     newTextualTarget(title, c) {
         let textual = new STextual(title, new Facets.Facets$2(this, c));
@@ -2023,7 +2023,7 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
                 this.__parent.times.traceElapsed(msg);
             else
                 this.__parent.trace(msg);
-            this.__parent.onRetargeted();
+            this.__parent.callOnRetargeted();
             this.__parent.rootTargeter.retargetFacets();
             msg = "> Facets retargeted in " + Debug.info(this.__parent.rootTargeter);
             if (this.__parent.times.doTime)

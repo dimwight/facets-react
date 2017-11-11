@@ -64,7 +64,7 @@ class TextContentType{
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(true));
+    super(newInstance(false));
   }
   defineContent=()=>this.test.newTree(this.facets);
   buildLayout=()=>this.test.buildLayout(this.facets);
@@ -208,7 +208,7 @@ function buildAllSimples(facets){
     document.getElementById('root'),
   );
 }
-function newSelectingTypedTree(facets){
+function newSelectingTypedTree(facets:Facets){
   function listAt():number{
     return facets.getTargetState(frame.indexingTitle) as number;
   }
@@ -260,7 +260,42 @@ function newSelectingTypedTree(facets){
       ),
     );
   };
+  traceThing('^newSelectingTypedTree',{onRetargeted:facets.onRetargeted})
   return facets.newIndexingFrame(frame);
+}
+function buildSelectingTyped(facets){
+  function newEditField(tail){
+    return false?null:<PanelRow>
+      <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
+    </PanelRow>;
+  }
+  let tail=TextContentType.ShowChars.titleTail;
+  let liveCheckbox=true?null:<PanelRow>
+    <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
+  </PanelRow>;
+  ReactDOM.render(<RowPanel title={Tests.SelectingTyped.name} withRubric={true}>
+      {false?<IndexingDropdown title={SelectingTitles.CHOOSER} facets={facets}/>
+        :<IndexingList title={SelectingTitles.CHOOSER} facets={facets}/>}
+      {true?null:<PanelRow>
+        <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
+      </PanelRow>}
+      <ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
+        <RowPanel title={TextContentType.Standard.name}>
+          {newEditField('')}
+          {liveCheckbox}
+        </RowPanel>
+        <RowPanel title={TextContentType.ShowChars.name}>
+          {newEditField(tail)}
+          <PanelRow>
+            <TextualLabel title={SelectingTitles.CHARS+tail} facets={facets}/>
+          </PanelRow>
+          {liveCheckbox}
+        </RowPanel>
+      </ShowPanel>
+
+    </RowPanel>,
+    document.getElementById('root'),
+  );
 }
 function buildSelectingShowable(facets){
   ReactDOM.render(<RowPanel title={Tests.SelectingShowable.name} withRubric={true}>
@@ -315,7 +350,7 @@ function newSelectingShowableTree(facets){
   const list=new ShowableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
-function newContentingTrees(facets){
+function newContentingTrees(facets:Facets){
   const content=[
     {text: 'Hello world!'},
     {text: 'Hello Dolly!'},
@@ -328,9 +363,9 @@ function newContentingTrees(facets){
   actions.push(
     facets.newTextualTarget(SimpleTitles.INDEXED,{
     passText:'For onRetargeted'
-  }as TextualCoupler),
-    facets.newTriggerTarget(SelectingTitles.EDIT,{
-    targetStateUpdated:()=>alert()
+  }),
+  facets.newTriggerTarget(SelectingTitles.EDIT,{
+    targetStateUpdated:()=>facets.activateContentTree(SimpleTitles.INDEXED)
   }));
   let trees=[];
   const frame=facets.newIndexingFrame({
@@ -343,7 +378,7 @@ function newContentingTrees(facets){
   });
   trees.push(frame);
   facets.onRetargeted=activeTitle=>{
-    traceThing('onRetargeted',{activeTitle:activeTitle});
+    traceThing('onRetargeted',activeTitle);
     facets.updateTargetState(SimpleTitles.INDEXED,activeTitle);
   };
   return false?trees:frame;
@@ -360,9 +395,7 @@ function buildContenting(facets:Facets){
           <TriggerButton title={SelectingTitles.DOWN} facets={facets}/>
           <TriggerButton title={SelectingTitles.DELETE} facets={facets}/>
           <TriggerButton title={SelectingTitles.NEW} facets={facets}/>
-        </PanelRow>
-        <PanelRow>
-          <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
+          <TriggerButton title={SelectingTitles.EDIT} facets={facets}/>
         </PanelRow>
       </RowPanel>
     <RowPanel title={SimpleTitles.INDEXED}>
@@ -372,40 +405,6 @@ function buildContenting(facets:Facets){
     document.getElementById('root'),
   );
 }
-function buildSelectingTyped(facets){
-  function newEditField(tail){
-    return false?null:<PanelRow>
-      <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
-    </PanelRow>;
-  }
-  let tail=TextContentType.ShowChars.titleTail;
-  let liveCheckbox=true?null:<PanelRow>
-    <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
-  </PanelRow>;
-  ReactDOM.render(<RowPanel title={Tests.SelectingTyped.name} withRubric={true}>
-      {false?<IndexingDropdown title={SelectingTitles.CHOOSER} facets={facets}/>
-        :<IndexingList title={SelectingTitles.CHOOSER} facets={facets}/>}
-      {true?null:<PanelRow>
-        <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
-      </PanelRow>}
-      <ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
-        <RowPanel title={TextContentType.Standard.name}>
-          {newEditField('')}
-          {liveCheckbox}
-        </RowPanel>
-        <RowPanel title={TextContentType.ShowChars.name}>
-          {newEditField(tail)}
-          <PanelRow>
-            <TextualLabel title={SelectingTitles.CHARS+tail} facets={facets}/>
-          </PanelRow>
-          {liveCheckbox}
-        </RowPanel>
-      </ShowPanel>
-
-    </RowPanel>,
-    document.getElementById('root'),
-  );
-}
 export function doTest(){
-  new TestSurface(Tests.SelectingTyped).buildSurface();
+  new TestSurface(Tests.Contenting).buildSurface();
 }

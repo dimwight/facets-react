@@ -13,7 +13,7 @@ export namespace SelectingTitles {
     UP='Move Up',
     DOWN='Move Down',
     DELETE='Delete',
-    EDIT='Edit Selection',
+    EDIT='Edit',
     CHARS='Characters';
 }
 export interface ShowAtOvershoot{
