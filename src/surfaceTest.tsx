@@ -437,20 +437,21 @@ function buildContenting(facets:Facets){
   );
 }
 class TestSurface extends Surface{
+  readonly content=[
+    {text: 'Hello world!'},
+    {text: 'Hello Dolly!'},
+    {text: 'Hello, sailor!'},
+    {text: 'Hello, good evening and welcome!'},
+  ];
+  readonly indexingTitle=SelectingTitles.CHOOSER;
+  readonly list;
   constructor(ff:Facets){
     super(ff);
-
+    this.list=new ShowableList<TextContent>(this.content,3,ff,this.indexingTitle);
   }
-  newTrees(ff:Facets){
-    const content=[
-      {text: 'Hello world!'},
-      {text: 'Hello Dolly!'},
-      {text: 'Hello, sailor!'},
-      {text: 'Hello, good evening and welcome!'},
-    ];
-    const indexingTitle=SelectingTitles.CHOOSER;
-    const list=new ShowableList<TextContent>(content,3,ff,indexingTitle);
-    const actions=true?[]:list.newActionTargets();
+  newTrees(){
+    let ff=this.facets;
+    const actions=false?[]:this.list.newActionTargets();
     actions.push(
       ff.newTextualTarget(SimpleTitles.INDEX,{
         passText:'For onRetargeted',
@@ -463,17 +464,17 @@ class TestSurface extends Surface{
     let trees=[];
     const frame=ff.newIndexingFrame({
       frameTitle: SelectingTitles.FRAME,
-      indexingTitle: indexingTitle,
-      getIndexables:()=>list.getShowables(),
+      indexingTitle: this.indexingTitle,
+      getIndexables:()=>this.list.getShowables(),
       newFrameTargets:()=>actions,
       newUiSelectable: (item:TextContent)=>item.text,
     });
     trees.push(ff.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
       ff.newTextualTarget(SimpleTitles.INDEXED,{
         getText:(getText)=>{
-          const state=ff.getTargetState(indexingTitle),
-            contentAt=list.contentAt(state as number);
-          return content[contentAt].text
+          const state=ff.getTargetState(this.indexingTitle),
+            contentAt=this.list.contentAt(state as number);
+          return this.content[contentAt].text
         },
       }),
       ff.newTriggerTarget(SelectingTitles.SAVE,{
@@ -489,7 +490,14 @@ class TestSurface extends Surface{
     ]),frame);
     return true?trees:frame;
   }
-  buildLayout(ff:Facets){
+  onRetargeted(activeTitle:string){
+    this.list.onFacetsRetargeted();
+    let ff=this.facets;
+    traceThing('^onRetargeted',activeTitle);
+    ff.updateTargetState(SimpleTitles.INDEX,activeTitle);
+  }
+  buildLayout(){
+    let ff=this.facets;
     ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={ff}>
         <RowPanel title={SelectingTitles.FRAME}>
           <IndexingList
@@ -518,10 +526,6 @@ class TestSurface extends Surface{
       </ShowPanel>,
       document.getElementById('root'),
     );
-  }
-  onRetargeted(ff:Facets,activeTitle:string){
-    traceThing('^onRetargeted',activeTitle);
-    ff.updateTargetState(SimpleTitles.INDEX,activeTitle);
   }
 }
 export function doTest(){

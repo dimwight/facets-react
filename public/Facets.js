@@ -1728,11 +1728,11 @@ class Facets extends Tracer {
     buildSurface(newTrees, buildLayout, onRetargeted) {
         this.onRetargeted = (onRetargeted);
         this.trace$java_lang_String("Building surface...");
-        let trees = (target => (typeof target === 'function') ? target(this) : target.apply(this))(newTrees);
+        let trees = (target => (typeof target === 'function') ? target() : target.get())(newTrees);
         if (trees != null && trees instanceof Array && (trees.length == 0 || trees[0] == null || trees[0] != null)) {
-            let array545 = trees;
-            for (let index544 = 0; index544 < array545.length; index544++) {
-                let each = array545[index544];
+            let array589 = trees;
+            for (let index588 = 0; index588 < array589.length; index588++) {
+                let each = array589[index588];
                 this.addContentTree(each);
             }
         }
@@ -1740,7 +1740,7 @@ class Facets extends Tracer {
             this.addContentTree(trees);
         this.buildTargeterTree();
         this.trace$java_lang_String("Built targets, created targeters");
-        (target => (typeof target === 'function') ? target(this) : target.accept(this))(buildLayout);
+        (target => (typeof target === 'function') ? target("") : target.accept(""))(buildLayout);
         this.trace$java_lang_String("Attached and laid out facets");
         this.trace$java_lang_String("Surface built.");
     }
@@ -1775,8 +1775,8 @@ class Facets extends Tracer {
         let elements = t.titleElements();
         if (false && then == null)
             this.trace$java_lang_String("> Added targeter: title=" + title + (": titleTargeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length));
-        for (let index546 = 0; index546 < elements.length; index546++) {
-            let e = elements[index546];
+        for (let index590 = 0; index590 < elements.length; index590++) {
+            let e = elements[index590];
             this.putTitleTargeters(e);
         }
     }
@@ -1785,7 +1785,7 @@ class Facets extends Tracer {
             return;
         let title = this.root.indexedTarget().title();
         this.trace$java_lang_String(" > Calling onRetargeted with active=" + title);
-        (target => (typeof target === 'function') ? target(this, title) : target.accept(this, title))(this.onRetargeted);
+        (target => (typeof target === 'function') ? target(title) : target.accept(title))(this.onRetargeted);
     }
     newTextualTarget(title, c) {
         let textual = new STextual(title, new Facets.Facets$2(this, c));
@@ -2214,9 +2214,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array548 = i.indexables();
-                for (let index547 = 0; index547 < array548.length; index547++) {
-                    let each = array548[index547];
+                let array592 = i.indexables();
+                for (let index591 = 0; index591 < array592.length; index591++) {
+                    let each = array592[index591];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }
@@ -2266,9 +2266,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array550 = i.indexables();
-                for (let index549 = 0; index549 < array550.length; index549++) {
-                    let each = array550[index549];
+                let array594 = i.indexables();
+                for (let index593 = 0; index593 < array594.length; index593++) {
+                    let each = array594[index593];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }
