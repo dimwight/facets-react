@@ -21,7 +21,6 @@ import {
   newFacetsTargetTrees,
   buildFacetsLayout,
 } from './facets/export';
-import {Surface} from "./facets/Surface";
 import {
 SelectingTitles,
 ShowableList,
@@ -57,9 +56,6 @@ const Tests={
   SelectingShowable:new Test('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
   Contenting:new Test('Contenting',newContentingTrees,buildContenting),
 };
-export function doTest(){
-  Tests.Contenting.buildSurface(newInstance(true));
-}
 interface TextContent {
   text? : string;
 }
@@ -437,4 +433,7 @@ function buildContenting(facets:Facets){
     </ShowPanel>,
     document.getElementById('root'),
   );
+}
+export function doTest(){
+  Tests.Contenting.buildSurface(newInstance(true));
 }
