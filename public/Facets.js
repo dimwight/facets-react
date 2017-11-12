@@ -1717,6 +1717,19 @@ class Facets extends Tracer {
         this.root = new IndexingFrame("RootFrame", indexing);
         this.trace$java_lang_String$java_lang_Object(" > Created trees root ", this.root);
     }
+    buildSurface(newTrees, buildLayout) {
+        this.trace('Building surface...');
+        const trees = newTrees(this);
+        if (trees instanceof Array)
+            trees.forEach(each => this.addContentTree(each));
+        else
+            this.addContentTree(trees);
+        this.buildTargeterTree();
+        this.trace('Built targets, created targeters');
+        buildLayout(this);
+        this.trace('Attached and laid out facets');
+        this.trace('Surface built.');
+    }
     /**
      *
      * @param {string} msg

@@ -1,13 +1,13 @@
 import {
   Facets,
   Target,
+  newFacetsTargetTrees,
+  buildFacetsLayout
 } from 'facets-js';
-export type newTargetTrees=(Facets)=>Target|Target[]
 export interface AppSpec{
-  readonly newTrees: newTargetTrees,
-  readonly buildLayout:(Facets)=>void,
+  readonly newTrees: newFacetsTargetTrees,
+  readonly buildLayout:buildFacetsLayout,
 }
-
 export abstract class Surface{
   constructor(readonly facets:Facets){
     facets.times.doTime=false;
@@ -15,14 +15,18 @@ export abstract class Surface{
   trace(text){
     if(this.facets.doTrace)console.info('Surface > '+text);
   }
-  buildSurface(defineContent:newTargetTrees,buildLayout:(Facets)=>void){
+  buildSurface(newTrees:newFacetsTargetTrees,buildLayout:buildFacetsLayout){
+    if(true){
+      this.facets.buildSurface(newTrees,buildLayout);
+      return;
+    }
     let times=this.facets.times;
     this.trace('Building surface '+times.elapsed());
-    const content=defineContent(this.facets);
-    if(content instanceof Array)
-      (content as [Target]).forEach(each=>
+    const trees=newTrees(this.facets);
+    if(trees instanceof Array)
+      (trees as [Target]).forEach(each=>
         this.facets.addContentTree(each));
-    else this.facets.addContentTree(content);
+    else this.facets.addContentTree(trees);
     this.facets.buildTargeterTree();
     this.trace('Built targets, created targeters');
     buildLayout(this.facets);

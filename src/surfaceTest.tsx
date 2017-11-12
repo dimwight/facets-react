@@ -15,15 +15,18 @@ import {
   TriggerButton,
   IndexingDropdown,
   IndexingList,
-  ShowPanel
+  ShowPanel,
 } from './react/export';
 import {
-  ShowableList,
-  SelectingTitles,
-  Surface,
   AppSpec,
-  newTargetTrees,
+  newFacetsTargetTrees,
+  buildFacetsLayout,
 } from './facets/export';
+import {Surface} from "./facets/Surface";
+import {
+SelectingTitles,
+ShowableList,
+} from './facets/Selecting';
 import {traceThing}from './util/export';
 export namespace SimpleTitles{
   export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
@@ -38,8 +41,8 @@ export namespace SimpleTitles{
 class Test implements AppSpec{
   constructor(
     readonly name,
-    readonly newTrees: newTargetTrees,
-    readonly buildLayout:(Facets)=>void,
+    readonly newTrees: newFacetsTargetTrees,
+    readonly buildLayout:buildFacetsLayout,
   ){}
 }
 const Tests={
@@ -68,7 +71,7 @@ class TextContentType{
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(false));
+    super(newInstance(true));
   }
   buildTestSurface(){
     this.buildSurface(this.test.newTrees,
@@ -368,12 +371,12 @@ function newContentingTrees(facets:Facets){
   const actions=true?[]:list.newActionTargets();
   actions.push(
     facets.newTextualTarget(SimpleTitles.INDEX,{
-    passText:'For onRetargeted'
+    passText:'For onRetargeted',
   }),
   facets.newTriggerTarget(SelectingTitles.EDIT,{
     targetStateUpdated:()=>{
       facets.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
-    }
+    },
   }));
   let trees=[];
   const frame=facets.newIndexingFrame({
@@ -390,18 +393,18 @@ function newContentingTrees(facets:Facets){
           contentAt=list.contentAt(state as number);
         traceThing('^'+SimpleTitles.INDEXED,{state:state,contentAt:contentAt})
         return content[contentAt].text
-      }
+      },
     }),
     facets.newTriggerTarget(SelectingTitles.SAVE,{
       targetStateUpdated:()=>{
         facets.activateContentTree(SelectingTitles.FRAME)
-      }
+      },
     }),
     facets.newTriggerTarget(SelectingTitles.CANCEL,{
       targetStateUpdated:()=>{
         facets.activateContentTree(SelectingTitles.FRAME)
-      }
-    })
+      },
+    }),
   ]),frame);
   facets.onRetargeted=activeTitle=>{
     traceThing('^onRetargeted',activeTitle);

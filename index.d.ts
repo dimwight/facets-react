@@ -1,3 +1,5 @@
+export type newFacetsTargetTrees=(Facets)=>Target|Target[]
+export type buildFacetsLayout=(Facets)=>void
 /**
 Marker interface for Facets implementation of Superficial target.
 */
@@ -249,6 +251,7 @@ export interface Facets {
   identity(): any;
   /** */
   supplement: any;
+  buildSurface(newTrees:newFacetsTargetTrees,buildLayout:buildFacetsLayout)
 }
 /** */
 export function newInstance(trace: boolean): Facets;
