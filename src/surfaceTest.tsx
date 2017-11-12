@@ -18,7 +18,6 @@ import {
   ShowPanel,
 } from './react/export';
 import {
-  AppSpec,
   newFacetsTargetTrees,
   buildFacetsLayout,
 } from './facets/export';
@@ -38,12 +37,15 @@ export namespace SimpleTitles{
     TOGGLE_START=false,
     NUMERIC_FIELD='Number',NUMERIC_LABEL='Value',NUMERIC_START=123;
 }
-class Test implements AppSpec{
+class Test{
   constructor(
     readonly name,
     readonly newTrees: newFacetsTargetTrees,
     readonly buildLayout:buildFacetsLayout,
   ){}
+  buildSurface(facets:Facets){
+    facets.buildSurface(this.newTrees,this.buildLayout)
+  }
 }
 const Tests={
   Textual:new Test('Textual',newTextualTree,buildTextual),
@@ -55,6 +57,9 @@ const Tests={
   SelectingShowable:new Test('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
   Contenting:new Test('Contenting',newContentingTrees,buildContenting),
 };
+export function doTest(){
+  Tests.Contenting.buildSurface(newInstance(true));
+}
 interface TextContent {
   text? : string;
 }
@@ -67,15 +72,6 @@ class TextContentType{
   static ShowChars=new TextContentType('ShowChars','|ShowChars');
   static getContentType(content:TextContent){
     return content.text.length>20?TextContentType.ShowChars:TextContentType.Standard;
-  }
-}
-class TestSurface extends Surface{
-  constructor(private test:Test){
-    super(newInstance(true));
-  }
-  buildTestSurface(){
-    this.buildSurface(this.test.newTrees,
-      this.test.buildLayout);
   }
 }
 function newTextualTree(facets){
@@ -441,7 +437,4 @@ function buildContenting(facets:Facets){
     </ShowPanel>,
     document.getElementById('root'),
   );
-}
-export function doTest(){
-  new TestSurface(Tests.Contenting).buildTestSurface();
 }

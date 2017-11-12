@@ -1718,17 +1718,25 @@ class Facets extends Tracer {
         this.trace$java_lang_String$java_lang_Object(" > Created trees root ", this.root);
     }
     buildSurface(newTrees, buildLayout) {
-        this.trace('Building surface...');
-        const trees = newTrees(this);
-        if (trees instanceof Array)
-            trees.forEach(each => this.addContentTree(each));
-        else
-            this.addContentTree(trees);
-        this.buildTargeterTree();
-        this.trace('Built targets, created targeters');
-        buildLayout(this);
-        this.trace('Attached and laid out facets');
-        this.trace('Surface built.');
+        {
+            this.trace$java_lang_String("Building surface...");
+            let trees = (target => (typeof target === 'function') ? target(this) : target.apply(this))(newTrees);
+            if (trees != null && trees instanceof Array && (trees.length == 0 || trees[0] == null || trees[0] != null)) {
+                let array457 = trees;
+                for (let index456 = 0; index456 < array457.length; index456++) {
+                    let each = array457[index456];
+                    this.addContentTree(each);
+                }
+            }
+            else
+                this.addContentTree(trees);
+            this.buildTargeterTree();
+            this.trace$java_lang_String("Built targets, created targeters");
+            (target => (typeof target === 'function') ? target(this) : target.accept(this))(buildLayout);
+            this.trace$java_lang_String("Attached and laid out facets");
+            this.trace$java_lang_String("Surface built.");
+            return;
+        }
     }
     /**
      *

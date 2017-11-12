@@ -4,10 +4,6 @@ import {
   newFacetsTargetTrees,
   buildFacetsLayout
 } from 'facets-js';
-export interface AppSpec{
-  readonly newTrees: newFacetsTargetTrees,
-  readonly buildLayout:buildFacetsLayout,
-}
 export abstract class Surface{
   constructor(readonly facets:Facets){
     facets.times.doTime=false;

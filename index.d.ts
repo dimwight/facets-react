@@ -1,5 +1,3 @@
-export type newFacetsTargetTrees=(Facets)=>Target|Target[]
-export type buildFacetsLayout=(Facets)=>void
 /**
 Marker interface for Facets implementation of Superficial target.
 */
@@ -243,15 +241,30 @@ export interface Facets {
   /** */
   isTargetLive(title: string): boolean;
   /**
-   * Called by the application after retargeting the target tree but
-   * before retargeting facets. 
+   * If supplied by client code, called after retargeting the target tree but
+   * before retargeting facets.
+   * @param {string} activeTitle of the last content activated with {@link activateContentTree(string)}.
    */
-  onRetargeted: (activeTitle:string) => void;
-  /** */
-  identity(): any;
-  /** */
+  onRetargeted (activeTitle:string)
+   /** */
   supplement: any;
-  buildSurface(newTrees:newFacetsTargetTrees,buildLayout:buildFacetsLayout)
+  /**
+   * Construct a new surface using the callbacks passed.
+   * @param newTrees to define the initial content; returns passed successively to
+   * {@link addContentTree()}
+   * @param  buildLayout to construct the UI
+   */
+  buildSurface(newTrees: newFacetsTargetTrees, buildLayout: buildFacetsLayout): void;
 }
-/** */
+/**
+ * Documents callback required by {@link buildSurface()}
+ */
+export type newFacetsTargetTrees=(facets: Facets)=>Target|Target[]
+/**
+ * Documents callback required by {@link buildSurface()}
+ */
+export type buildFacetsLayout=(facets: Facets)=>void
+/** Create a new {@link Facets} instance.
+ *  @param trace should the instance log lifecycle events?
+ * */
 export function newInstance(trace: boolean): Facets;
