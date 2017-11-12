@@ -5,7 +5,7 @@ import * as Array from '../util/Array';
 import {traceThing}from '../util/export';
 import {SimpleTitles} from '../surfaceTest';
 export namespace SelectingTitles {
-  export let FRAME='Selecting',
+  export const FRAME='Selecting',
     CHOOSER='Select Content',
     ACTIONS='Actions',
     LIVE='Live',
@@ -30,25 +30,26 @@ export class ShowableList<T>{
     private readonly facets:Facets,
     private readonly indexingTitle,
   ){
-    if(false)facets.onRetargeted=()=>{
-      let contentAt=this.contentAt(this.getShowAt());
-      facets.setTargetLive(SelectingTitles.DELETE,this.content.length>1);
-      facets.setTargetLive(SelectingTitles.UP,contentAt>0);
-      facets.setTargetLive(SelectingTitles.DOWN,
-        contentAt<content.length-1);
-      traceThing('^onRetargeted',this.content);
-    };
     facets.supplement={
       overshot:belowShowZero=>this.onOvershoot(belowShowZero),
     }as ShowAtOvershoot;
   }
+  onFacetsRetargeted=()=>{
+    const contentAt=this.contentAt(this.getShowAt());
+    const f=this.facets;
+    f.setTargetLive(SelectingTitles.DELETE,this.content.length>1);
+    f.setTargetLive(SelectingTitles.UP,contentAt>0);
+    f.setTargetLive(SelectingTitles.DOWN,
+      contentAt<this.content.length-1);
+    traceThing('^onRetargeted',this.content);
+  };
   getShowables():T[]{
-    let showables=this.content.slice(this.showFrom, this.showFrom+this.showLength);
+    const showables=this.content.slice(this.showFrom, this.showFrom+this.showLength);
     traceThing('^showables:',showables);
     return showables;
   }
   onOvershoot(belowShowZero){
-    let thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
+    const thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
     if(belowShowZero&&thenFrom>0)this.showFrom--;
     else if(!belowShowZero&&thenStop<this.content.length)
       this.showFrom++;
@@ -70,8 +71,8 @@ export class ShowableList<T>{
     this.facets.updateTargetState(this.indexingTitle,at)
   }
   deleteElement(){
-    let showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
-    let atEnd=Array.removeElement(this.content,contentAt);
+    const showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
+    const atEnd=Array.removeElement(this.content,contentAt);
     if(atEnd)
       this.facets.updateTargetState(this.indexingTitle,showThen-1)
   };
@@ -83,7 +84,7 @@ export class ShowableList<T>{
     else this.onOvershoot(false);
   }
   swapElementDown(){
-    let showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
+    const showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
     Array.swapElement(this.content,contentAt,true);
     if(showThen>0)this.setShowAt(showThen-1);
     else this.onOvershoot(true)
@@ -99,7 +100,7 @@ export class ShowableList<T>{
     this.setShowAt(showNow)
   }
   newActionTargets(){
-    let f=this.facets;
+    const f=this.facets;
     return[f.newTriggerTarget(SelectingTitles.UP,{
           targetStateUpdated:()=>this.swapElementDown(),
         }),

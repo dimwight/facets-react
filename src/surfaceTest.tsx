@@ -72,10 +72,59 @@ const Tests={
   SelectingShowable:new Test('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
   Contenting:new Test('Contenting',newContentingTrees,buildContenting,
     (facets,activeTitle)=>{
-      traceThing('onRetargeted',activeTitle);
+      traceThing('^onRetargeted',activeTitle);
       facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
     }),
 };
+function newContentingTrees(facets:Facets){
+  const content=[
+    {text: 'Hello world!'},
+    {text: 'Hello Dolly!'},
+    {text: 'Hello, sailor!'},
+    {text: 'Hello, good evening and welcome!'},
+  ];
+  const indexingTitle=SelectingTitles.CHOOSER;
+  const list=new ShowableList<TextContent>(content,3,facets,indexingTitle);
+  const actions=true?[]:list.newActionTargets();
+  actions.push(
+    facets.newTextualTarget(SimpleTitles.INDEX,{
+      passText:'For onRetargeted',
+    }),
+    facets.newTriggerTarget(SelectingTitles.EDIT,{
+      targetStateUpdated:()=>{
+        facets.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
+      },
+    }));
+  let trees=[];
+  const frame=facets.newIndexingFrame({
+    frameTitle: SelectingTitles.FRAME,
+    indexingTitle: indexingTitle,
+    getIndexables:()=>list.getShowables(),
+    newFrameTargets:()=>actions,
+    newUiSelectable: (item:TextContent)=>item.text,
+  });
+  trees.push(facets.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
+    facets.newTextualTarget(SimpleTitles.INDEXED,{
+      getText:(getText)=>{
+        const state=facets.getTargetState(indexingTitle),
+          contentAt=list.contentAt(state as number);
+        traceThing('^'+SimpleTitles.INDEXED,{state:state,contentAt:contentAt})
+        return content[contentAt].text
+      },
+    }),
+    facets.newTriggerTarget(SelectingTitles.SAVE,{
+      targetStateUpdated:()=>{
+        facets.activateContentTree(SelectingTitles.FRAME)
+      },
+    }),
+    facets.newTriggerTarget(SelectingTitles.CANCEL,{
+      targetStateUpdated:()=>{
+        facets.activateContentTree(SelectingTitles.FRAME)
+      },
+    }),
+  ]),frame);
+  return true?trees:frame;
+}
 interface TextContent {
   text? : string;
 }
@@ -356,55 +405,6 @@ function newSelectingShowableTree(facets){
   };
   const list=new ShowableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
-}
-function newContentingTrees(facets:Facets){
-  const content=[
-    {text: 'Hello world!'},
-    {text: 'Hello Dolly!'},
-    {text: 'Hello, sailor!'},
-    {text: 'Hello, good evening and welcome!'},
-  ];
-  const indexingTitle=SelectingTitles.CHOOSER;
-  const list=new ShowableList<TextContent>(content,3,facets,indexingTitle);
-  const actions=true?[]:list.newActionTargets();
-  actions.push(
-    facets.newTextualTarget(SimpleTitles.INDEX,{
-    passText:'For onRetargeted',
-  }),
-  facets.newTriggerTarget(SelectingTitles.EDIT,{
-    targetStateUpdated:()=>{
-      facets.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
-    },
-  }));
-  let trees=[];
-  const frame=facets.newIndexingFrame({
-    frameTitle: SelectingTitles.FRAME,
-    indexingTitle: indexingTitle,
-    getIndexables:()=>list.getShowables(),
-    newFrameTargets:()=>actions,
-    newUiSelectable: (item:TextContent)=>item.text,
-  });
-  trees.push(facets.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
-    facets.newTextualTarget(SimpleTitles.INDEXED,{
-      getText:(getText)=>{
-        const state=facets.getTargetState(indexingTitle),
-          contentAt=list.contentAt(state as number);
-        traceThing('^'+SimpleTitles.INDEXED,{state:state,contentAt:contentAt})
-        return content[contentAt].text
-      },
-    }),
-    facets.newTriggerTarget(SelectingTitles.SAVE,{
-      targetStateUpdated:()=>{
-        facets.activateContentTree(SelectingTitles.FRAME)
-      },
-    }),
-    facets.newTriggerTarget(SelectingTitles.CANCEL,{
-      targetStateUpdated:()=>{
-        facets.activateContentTree(SelectingTitles.FRAME)
-      },
-    }),
-  ]),frame);
-  return true?trees:frame;
 }
 function buildContenting(facets:Facets){
   ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={facets}>
