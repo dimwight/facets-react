@@ -108,7 +108,6 @@ function newContentingTrees(facets:Facets){
       getText:(getText)=>{
         const state=facets.getTargetState(indexingTitle),
           contentAt=list.contentAt(state as number);
-        traceThing('^'+SimpleTitles.INDEXED,{state:state,contentAt:contentAt})
         return content[contentAt].text
       },
     }),
