@@ -5,7 +5,6 @@ import {
   newInstance,
   Target,
   IndexingFramePolicy,
-  TextualCoupler,
 } from 'facets-js';
 import {
   RowPanel,
@@ -16,11 +15,16 @@ import {
   TriggerButton,
   IndexingDropdown,
   IndexingList,
+  ShowPanel
 } from './react/export';
+import {
+  ShowableList,
+  SelectingTitles,
+  Surface,
+  AppSpec,
+  newTargetTrees,
+} from './facets/export';
 import {traceThing}from './util/export';
-import {Surface}from './facets/export';
-import {ShowableList,SelectingTitles} from './facets/Selecting';
-import {ShowPanel} from './react/Facet';
 export namespace SimpleTitles{
   export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
     INDEXING=TEXTUAL_FIRST+' or '+TEXTUAL_SECOND,
@@ -31,15 +35,10 @@ export namespace SimpleTitles{
     TOGGLE_START=false,
     NUMERIC_FIELD='Number',NUMERIC_LABEL='Value',NUMERIC_START=123;
 }
-interface AppSpec{
-  readonly name,
-  readonly newTree: (Facets)=>Target,
-  readonly buildLayout:(Facets)=>void,
-}
 class Test implements AppSpec{
   constructor(
     readonly name,
-    readonly newTree: (Facets)=>Target,
+    readonly newTrees: newTargetTrees,
     readonly buildLayout:(Facets)=>void,
   ){}
 }
@@ -71,8 +70,10 @@ class TestSurface extends Surface{
   constructor(private test:Test){
     super(newInstance(false));
   }
-  defineContent=()=>this.test.newTree(this.facets);
-  buildLayout=()=>this.test.buildLayout(this.facets);
+  buildTestSurface(){
+    this.buildSurface(this.test.newTrees,
+      this.test.buildLayout);
+  }
 }
 function newTextualTree(facets){
   const first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
@@ -439,5 +440,5 @@ function buildContenting(facets:Facets){
   );
 }
 export function doTest(){
-  new TestSurface(Tests.Contenting).buildSurface();
+  new TestSurface(Tests.Contenting).buildTestSurface();
 }

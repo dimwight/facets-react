@@ -4,7 +4,9 @@ export {
   TextualLabel,
   TextualField,
   TogglingCheckbox,
-  TriggerButton,} from './Facet';
+  TriggerButton,
+  ShowPanel,
+} from './Facet';
 export {
   IndexingDropdown,
   IndexingList,
