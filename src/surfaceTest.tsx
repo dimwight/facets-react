@@ -5,6 +5,7 @@ import {
   newInstance,
   Target,
   IndexingFramePolicy,
+  addOnRetargeted,
 } from 'facets-js';
 import {
   RowPanel,
@@ -41,20 +42,39 @@ class Test{
     readonly name,
     readonly newTrees: newFacetsTargetTrees,
     readonly buildLayout:buildFacetsLayout,
+    readonly onRetargeted?:addOnRetargeted,
   ){}
   buildSurface(facets:Facets){
-    facets.buildSurface(this.newTrees,this.buildLayout)
+    facets.buildSurface(this.newTrees,this.buildLayout,
+      this.onRetargeted)
   }
 }
 const Tests={
   Textual:new Test('Textual',newTextualTree,buildTextual),
-  TogglingLive:new Test('TogglingLive',newTogglingTree,buildToggling),
+  TogglingLive:new Test('TogglingLive',newTogglingTree,buildToggling,
+    (facets:Facets)=>{
+      facets.setTargetLive(SimpleTitles.TOGGLED,
+        facets.getTargetState(SimpleTitles.TOGGLING)as boolean);
+    }),
   Indexing:new Test('Indexing',newIndexingTree,buildIndexing),
   Trigger:new Test('Trigger',newTriggerTree,buildTrigger),
   AllSimples:new Test('AllSimples',newAllSimplesTree,buildAllSimples),
-  SelectingTyped:new Test('SelectingTyped',newSelectingTypedTree,buildSelectingTyped),
+  SelectingTyped:new Test('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
+    (facets,activeTitle)=>{
+      traceThing('onRetargeted',{activeTitle:activeTitle});
+      const live=facets.getTargetState(SelectingTitles.LIVE) as boolean;
+      if(false)[SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>
+        ['',TextContentType.ShowChars.titleTail].forEach(tail=>
+          facets.setTargetLive(title+tail,live),
+        ),
+      );
+    }),
   SelectingShowable:new Test('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
-  Contenting:new Test('Contenting',newContentingTrees,buildContenting),
+  Contenting:new Test('Contenting',newContentingTrees,buildContenting,
+    (facets,activeTitle)=>{
+      traceThing('onRetargeted',activeTitle);
+      facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
+    }),
 };
 interface TextContent {
   text? : string;
@@ -99,10 +119,6 @@ function newTogglingTree(facets){
   toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
       getText:()=>facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set',
     });
-  facets.onRetargeted=()=>{
-    facets.setTargetLive(SimpleTitles.TOGGLED,
-      facets.getTargetState(SimpleTitles.TOGGLING)as boolean);
-  };
   return facets.newTargetGroup('TogglingTest',[toggling,toggled]);
 }
 function newTriggerTree(facets){
@@ -252,16 +268,6 @@ function newSelectingTypedTree(facets:Facets){
       ])
     },
   };
-  facets.onRetargeted=activeTitle=>{
-    traceThing('onRetargeted',{activeTitle:activeTitle});
-    const live=facets.getTargetState(SelectingTitles.LIVE) as boolean;
-    if(false)[SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>
-        ['',TextContentType.ShowChars.titleTail].forEach(tail=>
-      facets.setTargetLive(title+tail,live),
-      ),
-    );
-  };
-  traceThing('^newSelectingTypedTree',{onRetargeted:facets.onRetargeted})
   return facets.newIndexingFrame(frame);
 }
 function buildSelectingTyped(facets){
@@ -398,10 +404,6 @@ function newContentingTrees(facets:Facets){
       },
     }),
   ]),frame);
-  facets.onRetargeted=activeTitle=>{
-    traceThing('^onRetargeted',activeTitle);
-    facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
-  };
   return true?trees:frame;
 }
 function buildContenting(facets:Facets){

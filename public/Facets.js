@@ -1717,27 +1717,6 @@ class Facets extends Tracer {
         this.root = new IndexingFrame("RootFrame", indexing);
         this.trace$java_lang_String$java_lang_Object(" > Created trees root ", this.root);
     }
-    buildSurface(newTrees, buildLayout) {
-        {
-            this.trace$java_lang_String("Building surface...");
-            let trees = (target => (typeof target === 'function') ? target(this) : target.apply(this))(newTrees);
-            if (trees != null && trees instanceof Array && (trees.length == 0 || trees[0] == null || trees[0] != null)) {
-                let array457 = trees;
-                for (let index456 = 0; index456 < array457.length; index456++) {
-                    let each = array457[index456];
-                    this.addContentTree(each);
-                }
-            }
-            else
-                this.addContentTree(trees);
-            this.buildTargeterTree();
-            this.trace$java_lang_String("Built targets, created targeters");
-            (target => (typeof target === 'function') ? target(this) : target.accept(this))(buildLayout);
-            this.trace$java_lang_String("Attached and laid out facets");
-            this.trace$java_lang_String("Surface built.");
-            return;
-        }
-    }
     /**
      *
      * @param {string} msg
@@ -1745,6 +1724,25 @@ class Facets extends Tracer {
     doTraceMsg(msg) {
         if (this.doTrace || (Debug.trace && ((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(msg, ">>")))
             super.doTraceMsg(msg);
+    }
+    buildSurface(newTrees, buildLayout, onRetargeted) {
+        this.onRetargeted = (onRetargeted);
+        this.trace$java_lang_String("Building surface...");
+        let trees = (target => (typeof target === 'function') ? target(this) : target.apply(this))(newTrees);
+        if (trees != null && trees instanceof Array && (trees.length == 0 || trees[0] == null || trees[0] != null)) {
+            let array545 = trees;
+            for (let index544 = 0; index544 < array545.length; index544++) {
+                let each = array545[index544];
+                this.addContentTree(each);
+            }
+        }
+        else
+            this.addContentTree(trees);
+        this.buildTargeterTree();
+        this.trace$java_lang_String("Built targets, created targeters");
+        (target => (typeof target === 'function') ? target(this) : target.accept(this))(buildLayout);
+        this.trace$java_lang_String("Attached and laid out facets");
+        this.trace$java_lang_String("Surface built.");
     }
     addContentTree(add) {
         let title = add.title();
@@ -1777,8 +1775,8 @@ class Facets extends Tracer {
         let elements = t.titleElements();
         if (false && then == null)
             this.trace$java_lang_String("> Added targeter: title=" + title + (": titleTargeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length));
-        for (let index506 = 0; index506 < elements.length; index506++) {
-            let e = elements[index506];
+        for (let index546 = 0; index546 < elements.length; index546++) {
+            let e = elements[index546];
             this.putTitleTargeters(e);
         }
     }
@@ -1786,8 +1784,8 @@ class Facets extends Tracer {
         if (this.onRetargeted == null)
             return;
         let title = this.root.indexedTarget().title();
-        this.trace$java_lang_String("> Calling onRetargeted with active=" + title);
-        this.onRetargeted(title);
+        this.trace$java_lang_String(" > Calling onRetargeted with active=" + title);
+        (target => (typeof target === 'function') ? target(this, title) : target.accept(this, title))(this.onRetargeted);
     }
     newTextualTarget(title, c) {
         let textual = new STextual(title, new Facets.Facets$2(this, c));
@@ -1811,7 +1809,9 @@ class Facets extends Tracer {
         return numeric;
     }
     newTriggerTarget(title, c) {
-        return new STrigger(title, new Facets.Facets$5(this, c));
+        let trigger = new STrigger(title, new Facets.Facets$5(this, c));
+        this.trace$java_lang_String$java_lang_Object(" > Created trigger ", trigger);
+        return trigger;
     }
     newTargetGroup(title, members) {
         let group = new (__Function$1.prototype.bind.apply(TargetCore, [null, title].concat(members)));
@@ -2214,9 +2214,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array508 = i.indexables();
-                for (let index507 = 0; index507 < array508.length; index507++) {
-                    let each = array508[index507];
+                let array548 = i.indexables();
+                for (let index547 = 0; index547 < array548.length; index547++) {
+                    let each = array548[index547];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }
@@ -2250,7 +2250,7 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
                 throw Object.defineProperty(new Error("Null getIndexables for " + i.title()), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
             let equal = Util.arraysEqual(got, this.thenIndexables);
             if (!equal)
-                this.__parent.trace("> Got new indexables: ", got);
+                this.__parent.trace("> Got new indexables in " + Debug.info(i) + ": ", got);
             this.thenIndexables = got;
             return got;
         }
@@ -2266,9 +2266,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array510 = i.indexables();
-                for (let index509 = 0; index509 < array510.length; index509++) {
-                    let each = array510[index509];
+                let array550 = i.indexables();
+                for (let index549 = 0; index549 < array550.length; index549++) {
+                    let each = array550[index549];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }
@@ -2282,7 +2282,7 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             } })([], selectables);
             let equal = Util.arraysEqual(got, this.thenSelectables);
             if (!equal)
-                this.__parent.trace("> Got new selectables: ", got);
+                this.__parent.trace("> Got new selectables in " + Debug.info(i) + ": ", got);
             this.thenSelectables = got;
             return got;
         }

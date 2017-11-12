@@ -30,7 +30,7 @@ export class ShowableList<T>{
     private readonly facets:Facets,
     private readonly indexingTitle,
   ){
-    facets.onRetargeted=()=>{
+    if(false)facets.onRetargeted=()=>{
       let contentAt=this.contentAt(this.getShowAt());
       facets.setTargetLive(SelectingTitles.DELETE,this.content.length>1);
       facets.setTargetLive(SelectingTitles.UP,contentAt>0);
