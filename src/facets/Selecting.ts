@@ -14,6 +14,8 @@ export namespace SelectingTitles {
     DOWN='Move Down',
     DELETE='Delete',
     EDIT='Edit',
+    SAVE='Save',
+    CANCEL='Cancel',
     CHARS='Characters';
 }
 export interface ShowAtOvershoot{
@@ -58,7 +60,7 @@ export class ShowableList<T>{
     });
     this.facets.notifyTargetUpdated(SelectingTitles.CHOOSER)
   }
-  contentAt(showAt){
+  contentAt(showAt):number{
     return showAt+this.showFrom;
   }
   getShowAt():number{

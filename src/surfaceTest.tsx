@@ -64,7 +64,7 @@ class TextContentType{
 }
 class TestSurface extends Surface{
   constructor(private test:Test){
-    super(newInstance(true));
+    super(newInstance(false));
   }
   defineContent=()=>this.test.newTree(this.facets);
   buildLayout=()=>this.test.buildLayout(this.facets);
@@ -361,7 +361,7 @@ function newContentingTrees(facets:Facets){
   const list=new ShowableList<TextContent>(content,3,facets,indexingTitle);
   const actions=true?[]:list.newActionTargets();
   actions.push(
-    facets.newTextualTarget(SimpleTitles.INDEXED,{
+    facets.newTextualTarget(SimpleTitles.INDEX,{
     passText:'For onRetargeted'
   }),
   facets.newTriggerTarget(SelectingTitles.EDIT,{
@@ -376,19 +376,35 @@ function newContentingTrees(facets:Facets){
     getIndexables:()=>list.getShowables(),
     newFrameTargets:()=>actions,
     newUiSelectable: (item:TextContent)=>item.text,
-    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME,
   });
-  trees.push(facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
-    passText:'More content!'
-  }),frame);
+  trees.push(facets.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
+    facets.newTextualTarget(SimpleTitles.INDEXED,{
+      getText:(getText)=>{
+        const state=facets.getTargetState(indexingTitle),
+          contentAt=list.contentAt(state as number);
+        traceThing('^'+SimpleTitles.INDEXED,{state:state,contentAt:contentAt})
+        return content[contentAt].text
+      }
+    }),
+    facets.newTriggerTarget(SelectingTitles.SAVE,{
+      targetStateUpdated:()=>{
+        facets.activateContentTree(SelectingTitles.FRAME)
+      }
+    }),
+    facets.newTriggerTarget(SelectingTitles.CANCEL,{
+      targetStateUpdated:()=>{
+        facets.activateContentTree(SelectingTitles.FRAME)
+      }
+    })
+  ]),frame);
   facets.onRetargeted=activeTitle=>{
-    traceThing('onRetargeted',activeTitle);
-    facets.updateTargetState(SimpleTitles.INDEXED,activeTitle);
+    traceThing('^onRetargeted',activeTitle);
+    facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
   };
   return true?trees:frame;
 }
 function buildContenting(facets:Facets){
-  ReactDOM.render(<ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
+  ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={facets}>
     <RowPanel title={SelectingTitles.FRAME}>
         <IndexingList
             title={SelectingTitles.CHOOSER}
@@ -407,7 +423,11 @@ function buildContenting(facets:Facets){
       }
       </RowPanel>
     <RowPanel title={SimpleTitles.TEXTUAL_FIRST}>
-      <TextualLabel title={SimpleTitles.TEXTUAL_FIRST} facets={facets}/>
+      <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
+      <PanelRow>
+        <TriggerButton title={SelectingTitles.SAVE} facets={facets}/>
+        <TriggerButton title={SelectingTitles.CANCEL} facets={facets}/>
+      </PanelRow>
     </RowPanel>
     </ShowPanel>,
     document.getElementById('root'),
