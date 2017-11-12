@@ -31,7 +31,12 @@ export namespace SimpleTitles{
     TOGGLE_START=false,
     NUMERIC_FIELD='Number',NUMERIC_LABEL='Value',NUMERIC_START=123;
 }
-class Test{
+interface AppSpec{
+  readonly name,
+  readonly newTree: (Facets)=>Target,
+  readonly buildLayout:(Facets)=>void,
+}
+class Test implements AppSpec{
   constructor(
     readonly name,
     readonly newTree: (Facets)=>Target,
