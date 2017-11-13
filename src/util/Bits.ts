@@ -4,7 +4,10 @@ export function traceThing(top,thing?){
   else console.info(top,
     JSON.stringify(thing, false ? null : (key, value) => {
       if(false)console.log(key)
-      return key=='facets'?key: value
+      'facets,__parent'.split(',').forEach(check=>{
+        if(key===check)value=key;
+      });
+      return value
     }, 1))
 }
 export function errorTest (msg?){

@@ -98,6 +98,99 @@ class TextContentType{
     return content.text.length>20?TextContentType.ShowChars:TextContentType.Standard;
   }
 }
+class ContentingTest extends SurfaceApp{
+  readonly content=[
+    {text: 'Hello world!'},
+    {text: 'Hello Dolly!'},
+    {text: 'Hello, sailor!'},
+    {text: 'Hello, good evening and welcome!'},
+  ];
+  readonly indexingTitle=SelectingTitles.CHOOSER;
+  readonly list;
+  readonly actions:Target[];
+  constructor(ff:Facets){
+    super(ff);
+    this.list=new ShowableList<TextContent>(this.content,3,ff,this.indexingTitle);
+    this.actions=true?[]:this.list.newActionTargets();
+  }
+  getContentTrees():Target|Target[]{
+    let f=this.facets;
+    this.actions.push(
+      f.newTextualTarget(SimpleTitles.INDEX,{
+        passText:'For onRetargeted',
+      }),
+      f.newTriggerTarget(SelectingTitles.EDIT,{
+        targetStateUpdated:()=>{
+          f.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
+        },
+      }));
+    traceThing('getContentTrees',this.actions)
+    let trees=[];
+    const frame=f.newIndexingFrame({
+      frameTitle: SelectingTitles.FRAME,
+      indexingTitle: this.indexingTitle,
+      getIndexables:()=>this.list.getShowables(),
+      newFrameTargets:()=>this.actions,
+      newUiSelectable: (item:TextContent)=>item.text,
+    });
+    trees.push(f.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
+      f.newTextualTarget(SimpleTitles.INDEXED,{
+        getText:(getText)=>{
+          const state=f.getTargetState(this.indexingTitle),
+            contentAt=this.list.contentAt(state as number);
+          return this.content[contentAt].text
+        },
+      }),
+      f.newTriggerTarget(SelectingTitles.SAVE,{
+        targetStateUpdated:()=>{
+          f.activateContentTree(SelectingTitles.FRAME)
+        },
+      }),
+      f.newTriggerTarget(SelectingTitles.CANCEL,{
+        targetStateUpdated:()=>{
+          f.activateContentTree(SelectingTitles.FRAME)
+        },
+      }),
+    ]),frame);
+    return true?trees:frame;
+  }
+  onRetargeted(activeTitle:string){
+    this.list.onFacetsRetargeted();
+    traceThing('^onRetargeted',activeTitle);
+    this.facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
+  }
+  buildLayout(){
+    let f=this.facets;
+    ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={f}>
+        <RowPanel title={SelectingTitles.FRAME}>
+          <IndexingList
+            title={SelectingTitles.CHOOSER}
+            facets={f}
+            listWidth={200}/>
+          {this.actions.length>2?<PanelRow>
+              <TriggerButton title={SelectingTitles.UP} facets={f}/>
+              <TriggerButton title={SelectingTitles.DOWN} facets={f}/>
+              <TriggerButton title={SelectingTitles.DELETE} facets={f}/>
+              <TriggerButton title={SelectingTitles.NEW} facets={f}/>
+              <TriggerButton title={SelectingTitles.EDIT} facets={f}/>
+            </PanelRow>
+            :<PanelRow>
+              <TriggerButton title={SelectingTitles.EDIT} facets={f}/>
+            </PanelRow>
+          }
+        </RowPanel>
+        <RowPanel title={SimpleTitles.TEXTUAL_FIRST}>
+          <TextualLabel title={SimpleTitles.INDEXED} facets={f}/>
+          <PanelRow>
+            <TriggerButton title={SelectingTitles.SAVE} facets={f}/>
+            <TriggerButton title={SelectingTitles.CANCEL} facets={f}/>
+          </PanelRow>
+        </RowPanel>
+      </ShowPanel>,
+      document.getElementById('root'),
+    );
+  }
+}
 function newTextualTree(facets){
   const first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
       passText:'Some text for '+SimpleTitles.TEXTUAL_FIRST,
@@ -366,95 +459,4 @@ function newSelectingShowableTree(facets){
   };
   const list=new ShowableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
-}
-class ContentingTest extends SurfaceApp{
-  readonly content=[
-    {text: 'Hello world!'},
-    {text: 'Hello Dolly!'},
-    {text: 'Hello, sailor!'},
-    {text: 'Hello, good evening and welcome!'},
-  ];
-  readonly indexingTitle=SelectingTitles.CHOOSER;
-  readonly list;
-  constructor(ff:Facets){
-    super(ff);
-    this.list=new ShowableList<TextContent>(this.content,3,ff,this.indexingTitle);
-  }
-  getContentTrees():Target|Target[]{
-    let f=this.facets;
-    const actions=false?[]:this.list.newActionTargets();
-    actions.push(
-      f.newTextualTarget(SimpleTitles.INDEX,{
-        passText:'For onRetargeted',
-      }),
-      f.newTriggerTarget(SelectingTitles.EDIT,{
-        targetStateUpdated:()=>{
-          f.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
-        },
-      }));
-    let trees=[];
-    const frame=f.newIndexingFrame({
-      frameTitle: SelectingTitles.FRAME,
-      indexingTitle: this.indexingTitle,
-      getIndexables:()=>this.list.getShowables(),
-      newFrameTargets:()=>actions,
-      newUiSelectable: (item:TextContent)=>item.text,
-    });
-    trees.push(f.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
-      f.newTextualTarget(SimpleTitles.INDEXED,{
-        getText:(getText)=>{
-          const state=f.getTargetState(this.indexingTitle),
-            contentAt=this.list.contentAt(state as number);
-          return this.content[contentAt].text
-        },
-      }),
-      f.newTriggerTarget(SelectingTitles.SAVE,{
-        targetStateUpdated:()=>{
-          f.activateContentTree(SelectingTitles.FRAME)
-        },
-      }),
-      f.newTriggerTarget(SelectingTitles.CANCEL,{
-        targetStateUpdated:()=>{
-          f.activateContentTree(SelectingTitles.FRAME)
-        },
-      }),
-    ]),frame);
-    return true?trees:frame;
-  }
-  onRetargeted(activeTitle:string){
-    this.list.onFacetsRetargeted();
-    traceThing('^onRetargeted',activeTitle);
-    this.facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
-  }
-  buildLayout(){
-    let f=this.facets;
-    ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={f}>
-        <RowPanel title={SelectingTitles.FRAME}>
-          <IndexingList
-            title={SelectingTitles.CHOOSER}
-            facets={f}
-            listWidth={200}/>
-          {true?<PanelRow>
-              <TriggerButton title={SelectingTitles.UP} facets={f}/>
-              <TriggerButton title={SelectingTitles.DOWN} facets={f}/>
-              <TriggerButton title={SelectingTitles.DELETE} facets={f}/>
-              <TriggerButton title={SelectingTitles.NEW} facets={f}/>
-              <TriggerButton title={SelectingTitles.EDIT} facets={f}/>
-            </PanelRow>
-            :<PanelRow>
-              <TriggerButton title={SelectingTitles.EDIT} facets={f}/>
-            </PanelRow>
-          }
-        </RowPanel>
-        <RowPanel title={SimpleTitles.TEXTUAL_FIRST}>
-          <TextualLabel title={SimpleTitles.INDEXED} facets={f}/>
-          <PanelRow>
-            <TriggerButton title={SelectingTitles.SAVE} facets={f}/>
-            <TriggerButton title={SelectingTitles.CANCEL} facets={f}/>
-          </PanelRow>
-        </RowPanel>
-      </ShowPanel>,
-      document.getElementById('root'),
-    );
-  }
 }
