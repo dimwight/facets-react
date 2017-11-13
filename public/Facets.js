@@ -1715,7 +1715,7 @@ class Facets extends Tracer {
         this.doTrace = trace;
         let indexing = new SIndexing("RootIndexing", new Facets.Facets$1(this));
         this.root = new IndexingFrame("RootFrame", indexing);
-        this.trace$java_lang_String$java_lang_Object(" > Created trees root ", this.root);
+        
     }
     /**
      *
@@ -1725,30 +1725,33 @@ class Facets extends Tracer {
         if (this.doTrace || (Debug.trace && ((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(msg, ">>")))
             super.doTraceMsg(msg);
     }
-    buildSurface(newTrees, buildLayout, onRetargeted) {
-        this.onRetargeted = (onRetargeted);
+    buildApp(app) {
+        this.onRetargeted = (title) => {
+            app.onRetargeted(title);
+        };
         this.trace$java_lang_String("Building surface...");
-        let trees = (target => (typeof target === 'function') ? target() : target.get())(newTrees);
+        let trees = app.getContentTrees();
         if (trees != null && trees instanceof Array && (trees.length == 0 || trees[0] == null || trees[0] != null)) {
-            let array589 = trees;
-            for (let index588 = 0; index588 < array589.length; index588++) {
-                let each = array589[index588];
+            let array633 = trees;
+            for (let index632 = 0; index632 < array633.length; index632++) {
+                let each = array633[index632];
                 this.addContentTree(each);
             }
         }
         else
             this.addContentTree(trees);
-        this.buildTargeterTree();
+        this.trace$java_lang_String$java_lang_Object(" > Building targeter tree for root=", this.root);
+        if (this.rootTargeter == null)
+            this.rootTargeter = this.root.newTargeter();
+        this.rootTargeter.setNotifiable(this.notifiable);
+        this.rootTargeter.retarget(this.root);
+        this.putTitleTargeters(this.rootTargeter);
+        this.trace$java_lang_String(" > Created targeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length);
+        this.callOnRetargeted();
         this.trace$java_lang_String("Built targets, created targeters");
-        (target => (typeof target === 'function') ? target("") : target.accept(""))(buildLayout);
+        app.buildLayout();
         this.trace$java_lang_String("Attached and laid out facets");
         this.trace$java_lang_String("Surface built.");
-    }
-    addContentTree(add) {
-        let title = add.title();
-        this.trace$java_lang_String(" > Adding content title=" + title);
-        /* put */ (this.titleTrees[title] = add);
-        this.root.indexing().setIndexed(add);
     }
     activateContentTree(title) {
         this.trace$java_lang_String(" > Activating content title=" + title);
@@ -1758,15 +1761,11 @@ class Facets extends Tracer {
         this.root.indexing().setIndexed(tree);
         this.notifiable.notify(this.root);
     }
-    buildTargeterTree() {
-        this.trace$java_lang_String$java_lang_Object(" > Building targeter tree for root=", this.root);
-        if (this.rootTargeter == null)
-            this.rootTargeter = this.root.newTargeter();
-        this.rootTargeter.setNotifiable(this.notifiable);
-        this.rootTargeter.retarget(this.root);
-        this.putTitleTargeters(this.rootTargeter);
-        this.trace$java_lang_String(" > Created targeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length);
-        this.callOnRetargeted();
+    addContentTree(add) {
+        let title = add.title();
+        this.trace$java_lang_String(" > Adding content title=" + title);
+        /* put */ (this.titleTrees[title] = add);
+        this.root.indexing().setIndexed(add);
     }
     putTitleTargeters(t) {
         let title = t.title();
@@ -1775,14 +1774,12 @@ class Facets extends Tracer {
         let elements = t.titleElements();
         if (false && then == null)
             this.trace$java_lang_String("> Added targeter: title=" + title + (": titleTargeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length));
-        for (let index590 = 0; index590 < elements.length; index590++) {
-            let e = elements[index590];
+        for (let index634 = 0; index634 < elements.length; index634++) {
+            let e = elements[index634];
             this.putTitleTargeters(e);
         }
     }
     callOnRetargeted() {
-        if (this.onRetargeted == null)
-            return;
         let title = this.root.indexedTarget().title();
         this.trace$java_lang_String(" > Calling onRetargeted with active=" + title);
         (target => (typeof target === 'function') ? target(title) : target.accept(title))(this.onRetargeted);
@@ -1847,10 +1844,11 @@ class Facets extends Tracer {
         }, '__interfaces', { configurable: true, value: ["fjs.globals.Facets.IndexingState"] });
     }
     newIndexingFrame(p) {
-        let indexing = new SIndexing(p.indexingTitle, new Facets.Facets$7(this, p));
+        let frameTitle = p.frameTitle != null ? p.frameTitle : "IndexingFrame" + this.indexingFrames++;
+        let indexingTitle = p.indexingTitle != null ? p.indexingTitle : frameTitle + ".Indexing";
+        let indexing = new SIndexing(indexingTitle, new Facets.Facets$7(this, p));
         indexing.setIndex(0);
-        let title = p.frameTitle != null ? p.frameTitle : "IndexingFrame" + this.indexingFrames++;
-        let frame = new Facets.LocalIndexingFrame(title, indexing, p);
+        let frame = new Facets.LocalIndexingFrame(frameTitle, indexing, p);
         this.trace$java_lang_String$java_lang_Object(" > Created indexing frame ", frame);
         return frame;
     }
@@ -2214,9 +2212,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array592 = i.indexables();
-                for (let index591 = 0; index591 < array592.length; index591++) {
-                    let each = array592[index591];
+                let array636 = i.indexables();
+                for (let index635 = 0; index635 < array636.length; index635++) {
+                    let each = array636[index635];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }
@@ -2266,9 +2264,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array594 = i.indexables();
-                for (let index593 = 0; index593 < array594.length; index593++) {
-                    let each = array594[index593];
+                let array638 = i.indexables();
+                for (let index637 = 0; index637 < array638.length; index637++) {
+                    let each = array638[index637];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }

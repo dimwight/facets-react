@@ -5,7 +5,6 @@ import {
   newInstance,
   Target,
   IndexingFramePolicy,
-  addOnRetargeted,
 } from 'facets-js';
 import {
   RowPanel,
@@ -19,8 +18,6 @@ import {
   ShowPanel,
 } from './react/export';
 import {
-  newFacetsTargetTrees,
-  buildFacetsLayout,
 } from './facets/export';
 import {
 SelectingTitles,
@@ -41,14 +38,10 @@ export namespace SimpleTitles{
 class Test{
   constructor(
     readonly name,
-    readonly newTrees: newFacetsTargetTrees,
-    readonly buildLayout:buildFacetsLayout,
-    readonly onRetargeted?:addOnRetargeted,
+    readonly newTrees,
+    readonly buildLayout,
+    readonly onRetargeted?,
   ){}
-  buildSurface(facets:Facets){
-    facets.buildSurface(this.newTrees,this.buildLayout,
-      this.onRetargeted)
-  }
 }
 const Tests={
   Textual:new Test('Textual',newTextualTree,buildTextual),
@@ -449,42 +442,42 @@ class TestSurface extends Surface{
     super(ff);
     this.list=new ShowableList<TextContent>(this.content,3,ff,this.indexingTitle);
   }
-  newTrees(){
-    let ff=this.facets;
+  getContentTrees():Target|Target[]{
+    let f=this.facets;
     const actions=false?[]:this.list.newActionTargets();
     actions.push(
-      ff.newTextualTarget(SimpleTitles.INDEX,{
+      f.newTextualTarget(SimpleTitles.INDEX,{
         passText:'For onRetargeted',
       }),
-      ff.newTriggerTarget(SelectingTitles.EDIT,{
+      f.newTriggerTarget(SelectingTitles.EDIT,{
         targetStateUpdated:()=>{
-          ff.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
+          f.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
         },
       }));
     let trees=[];
-    const frame=ff.newIndexingFrame({
+    const frame=f.newIndexingFrame({
       frameTitle: SelectingTitles.FRAME,
       indexingTitle: this.indexingTitle,
       getIndexables:()=>this.list.getShowables(),
       newFrameTargets:()=>actions,
       newUiSelectable: (item:TextContent)=>item.text,
     });
-    trees.push(ff.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
-      ff.newTextualTarget(SimpleTitles.INDEXED,{
+    trees.push(f.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
+      f.newTextualTarget(SimpleTitles.INDEXED,{
         getText:(getText)=>{
-          const state=ff.getTargetState(this.indexingTitle),
+          const state=f.getTargetState(this.indexingTitle),
             contentAt=this.list.contentAt(state as number);
           return this.content[contentAt].text
         },
       }),
-      ff.newTriggerTarget(SelectingTitles.SAVE,{
+      f.newTriggerTarget(SelectingTitles.SAVE,{
         targetStateUpdated:()=>{
-          ff.activateContentTree(SelectingTitles.FRAME)
+          f.activateContentTree(SelectingTitles.FRAME)
         },
       }),
-      ff.newTriggerTarget(SelectingTitles.CANCEL,{
+      f.newTriggerTarget(SelectingTitles.CANCEL,{
         targetStateUpdated:()=>{
-          ff.activateContentTree(SelectingTitles.FRAME)
+          f.activateContentTree(SelectingTitles.FRAME)
         },
       }),
     ]),frame);
@@ -492,35 +485,34 @@ class TestSurface extends Surface{
   }
   onRetargeted(activeTitle:string){
     this.list.onFacetsRetargeted();
-    let ff=this.facets;
     traceThing('^onRetargeted',activeTitle);
-    ff.updateTargetState(SimpleTitles.INDEX,activeTitle);
+    this.facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
   }
   buildLayout(){
-    let ff=this.facets;
-    ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={ff}>
+    let f=this.facets;
+    ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={f}>
         <RowPanel title={SelectingTitles.FRAME}>
           <IndexingList
             title={SelectingTitles.CHOOSER}
-            facets={ff}
+            facets={f}
             listWidth={200}/>
           {false?<PanelRow>
-              <TriggerButton title={SelectingTitles.UP} facets={ff}/>
-              <TriggerButton title={SelectingTitles.DOWN} facets={ff}/>
-              <TriggerButton title={SelectingTitles.DELETE} facets={ff}/>
-              <TriggerButton title={SelectingTitles.NEW} facets={ff}/>
-              <TriggerButton title={SelectingTitles.EDIT} facets={ff}/>
+              <TriggerButton title={SelectingTitles.UP} facets={f}/>
+              <TriggerButton title={SelectingTitles.DOWN} facets={f}/>
+              <TriggerButton title={SelectingTitles.DELETE} facets={f}/>
+              <TriggerButton title={SelectingTitles.NEW} facets={f}/>
+              <TriggerButton title={SelectingTitles.EDIT} facets={f}/>
             </PanelRow>
             :<PanelRow>
-              <TriggerButton title={SelectingTitles.EDIT} facets={ff}/>
+              <TriggerButton title={SelectingTitles.EDIT} facets={f}/>
             </PanelRow>
           }
         </RowPanel>
         <RowPanel title={SimpleTitles.TEXTUAL_FIRST}>
-          <TextualLabel title={SimpleTitles.INDEXED} facets={ff}/>
+          <TextualLabel title={SimpleTitles.INDEXED} facets={f}/>
           <PanelRow>
-            <TriggerButton title={SelectingTitles.SAVE} facets={ff}/>
-            <TriggerButton title={SelectingTitles.CANCEL} facets={ff}/>
+            <TriggerButton title={SelectingTitles.SAVE} facets={f}/>
+            <TriggerButton title={SelectingTitles.CANCEL} facets={f}/>
           </PanelRow>
         </RowPanel>
       </ShowPanel>,
@@ -529,6 +521,5 @@ class TestSurface extends Surface{
   }
 }
 export function doTest(){
-  if(false)Tests.Contenting.buildSurface(newInstance(true));
-  else new TestSurface(newInstance(true)).buildSurface();
+  new TestSurface(newInstance(true)).buildSurface();
 }
