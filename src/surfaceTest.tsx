@@ -84,9 +84,18 @@ class TestApp extends SurfaceApp{
     this.test.buildLayout(this.facets)
   }
 }
-interface TextContent {
-  text? : string;
+class TextContent {
+  constructor(public text : string){}
+  clone():TextContent{
+    return new TextContent(this.text)
+  }
 }
+const content=[
+  new TextContent('Hello world!'),
+  new TextContent('Hello, good evening and welcome!'),
+  new TextContent('Hello Dolly!'),
+  new TextContent('Hello, sailor!'),
+];
 class TextContentType{
   constructor(
     readonly name,
@@ -99,24 +108,36 @@ class TextContentType{
   }
 }
 class ContentingTest extends SurfaceApp{
-  private readonly fullFrameTargets=false;
-  readonly content=[
-    {text: 'Hello world!'},
-    {text: 'Hello, good evening and welcome!'},
-    {text: 'Hello Dolly!'},
-    {text: 'Hello, sailor!'},
-  ];
+  readonly fullFrameTargets=false;
   readonly indexingTitle=SelectingTitles.CHOOSER;
+  readonly frameTitle=SelectingTitles.FRAME;
   readonly list;
   readonly frameTargets:Target[];
+  active:TextContent;
+  edit:TextContent;
   constructor(ff:Facets){
     super(ff);
-    this.list=new ShowableList<TextContent>(this.content,3,ff,this.indexingTitle);
+    this.list=new ShowableList<TextContent>(content,3,ff,this.indexingTitle);
     this.frameTargets=this.fullFrameTargets?this.list.newActionTargets():[];
   }
   getContentTrees():Target|Target[]{
     function getType(indexed:TextContent){
       return TextContentType.getContentType(indexed);
+    }
+    function activateChooser(){
+      this.facets.activateContentTree(this.frameTitle);
+    }
+    function newEditTarget(indexed:TextContent,tail){
+      return this.facets.newTextualTarget(SelectingTitles.EDIT+tail,{
+        passText:indexed.text,
+        targetStateUpdated:(state,title)=>indexed.text=state as string,
+      })
+    }
+    function newCharsTarget(tail){
+      return this.facets.newTextualTarget(SelectingTitles.CHARS+tail,{
+        getText:(title)=>''+(this.facets.getTargetState(
+          SelectingTitles.EDIT+TextContentType.ShowChars.titleTail)as string).length
+      })
     }
     function newContentTree(content:TextContent):Target {
       let f=this.facets;
@@ -127,14 +148,14 @@ class ContentingTest extends SurfaceApp{
       if(type==TextContentType.ShowChars)members.push(newCharsTarget(tail));
       members.push(f.newTriggerTarget(SelectingTitles.SAVE+tail,{
         targetStateUpdated:(state,title)=>{
-          active.copyClone(edit);
+          this.active.copyClone(this.edit);
           activateChooser();
         }
       }));
       members.push(f.newTriggerTarget(SelectingTitles.CANCEL+tail,{
         targetStateUpdated:(state,title)=>activateChooser()
       }));
-      return f.newTargetGroup(type.name,members);
+      return f.newTargetGroup(type.name, members);
     }
     let f=this.facets;
     this.frameTargets.push(
@@ -143,12 +164,14 @@ class ContentingTest extends SurfaceApp{
       }),
       f.newTriggerTarget(SelectingTitles.EDIT,{
         targetStateUpdated:()=>{
-          f.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
+            this.active=this.facets.getIndexingState(SelectingTitles.CHOOSER
+            ).indexed;
+            this.facets.addContentTree(newContentTree(this.edit=this.active.clone()));
         },
       }));
     let trees=[];
     const frame=f.newIndexingFrame({
-      frameTitle: SelectingTitles.FRAME,
+      frameTitle: this.frameTitle,
       indexingTitle: this.indexingTitle,
       getIndexables:()=>this.list.getShowables(),
       newFrameTargets:()=>this.frameTargets,
@@ -160,7 +183,7 @@ class ContentingTest extends SurfaceApp{
           getText:(getText)=>{
             const state=f.getTargetState(this.indexingTitle),
               contentAt=this.list.contentAt(state as number);
-            return this.content[contentAt].text
+            return content[contentAt].text
           },
         }),
         f.newTriggerTarget(SelectingTitles.SAVE,{
@@ -286,18 +309,13 @@ function newSelectingTypedTree(facets:Facets){
   function listAt():number{
     return facets.getTargetState(frame.indexingTitle) as number;
   }
-  const list : TextContent[]=[
-    {text: 'Hello world!'},
-    {text: 'Hello Dolly!'},
-    {text: 'Hello, good evening and welcome!'},
-  ];
   function getType(indexed:TextContent){
     return TextContentType.getContentType(indexed);
   }
   const frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.CHOOSER,
-    getIndexables:()=>list,
+    getIndexables:()=>this.list,
     newUiSelectable:(item:TextContent)=>item.text,
     newFrameTargets:()=>[
       facets.newTextualTarget(SimpleTitles.INDEXED,{
@@ -328,12 +346,6 @@ function newSelectingTypedTree(facets:Facets){
   return facets.newIndexingFrame(frame);
 }
 function newSelectingShowableTree(facets){
-  const content=[
-    {text: 'Hello world!'},
-    {text: 'Hello Dolly!'},
-    {text: 'Hello, sailor!'},
-    {text: 'Hello, good evening and welcome!'},
-  ];
   const frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.FRAME,
     indexingTitle: SelectingTitles.CHOOSER,
