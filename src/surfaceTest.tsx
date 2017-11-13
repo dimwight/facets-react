@@ -66,7 +66,7 @@ const SimpleTests={
   SelectingShowable:new SimpleTest('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
 };
 export function doTest(){
-  if(true)new TestApp(SimpleTests.AllNonSelecting).buildSurface();
+  if(false)new TestApp(SimpleTests.AllNonSelecting).buildSurface();
   else new ContentingTest(newInstance(true)).buildSurface();
 }
 class TestApp extends SurfaceApp{
