@@ -1751,7 +1751,7 @@ class Facets extends Tracer {
         this.trace$java_lang_String("Built targets, created targeters");
         app.buildLayout();
         this.trace$java_lang_String("Attached and laid out facets");
-        this.trace$java_lang_String("Surface built.");
+        this.trace$java_lang_String("SurfaceApp built.");
     }
     activateContentTree(title) {
         this.trace$java_lang_String(" > Activating content title=" + title);
@@ -2035,7 +2035,7 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
          * @param {*} notice
          */
         notify(notice) {
-            let msg = "> Surface for " + Debug.info(this.__parent.rootTargeter) + " notified by " + notice;
+            let msg = "> SurfaceApp for " + Debug.info(this.__parent.rootTargeter) + " notified by " + notice;
             if (this.__parent.times.doTime)
                 this.__parent.times.traceElapsed(msg);
             else
