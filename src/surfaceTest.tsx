@@ -52,10 +52,10 @@ const SimpleTests={
     }),
   Indexing:new SimpleTest('Indexing',newIndexingTree,buildIndexing),
   Trigger:new SimpleTest('Trigger',newTriggerTree,buildTrigger),
-  AllSimples:new SimpleTest('AllSimples',newAllSimplesTree,buildAllSimples),
+  AllNonSelecting:new SimpleTest('AllNonSelecting',newAllSimplesTree,buildAllSimples),
   SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
     (facets,activeTitle)=>{
-      traceThing('onRetargeted',{activeTitle:activeTitle});
+      traceThing('^onRetargeted',{activeTitle:activeTitle});
       const live=facets.getTargetState(SelectingTitles.LIVE) as boolean;
       if(false)[SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
@@ -65,6 +65,25 @@ const SimpleTests={
     }),
   SelectingShowable:new SimpleTest('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
 };
+export function doTest(){
+  if(true)new TestApp(SimpleTests.AllNonSelecting).buildSurface();
+  else new ContentingTest(newInstance(true)).buildSurface();
+}
+class TestApp extends SurfaceApp{
+  constructor(readonly test:SimpleTest){
+    super(newInstance(true));
+  }
+  getContentTrees():Target|Target[]{
+    return this.test.newTrees(this.facets)
+  }
+  onRetargeted(active){
+    const onRetargeted=this.test.onRetargeted;
+    if(onRetargeted)onRetargeted(this.facets,active)
+  }
+  buildLayout():void{
+    this.test.buildLayout(this.facets)
+  }
+}
 interface TextContent {
   text? : string;
 }
@@ -100,10 +119,12 @@ function setSimplesLive(facets,state){
     facets.setTargetLive(title,state);
   })
 }
-function newTogglingTree(facets){
+function newTogglingTree(facets,setLive){
   const toggling=facets.newTogglingTarget(SimpleTitles.TOGGLING,{
     passSet:SimpleTitles.TOGGLE_START,
-    targetStateUpdated:state=>setSimplesLive(facets,state),
+    targetStateUpdated:state=>{
+      if(setLive)setSimplesLive(facets,state)
+    },
   }),
   toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
       getText:()=>facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set',
@@ -141,9 +162,9 @@ function newIndexingTree(facets){
   return facets.newTargetGroup('IndexingTest',[indexing,index,indexed]);
 }
 function newAllSimplesTree(facets):Target{
-  return facets.newTargetGroup('AllTest',[
+  return facets.newTargetGroup('AllSimples',[
     newTextualTree(facets),
-    newTogglingTree(facets),
+    newTogglingTree(facets,true),
     newIndexingTree(facets),
     newTriggerTree(facets)]);
 }
@@ -346,21 +367,6 @@ function newSelectingShowableTree(facets){
   const list=new ShowableList<TextContent>(content,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
-class TestApp extends SurfaceApp{
-  constructor(readonly test:SimpleTest){
-    super(newInstance(true));
-  }
-  getContentTrees():Target|Target[]{
-    return this.test.newTrees(this.facets)
-  }
-  onRetargeted(active){
-    const onRetargeted=this.test.onRetargeted;
-    if(onRetargeted)onRetargeted(this.facets,active)
-  }
-  buildLayout():void{
-    this.test.buildLayout(this.facets)
-  }
-}
 class ContentingTest extends SurfaceApp{
   readonly content=[
     {text: 'Hello world!'},
@@ -451,8 +457,4 @@ class ContentingTest extends SurfaceApp{
       document.getElementById('root'),
     );
   }
-}
-export function doTest(){
-  if(true)new TestApp(SimpleTests.SelectingTyped).buildSurface();
-  else new ContentingTest(newInstance(true)).buildSurface();
 }
