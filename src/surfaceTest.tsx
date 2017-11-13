@@ -99,23 +99,45 @@ class TextContentType{
   }
 }
 class ContentingTest extends SurfaceApp{
+  private readonly fullFrameTargets=false;
   readonly content=[
     {text: 'Hello world!'},
+    {text: 'Hello, good evening and welcome!'},
     {text: 'Hello Dolly!'},
     {text: 'Hello, sailor!'},
-    {text: 'Hello, good evening and welcome!'},
   ];
   readonly indexingTitle=SelectingTitles.CHOOSER;
   readonly list;
-  readonly actions:Target[];
+  readonly frameTargets:Target[];
   constructor(ff:Facets){
     super(ff);
     this.list=new ShowableList<TextContent>(this.content,3,ff,this.indexingTitle);
-    this.actions=true?[]:this.list.newActionTargets();
+    this.frameTargets=this.fullFrameTargets?this.list.newActionTargets():[];
   }
   getContentTrees():Target|Target[]{
+    function getType(indexed:TextContent){
+      return TextContentType.getContentType(indexed);
+    }
+    function newContentTree(content:TextContent):Target {
+      let f=this.facets;
+      let type=getType(content);
+      let tail=type.titleTail();
+      let members=[];
+      members.push(newEditTarget(content,tail));
+      if(type==TextContentType.ShowChars)members.push(newCharsTarget(tail));
+      members.push(f.newTriggerTarget(SelectingTitles.SAVE+tail,{
+        targetStateUpdated:(state,title)=>{
+          active.copyClone(edit);
+          activateChooser();
+        }
+      }));
+      members.push(f.newTriggerTarget(SelectingTitles.CANCEL+tail,{
+        targetStateUpdated:(state,title)=>activateChooser()
+      }));
+      return f.newTargetGroup(type.name,members);
+    }
     let f=this.facets;
-    this.actions.push(
+    this.frameTargets.push(
       f.newTextualTarget(SimpleTitles.INDEX,{
         passText:'For onRetargeted',
       }),
@@ -124,39 +146,38 @@ class ContentingTest extends SurfaceApp{
           f.activateContentTree(SimpleTitles.TEXTUAL_FIRST)
         },
       }));
-    traceThing('getContentTrees',this.actions)
     let trees=[];
     const frame=f.newIndexingFrame({
       frameTitle: SelectingTitles.FRAME,
       indexingTitle: this.indexingTitle,
       getIndexables:()=>this.list.getShowables(),
-      newFrameTargets:()=>this.actions,
+      newFrameTargets:()=>this.frameTargets,
       newUiSelectable: (item:TextContent)=>item.text,
     });
-    trees.push(f.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
-      f.newTextualTarget(SimpleTitles.INDEXED,{
-        getText:(getText)=>{
-          const state=f.getTargetState(this.indexingTitle),
-            contentAt=this.list.contentAt(state as number);
-          return this.content[contentAt].text
-        },
-      }),
-      f.newTriggerTarget(SelectingTitles.SAVE,{
-        targetStateUpdated:()=>{
-          f.activateContentTree(SelectingTitles.FRAME)
-        },
-      }),
-      f.newTriggerTarget(SelectingTitles.CANCEL,{
-        targetStateUpdated:()=>{
-          f.activateContentTree(SelectingTitles.FRAME)
-        },
-      }),
+    trees.push(
+      f.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
+        f.newTextualTarget(SimpleTitles.INDEXED,{
+          getText:(getText)=>{
+            const state=f.getTargetState(this.indexingTitle),
+              contentAt=this.list.contentAt(state as number);
+            return this.content[contentAt].text
+          },
+        }),
+        f.newTriggerTarget(SelectingTitles.SAVE,{
+          targetStateUpdated:()=>{
+            f.activateContentTree(SelectingTitles.FRAME)
+          },
+        }),
+        f.newTriggerTarget(SelectingTitles.CANCEL,{
+          targetStateUpdated:()=>{
+            f.activateContentTree(SelectingTitles.FRAME)
+          },
+        }),
     ]),frame);
     return true?trees:frame;
   }
   onRetargeted(activeTitle:string){
-    this.list.onFacetsRetargeted();
-    traceThing('^onRetargeted',activeTitle);
+    if(this.fullFrameTargets)this.list.onFacetsRetargeted();
     this.facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
   }
   buildLayout(){
@@ -167,7 +188,7 @@ class ContentingTest extends SurfaceApp{
             title={SelectingTitles.CHOOSER}
             facets={f}
             listWidth={200}/>
-          {this.actions.length>2?<PanelRow>
+          {this.fullFrameTargets?<PanelRow>
               <TriggerButton title={SelectingTitles.UP} facets={f}/>
               <TriggerButton title={SelectingTitles.DOWN} facets={f}/>
               <TriggerButton title={SelectingTitles.DELETE} facets={f}/>
@@ -261,6 +282,82 @@ function newAllSimplesTree(facets):Target{
     newIndexingTree(facets),
     newTriggerTree(facets)]);
 }
+function newSelectingTypedTree(facets:Facets){
+  function listAt():number{
+    return facets.getTargetState(frame.indexingTitle) as number;
+  }
+  const list : TextContent[]=[
+    {text: 'Hello world!'},
+    {text: 'Hello Dolly!'},
+    {text: 'Hello, good evening and welcome!'},
+  ];
+  function getType(indexed:TextContent){
+    return TextContentType.getContentType(indexed);
+  }
+  const frame:IndexingFramePolicy={
+    frameTitle: SelectingTitles.FRAME,
+    indexingTitle: SelectingTitles.CHOOSER,
+    getIndexables:()=>list,
+    newUiSelectable:(item:TextContent)=>item.text,
+    newFrameTargets:()=>[
+      facets.newTextualTarget(SimpleTitles.INDEXED,{
+        getText:()=>getType(facets.getIndexingState(
+          SelectingTitles.CHOOSER).indexed).name,
+      }),
+    ]
+    ,
+    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME+getType(indexed).titleTail,
+    newIndexedTree: (indexed:TextContent,title:string) =>{
+      const tail=getType(indexed).titleTail;
+      return facets.newTargetGroup(title,tail===''?[
+        facets.newTextualTarget(SelectingTitles.EDIT, {
+          passText: indexed.text,
+          targetStateUpdated: state => indexed.text = state as string,
+        }),
+      ]:[
+        facets.newTextualTarget(SelectingTitles.EDIT+tail, {
+          passText: indexed.text,
+          targetStateUpdated: state => indexed.text = state as string,
+        }),
+        facets.newTextualTarget(SelectingTitles.CHARS+tail, {
+          getText: () =>''+indexed.text.length,
+        }),
+      ])
+    },
+  };
+  return facets.newIndexingFrame(frame);
+}
+function newSelectingShowableTree(facets){
+  const content=[
+    {text: 'Hello world!'},
+    {text: 'Hello Dolly!'},
+    {text: 'Hello, sailor!'},
+    {text: 'Hello, good evening and welcome!'},
+  ];
+  const frame:IndexingFramePolicy={
+    frameTitle: SelectingTitles.FRAME,
+    indexingTitle: SelectingTitles.CHOOSER,
+    newFrameTargets:()=>list.newActionTargets(),
+    getIndexables:()=>list.getShowables(),
+    newUiSelectable: (item:TextContent)=>item.text,
+    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME,
+    newIndexedTree: (indexed:TextContent,title:string) => {
+      traceThing('^newIndexedTargets',{indexed:indexed});
+      return facets.newTargetGroup(title,[
+        facets.newTextualTarget(SelectingTitles.EDIT, {
+          passText: indexed.text,
+          targetStateUpdated: state => indexed.text = state as string,
+        }),
+        facets.newTextualTarget(SelectingTitles.CHARS, {
+          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
+          ).length,
+        }),
+      ])
+    },
+  };
+  const list=new ShowableList<TextContent>(content,3,facets,frame.indexingTitle);
+  return facets.newIndexingFrame(frame);
+}
 function buildTextual(facets){
   const first=SimpleTitles.TEXTUAL_FIRST,second=SimpleTitles.TEXTUAL_SECOND;
   ReactDOM.render(
@@ -328,51 +425,6 @@ function buildAllSimples(facets){
     document.getElementById('root'),
   );
 }
-function newSelectingTypedTree(facets:Facets){
-  function listAt():number{
-    return facets.getTargetState(frame.indexingTitle) as number;
-  }
-  const list : TextContent[]=[
-    {text: 'Hello world!'},
-    {text: 'Hello Dolly!'},
-    {text: 'Hello, good evening and welcome!'},
-  ];
-  function getType(indexed:TextContent){
-    return TextContentType.getContentType(indexed);
-  }
-  const frame:IndexingFramePolicy={
-    frameTitle: SelectingTitles.FRAME,
-    indexingTitle: SelectingTitles.CHOOSER,
-    getIndexables:()=>list,
-    newUiSelectable:(item:TextContent)=>item.text,
-    newFrameTargets:()=>[
-      facets.newTextualTarget(SimpleTitles.INDEXED,{
-        getText:()=>getType(facets.getIndexingState(
-            SelectingTitles.CHOOSER).indexed).name,
-      }),
-    ]
-    ,
-    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME+getType(indexed).titleTail,
-    newIndexedTree: (indexed:TextContent,title:string) =>{
-      const tail=getType(indexed).titleTail;
-      return facets.newTargetGroup(title,tail===''?[
-        facets.newTextualTarget(SelectingTitles.EDIT, {
-          passText: indexed.text,
-          targetStateUpdated: state => indexed.text = state as string,
-        }),
-      ]:[
-        facets.newTextualTarget(SelectingTitles.EDIT+tail, {
-          passText: indexed.text,
-          targetStateUpdated: state => indexed.text = state as string,
-        }),
-        facets.newTextualTarget(SelectingTitles.CHARS+tail, {
-          getText: () =>''+indexed.text.length,
-        }),
-      ])
-    },
-  };
-  return facets.newIndexingFrame(frame);
-}
 function buildSelectingTyped(facets){
   function newEditField(tail){
     return false?null:<PanelRow>
@@ -428,35 +480,4 @@ function buildSelectingShowable(facets){
     </RowPanel>,
     document.getElementById('root'),
   );
-}
-function newSelectingShowableTree(facets){
-  const content=[
-    {text: 'Hello world!'},
-    {text: 'Hello Dolly!'},
-    {text: 'Hello, sailor!'},
-    {text: 'Hello, good evening and welcome!'},
-  ];
-  const frame:IndexingFramePolicy={
-    frameTitle: SelectingTitles.FRAME,
-    indexingTitle: SelectingTitles.CHOOSER,
-    newFrameTargets:()=>list.newActionTargets(),
-    getIndexables:()=>list.getShowables(),
-    newUiSelectable: (item:TextContent)=>item.text,
-    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME,
-    newIndexedTree: (indexed:TextContent,title:string) => {
-      traceThing('^newIndexedTargets',{indexed:indexed});
-      return facets.newTargetGroup(title,[
-        facets.newTextualTarget(SelectingTitles.EDIT, {
-          passText: indexed.text,
-          targetStateUpdated: state => indexed.text = state as string,
-        }),
-        facets.newTextualTarget(SelectingTitles.CHARS, {
-          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
-          ).length,
-        }),
-      ])
-    },
-  };
-  const list=new ShowableList<TextContent>(content,3,facets,frame.indexingTitle);
-  return facets.newIndexingFrame(frame);
 }
