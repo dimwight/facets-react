@@ -453,6 +453,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function doTest(){
-  if(true)new TestApp(SimpleTests.SelectingShowable).buildSurface();
+  if(true)new TestApp(SimpleTests.SelectingTyped).buildSurface();
   else new ContentingTest(newInstance(true)).buildSurface();
 }
