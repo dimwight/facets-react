@@ -1714,7 +1714,7 @@ class Facets extends Tracer {
         this.indexingFrames = 0;
         this.doTrace = trace;
         let indexing = new SIndexing("RootIndexing", new Facets.Facets$1(this));
-        this.root = new IndexingFrame("RootFrame", indexing);
+        this.root = new Facets.Facets$2(this, "RootFrame", indexing);
         
     }
     /**
@@ -1732,9 +1732,9 @@ class Facets extends Tracer {
         this.trace$java_lang_String("Building surface...");
         let trees = app.getContentTrees();
         if (trees != null && trees instanceof Array && (trees.length == 0 || trees[0] == null || trees[0] != null)) {
-            let array633 = trees;
-            for (let index632 = 0; index632 < array633.length; index632++) {
-                let each = array633[index632];
+            let array721 = trees;
+            for (let index720 = 0; index720 < array721.length; index720++) {
+                let each = array721[index720];
                 this.addContentTree(each);
             }
         }
@@ -1774,8 +1774,8 @@ class Facets extends Tracer {
         let elements = t.titleElements();
         if (false && then == null)
             this.trace$java_lang_String("> Added targeter: title=" + title + (": titleTargeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length));
-        for (let index634 = 0; index634 < elements.length; index634++) {
-            let e = elements[index634];
+        for (let index722 = 0; index722 < elements.length; index722++) {
+            let e = elements[index722];
             this.putTitleTargeters(e);
         }
     }
@@ -1785,7 +1785,7 @@ class Facets extends Tracer {
         (target => (typeof target === 'function') ? target(title) : target.accept(title))(this.onRetargeted);
     }
     newTextualTarget(title, c) {
-        let textual = new STextual(title, new Facets.Facets$2(this, c));
+        let textual = new STextual(title, new Facets.Facets$3(this, c));
         let passText = c.passText;
         if (passText != null)
             textual.setText(passText);
@@ -1796,17 +1796,17 @@ class Facets extends Tracer {
         let passSet = c.passSet;
         if (passSet == null)
             throw Object.defineProperty(new Error("Null passSet for " + title), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
-        let toggling = new SToggling(title, passSet, new Facets.Facets$3(this, c));
+        let toggling = new SToggling(title, passSet, new Facets.Facets$4(this, c));
         this.trace$java_lang_String$java_lang_Object(" > Created toggling ", toggling);
         return toggling;
     }
     newNumericTarget(title, c) {
-        let numeric = new SNumeric(title, c.passValue, new Facets.Facets$4(this, c));
+        let numeric = new SNumeric(title, c.passValue, new Facets.Facets$5(this, c));
         this.trace$java_lang_String$java_lang_Object(" > Created numeric ", numeric);
         return numeric;
     }
     newTriggerTarget(title, c) {
-        let trigger = new STrigger(title, new Facets.Facets$5(this, c));
+        let trigger = new STrigger(title, new Facets.Facets$6(this, c));
         this.trace$java_lang_String$java_lang_Object(" > Created trigger ", trigger);
         return trigger;
     }
@@ -1824,7 +1824,7 @@ class Facets extends Tracer {
         }
     }
     newIndexingTarget(title, c) {
-        let indexing = new SIndexing(title, new Facets.Facets$6(this, c));
+        let indexing = new SIndexing(title, new Facets.Facets$7(this, c));
         let passIndex = c.passIndex;
         if (passIndex == null)
             throw Object.defineProperty(new Error("Null passIndex for " + title), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
@@ -1844,9 +1844,9 @@ class Facets extends Tracer {
         }, '__interfaces', { configurable: true, value: ["fjs.globals.Facets.IndexingState"] });
     }
     newIndexingFrame(p) {
-        let frameTitle = p.chooserTitle != null ? p.chooserTitle : "IndexingFrame" + this.indexingFrames++;
+        let frameTitle = p.frameTitle != null ? p.frameTitle : "IndexingFrame" + this.indexingFrames++;
         let indexingTitle = p.indexingTitle != null ? p.indexingTitle : frameTitle + ".Indexing";
-        let indexing = new SIndexing(indexingTitle, new Facets.Facets$7(this, p));
+        let indexing = new SIndexing(indexingTitle, new Facets.Facets$8(this, p));
         indexing.setIndex(0);
         let frame = new Facets.LocalIndexingFrame(frameTitle, indexing, p);
         this.trace$java_lang_String$java_lang_Object(" > Created indexing frame ", frame);
@@ -1875,7 +1875,7 @@ class Facets extends Tracer {
         let targeter = ((m, k) => m[k] ? m[k] : null)(this.titleTargeters, title);
         if (targeter == null)
             throw Object.defineProperty(new Error("Null targeter for " + title), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.IllegalArgumentException', 'java.lang.Exception'] });
-        let facet = new Facets.Facets$8(this, facetUpdated);
+        let facet = new Facets.Facets$9(this, facetUpdated);
         this.trace$java_lang_String$java_lang_Object(" > Attaching facet " + facet + " to", targeter);
         targeter.attachFacet(facet);
     }
@@ -1920,9 +1920,10 @@ class Facets extends Tracer {
     }
     _newFrameTarget(title, toFrame, editTargets) {
         let asTargets = STarget.newTargets(editTargets);
-        return new Facets.Facets$9(this, title, toFrame, asTargets);
+        return new Facets.Facets$10(this, title, toFrame, asTargets);
     }
 }
+Facets.TITLE_CONTENT_ACTIVE = "[Active Content Tree]";
 Facets["__class"] = "fjs.globals.Facets";
 Facets["__interfaces"] = ["fjs.util.Identified"];
 (function (Facets) {
@@ -1932,6 +1933,10 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             this.p = null;
             this.p = p;
         }
+        /**
+         *
+         * @return {Array}
+         */
         lazyElements() {
             let getter = (this.p.newFrameTargets);
             let got = getter != null ? (target => (typeof target === 'function') ? target() : target.get())(getter) : [];
@@ -2086,7 +2091,48 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
         }
     }
     Facets.Facets$1 = Facets$1;
-    class Facets$2 extends STextual.Coupler {
+    class Facets$2 extends IndexingFrame {
+        constructor(__parent, __arg0, __arg1) {
+            super(__arg0, __arg1);
+            this.__parent = __parent;
+        }
+        /**
+         *
+         * @return {Array}
+         */
+        lazyElements() {
+            return [new STextual(Facets.TITLE_CONTENT_ACTIVE, new Facets$2.Facets$2$0(this))];
+        }
+    }
+    Facets.Facets$2 = Facets$2;
+    Facets$2["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core.Notifying", "fjs.core.Notifiable", "fjs.util.Titled"];
+    (function (Facets$2) {
+        class Facets$2$0 extends STextual.Coupler {
+            constructor(__parent) {
+                super();
+                this.__parent = __parent;
+            }
+            /**
+             *
+             * @param {STextual} t
+             * @return {string}
+             */
+            getText(t) {
+                return this.__parent.__parent.root.indexedTarget().title();
+            }
+            /**
+             *
+             * @param {STextual} t
+             * @param {string} text
+             * @return {boolean}
+             */
+            isValidText(t, text) {
+                return false;
+            }
+        }
+        Facets$2.Facets$2$0 = Facets$2$0;
+    })(Facets$2 = Facets.Facets$2 || (Facets.Facets$2 = {}));
+    class Facets$3 extends STextual.Coupler {
         constructor(__parent, c) {
             super();
             this.c = c;
@@ -2123,8 +2169,8 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             return valid == null ? true : (target => (typeof target === 'function') ? target(t.title(), text) : target.test(t.title(), text))(valid);
         }
     }
-    Facets.Facets$2 = Facets$2;
-    class Facets$3 extends SToggling.Coupler {
+    Facets.Facets$3 = Facets$3;
+    class Facets$4 extends SToggling.Coupler {
         constructor(__parent, c) {
             super();
             this.c = c;
@@ -2138,8 +2184,8 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             this.__parent.updatedTarget(target, this.c);
         }
     }
-    Facets.Facets$3 = Facets$3;
-    class Facets$4 extends SNumeric.Coupler {
+    Facets.Facets$4 = Facets$4;
+    class Facets$5 extends SNumeric.Coupler {
         constructor(__parent, c) {
             super();
             this.c = c;
@@ -2163,8 +2209,8 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             return new NumberPolicy(min, this.c.max);
         }
     }
-    Facets.Facets$4 = Facets$4;
-    class Facets$5 extends STrigger.Coupler {
+    Facets.Facets$5 = Facets$5;
+    class Facets$6 extends STrigger.Coupler {
         constructor(__parent, c) {
             super();
             this.c = c;
@@ -2178,8 +2224,8 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             this.__parent.updatedTarget(t, this.c);
         }
     }
-    Facets.Facets$5 = Facets$5;
-    class Facets$6 extends SIndexing.Coupler {
+    Facets.Facets$6 = Facets$6;
+    class Facets$7 extends SIndexing.Coupler {
         constructor(__parent, c) {
             super();
             this.c = c;
@@ -2212,9 +2258,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array636 = i.indexables();
-                for (let index635 = 0; index635 < array636.length; index635++) {
-                    let each = array636[index635];
+                let array724 = i.indexables();
+                for (let index723 = 0; index723 < array724.length; index723++) {
+                    let each = array724[index723];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }
@@ -2228,8 +2274,8 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             } })([], selectables);
         }
     }
-    Facets.Facets$6 = Facets$6;
-    class Facets$7 extends SIndexing.Coupler {
+    Facets.Facets$7 = Facets$7;
+    class Facets$8 extends SIndexing.Coupler {
         constructor(__parent, p) {
             super();
             this.p = p;
@@ -2264,9 +2310,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array638 = i.indexables();
-                for (let index637 = 0; index637 < array638.length; index637++) {
-                    let each = array638[index637];
+                let array726 = i.indexables();
+                for (let index725 = 0; index725 < array726.length; index725++) {
+                    let each = array726[index725];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }
@@ -2285,8 +2331,8 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             return got;
         }
     }
-    Facets.Facets$7 = Facets$7;
-    class Facets$8 {
+    Facets.Facets$8 = Facets$8;
+    class Facets$9 {
         constructor(__parent, facetUpdated) {
             this.facetUpdated = facetUpdated;
             this.__parent = __parent;
@@ -2310,9 +2356,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             return "#" + this.__parent.id;
         }
     }
-    Facets.Facets$8 = Facets$8;
-    Facets$8["__interfaces"] = ["fjs.core.SRetargetable", "fjs.core.SFacet"];
-    class Facets$9 extends SFrameTarget {
+    Facets.Facets$9 = Facets$9;
+    Facets$9["__interfaces"] = ["fjs.core.SRetargetable", "fjs.core.SFacet"];
+    class Facets$10 extends SFrameTarget {
         constructor(__parent, __arg0, __arg1, asTargets) {
             super(__arg0, __arg1);
             this.asTargets = asTargets;
@@ -2326,8 +2372,8 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             return this.asTargets;
         }
     }
-    Facets.Facets$9 = Facets$9;
-    Facets$9["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core.Notifying", "fjs.core.Notifiable", "fjs.util.Titled"];
+    Facets.Facets$10 = Facets$10;
+    Facets$10["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core.Notifying", "fjs.core.Notifiable", "fjs.util.Titled"];
 })(Facets || (Facets = {}));
 var __Function$1 = Function;
 
