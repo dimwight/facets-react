@@ -21,6 +21,7 @@ export class Facet<I extends TargetValues,K extends TargetValues>
   constructor(props){
     super(props);
     this.unique=props.title+Facet.ids++;
+    traceThing('^Facet',props.title)
     props.facets.attachFacet(props.title,this.facetUpdated);
   }
   facetUpdated=(update)=>{

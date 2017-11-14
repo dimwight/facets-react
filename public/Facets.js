@@ -1703,6 +1703,7 @@ STrigger["__interfaces"] = ["fjs.core.STarget", "fjs.util.Identified", "fjs.core
 class Facets extends Tracer {
     constructor(top, trace) {
         super(top);
+        this.activeContentTitle = "[Active Content Tree]";
         this.times = new Facets.Times(this);
         /*private*/ this.titleTargeters = ({});
         /*private*/ this.titleTrees = ({});
@@ -1732,9 +1733,9 @@ class Facets extends Tracer {
         this.trace$java_lang_String("Building surface...");
         let trees = app.getContentTrees();
         if (trees != null && trees instanceof Array && (trees.length == 0 || trees[0] == null || trees[0] != null)) {
-            let array721 = trees;
-            for (let index720 = 0; index720 < array721.length; index720++) {
-                let each = array721[index720];
+            let array831 = trees;
+            for (let index830 = 0; index830 < array831.length; index830++) {
+                let each = array831[index830];
                 this.addContentTree(each);
             }
         }
@@ -1774,8 +1775,8 @@ class Facets extends Tracer {
         let elements = t.titleElements();
         if (false && then == null)
             this.trace$java_lang_String("> Added targeter: title=" + title + (": titleTargeters=" + (obj => Object.keys(obj).map(key => obj[key]))(this.titleTargeters).length));
-        for (let index722 = 0; index722 < elements.length; index722++) {
-            let e = elements[index722];
+        for (let index832 = 0; index832 < elements.length; index832++) {
+            let e = elements[index832];
             this.putTitleTargeters(e);
         }
     }
@@ -1923,7 +1924,6 @@ class Facets extends Tracer {
         return new Facets.Facets$10(this, title, toFrame, asTargets);
     }
 }
-Facets.TITLE_CONTENT_ACTIVE = "[Active Content Tree]";
 Facets["__class"] = "fjs.globals.Facets";
 Facets["__interfaces"] = ["fjs.util.Identified"];
 (function (Facets) {
@@ -2101,7 +2101,7 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
          * @return {Array}
          */
         lazyElements() {
-            return [new STextual(Facets.TITLE_CONTENT_ACTIVE, new Facets$2.Facets$2$0(this))];
+            return [new STextual(this.__parent.activeContentTitle, new Facets$2.Facets$2$0(this))];
         }
     }
     Facets.Facets$2 = Facets$2;
@@ -2119,15 +2119,6 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
              */
             getText(t) {
                 return this.__parent.__parent.root.indexedTarget().title();
-            }
-            /**
-             *
-             * @param {STextual} t
-             * @param {string} text
-             * @return {boolean}
-             */
-            isValidText(t, text) {
-                return false;
             }
         }
         Facets$2.Facets$2$0 = Facets$2$0;
@@ -2258,9 +2249,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array724 = i.indexables();
-                for (let index723 = 0; index723 < array724.length; index723++) {
-                    let each = array724[index723];
+                let array834 = i.indexables();
+                for (let index833 = 0; index833 < array834.length; index833++) {
+                    let each = array834[index833];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }
@@ -2310,9 +2301,9 @@ Facets["__interfaces"] = ["fjs.util.Identified"];
             let selectables = ([]);
             let at = 0;
             {
-                let array726 = i.indexables();
-                for (let index725 = 0; index725 < array726.length; index725++) {
-                    let each = array726[index725];
+                let array836 = i.indexables();
+                for (let index835 = 0; index835 < array836.length; index835++) {
+                    let each = array836[index835];
                     /* add */ (selectables.push((target => (typeof target === 'function') ? target(each) : target.apply(each))(getter)) > 0);
                 }
             }

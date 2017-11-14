@@ -116,7 +116,7 @@ class ContentingTest extends SurfaceApp{
   readonly indexingTitle=SimpleTitles.INDEXING;
   readonly list;
   constructor(){
-    super(newInstance(true));
+    super(newInstance(false));
     this.list=new ShowableList<TextContent>(selectables,3,this.facets,this.indexingTitle);
   }
   getContentTrees():Target|Target[]{
@@ -156,9 +156,6 @@ class ContentingTest extends SurfaceApp{
     let active:TextContent,edit:TextContent;
     let chooserTargets=this.fullChooserTargets?this.list.newActionTargets():[];
     chooserTargets.push(
-      f.newTextualTarget(SimpleTitles.INDEX,{
-        passText:'For onRetargeted',
-      }),
       f.newTriggerTarget(SelectingTitles.OPEN_EDIT,{
         targetStateUpdated:()=>{
           active=this.facets.getIndexingState(this.indexingTitle)
@@ -183,7 +180,6 @@ class ContentingTest extends SurfaceApp{
   onRetargeted(activeTitle:string){
     if(this.fullChooserTargets)this.list.onFacetsRetargeted();
     traceThing('^onRetargeted',activeTitle);
-    this.facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
   }
   buildLayout(){
     function newEditField(tail){
@@ -199,7 +195,7 @@ class ContentingTest extends SurfaceApp{
     }
     let tail=TextContentType.ShowChars.titleTail;
     let f=this.facets;
-    ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={f}>
+    ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
         <RowPanel title={SelectingTitles.CHOOSER}>
           <IndexingList
             title={SimpleTitles.INDEXING}
