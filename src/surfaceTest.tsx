@@ -109,101 +109,73 @@ class TextContentType{
 }
 class ContentingTest extends SurfaceApp{
   readonly fullChooserTargets=false;
-  readonly contentTrees=true;
   readonly chooserTitle=SelectingTitles.CHOOSER;
   readonly indexingTitle=SimpleTitles.INDEXING;
   readonly list;
-  readonly chooserTargets:Target[];
-  active:TextContent;
-  edit:TextContent;
   constructor(){
     super(newInstance(false));
     this.list=new ShowableList<TextContent>(selectables,3,this.facets,this.indexingTitle);
-    this.chooserTargets=this.fullChooserTargets?this.list.newActionTargets():[];
-  }
-  newContentTree(content:TextContent):Target {
-    function newEditTarget(indexed:TextContent,tail){
-      return f.newTextualTarget(SelectingTitles.EDIT_FIELD+tail,{
-        passText:indexed.text,
-        targetStateUpdated:(state,title)=>indexed.text=state as string,
-      })
-    }
-    function newCharsTarget(tail){
-      return f.newTextualTarget(SelectingTitles.CHARS+tail,{
-        getText:(title)=>''+(f.getTargetState(
-          SelectingTitles.EDIT_FIELD+TextContentType.ShowChars.titleTail)as string).length,
-      })
-    }
-    let f=this.facets;
-    let type=this.getType(content);
-    let tail=type.titleTail;
-    let members=[];
-    members.push(newEditTarget(content,tail));
-    if(type==TextContentType.ShowChars)members.push(newCharsTarget(tail));
-    members.push(f.newTriggerTarget(SelectingTitles.SAVE+tail,{
-      targetStateUpdated:(state,title)=>{
-        // this.active.copyClone(this.edit);
-        this.activateChooser();
-      },
-    }));
-    members.push(f.newTriggerTarget(SelectingTitles.CANCEL+tail,{
-      targetStateUpdated:(state,title)=>this.activateChooser(),
-    }));
-    return f.newTargetGroup(type.name, members);
-  }
-  activateChooser(){
-    this.facets.activateContentTree(this.chooserTitle);
-  }
-  getType(indexed:TextContent){
-    return TextContentType.getContentType(indexed);
   }
   getContentTrees():Target|Target[]{
+    function activateChooser(){
+      f.activateContentTree(SelectingTitles.CHOOSER);
+    }
+    function newContentTree(content:TextContent):Target {
+      function newEditTarget(indexed:TextContent,tail){
+        return f.newTextualTarget(SelectingTitles.EDIT_FIELD+tail,{
+          passText:indexed.text,
+          targetStateUpdated:(state,title)=>indexed.text=state as string,
+        })
+      }
+      function newCharsTarget(tail){
+        return f.newTextualTarget(SelectingTitles.CHARS+tail,{
+          getText:(title)=>''+(f.getTargetState(
+            SelectingTitles.EDIT_FIELD+TextContentType.ShowChars.titleTail)as string).length,
+        })
+      }
+      let type=TextContentType.getContentType(content);
+      let tail=type.titleTail;
+      let members=[];
+      members.push(newEditTarget(content,tail));
+      if(type==TextContentType.ShowChars)members.push(newCharsTarget(tail));
+      members.push(f.newTriggerTarget(SelectingTitles.SAVE+tail,{
+        targetStateUpdated:(state,title)=>{
+          // this.active.copyClone(this.edit);
+          activateChooser();
+        },
+      }));
+      members.push(f.newTriggerTarget(SelectingTitles.CANCEL+tail,{
+        targetStateUpdated:(state,title)=>activateChooser(),
+      }));
+      return f.newTargetGroup(type.name, members);
+    }
     let f=this.facets;
-    this.chooserTargets.push(
+    let active:TextContent,edit:TextContent;
+    let chooserTargets=this.fullChooserTargets?this.list.newActionTargets():[];
+    chooserTargets.push(
       f.newTextualTarget(SimpleTitles.INDEX,{
         passText:'For onRetargeted',
       }),
       f.newTriggerTarget(SelectingTitles.OPEN_EDIT,{
         targetStateUpdated:()=>{
-          this.active=this.facets.getIndexingState(this.indexingTitle)
+          active=this.facets.getIndexingState(this.indexingTitle)
             .indexed;
-          if(this.contentTrees)this.facets.addContentTree(this.newContentTree(
-            this.edit=this.active.clone()));
+          this.facets.addContentTree(newContentTree(
+            edit=active.clone()));
         },
       }));
     let trees=[];
-    const chooser=f.newIndexingFrame({
+    trees.push(
+      newContentTree(selectables[0]),
+      newContentTree(selectables[1]),
+      f.newIndexingFrame({
       frameTitle: this.chooserTitle,
       indexingTitle: this.indexingTitle,
       getIndexables:()=>this.list.getShowables(),
-      newFrameTargets:()=>this.chooserTargets,
+      newFrameTargets:()=>chooserTargets,
       newUiSelectable: (item:TextContent)=>item.text,
-    });
-    if(!this.contentTrees)trees.push(
-      f.newTargetGroup(SimpleTitles.TEXTUAL_FIRST,[
-        f.newTextualTarget(SimpleTitles.INDEXED,{
-          getText:(getText)=>{
-            const state=f.getTargetState(this.indexingTitle),
-              contentAt=this.list.contentAt(state as number);
-            return selectables[contentAt].text
-          },
-        }),
-        f.newTriggerTarget(SelectingTitles.SAVE,{
-          targetStateUpdated:()=>{
-            f.activateContentTree(SelectingTitles.FRAME)
-          },
-        }),
-        f.newTriggerTarget(SelectingTitles.CANCEL,{
-          targetStateUpdated:()=>{
-            f.activateContentTree(SelectingTitles.FRAME)
-          },
-        }),
-      ]),chooser);
-    else trees.push(
-      this.newContentTree(selectables[0]),
-      this.newContentTree(selectables[1]),
-      chooser);
-    return true?trees:chooser;
+    }));
+    return trees;
   }
   onRetargeted(activeTitle:string){
     if(this.fullChooserTargets)this.list.onFacetsRetargeted();
