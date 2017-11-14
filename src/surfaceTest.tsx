@@ -89,6 +89,9 @@ class TextContent {
   clone():TextContent{
     return new TextContent(this.text)
   }
+  copyClone(clone:TextContent){
+    this.text=clone.text
+  }
 }
 const selectables=[
   new TextContent('Hello world!'),
@@ -113,7 +116,7 @@ class ContentingTest extends SurfaceApp{
   readonly indexingTitle=SimpleTitles.INDEXING;
   readonly list;
   constructor(){
-    super(newInstance(false));
+    super(newInstance(true));
     this.list=new ShowableList<TextContent>(selectables,3,this.facets,this.indexingTitle);
   }
   getContentTrees():Target|Target[]{
@@ -140,7 +143,7 @@ class ContentingTest extends SurfaceApp{
       if(type==TextContentType.ShowChars)members.push(newCharsTarget(tail));
       members.push(f.newTriggerTarget(SelectingTitles.SAVE+tail,{
         targetStateUpdated:(state,title)=>{
-          // this.active.copyClone(this.edit);
+          active.copyClone(edit);
           activateChooser();
         },
       }));
