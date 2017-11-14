@@ -27,7 +27,7 @@ import {traceThing}from './util/export';
 import {SurfaceApp} from './facets/Surface';
 export namespace SimpleTitles{
   export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
-    INDEXING=TEXTUAL_FIRST+' or '+TEXTUAL_SECOND,
+    INDEXING='Choose Item',
     INDEX='Index',INDEXED='Indexed',INDEX_START=0,
     INDEXABLES=[TEXTUAL_FIRST,TEXTUAL_SECOND],
     TOGGLING='Click to toggle',TOGGLED='TogglingLive state',
@@ -57,7 +57,7 @@ const SimpleTests={
     (facets,activeTitle)=>{
       traceThing('^onRetargeted',{activeTitle:activeTitle});
       const live=facets.getTargetState(SelectingTitles.LIVE) as boolean;
-      if(false)[SelectingTitles.EDIT,SelectingTitles.CHARS].forEach(title=>
+      if(false)[SelectingTitles.OPEN_EDIT,SelectingTitles.CHARS].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
           facets.setTargetLive(title+tail,live),
         ),
@@ -67,7 +67,7 @@ const SimpleTests={
 };
 export function doTest(){
   if(false)new TestApp(SimpleTests.SelectingTyped).buildSurface();
-  else new ContentingTest(newInstance(true)).buildSurface();
+  else new ContentingTest().buildSurface();
 }
 class TestApp extends SurfaceApp{
   constructor(readonly test:SimpleTest){
@@ -116,18 +116,30 @@ class ContentingTest extends SurfaceApp{
   readonly chooserTargets:Target[];
   active:TextContent;
   edit:TextContent;
-  constructor(ff:Facets){
-    super(ff);
-    this.list=new ShowableList<TextContent>(selectables,3,ff,this.indexingTitle);
+  constructor(){
+    super(newInstance(false));
+    this.list=new ShowableList<TextContent>(selectables,3,this.facets,this.indexingTitle);
     this.chooserTargets=this.fullChooserTargets?this.list.newActionTargets():[];
   }
   newContentTree(content:TextContent):Target {
+    function newEditTarget(indexed:TextContent,tail){
+      return f.newTextualTarget(SelectingTitles.EDIT_FIELD+tail,{
+        passText:indexed.text,
+        targetStateUpdated:(state,title)=>indexed.text=state as string,
+      })
+    }
+    function newCharsTarget(tail){
+      return f.newTextualTarget(SelectingTitles.CHARS+tail,{
+        getText:(title)=>''+(f.getTargetState(
+          SelectingTitles.EDIT_FIELD+TextContentType.ShowChars.titleTail)as string).length,
+      })
+    }
     let f=this.facets;
     let type=this.getType(content);
-    let tail=type.titleTail();
+    let tail=type.titleTail;
     let members=[];
-    members.push(this.newEditTarget(content,tail));
-    if(type==TextContentType.ShowChars)members.push(this.newCharsTarget(tail));
+    members.push(newEditTarget(content,tail));
+    if(type==TextContentType.ShowChars)members.push(newCharsTarget(tail));
     members.push(f.newTriggerTarget(SelectingTitles.SAVE+tail,{
       targetStateUpdated:(state,title)=>{
         // this.active.copyClone(this.edit);
@@ -142,18 +154,6 @@ class ContentingTest extends SurfaceApp{
   activateChooser(){
     this.facets.activateContentTree(this.chooserTitle);
   }
-  newEditTarget(indexed:TextContent,tail){
-    return this.facets.newTextualTarget(SelectingTitles.EDIT+tail,{
-      passText:indexed.text,
-      targetStateUpdated:(state,title)=>indexed.text=state as string,
-    })
-  }
-  newCharsTarget(tail){
-    return this.facets.newTextualTarget(SelectingTitles.CHARS+tail,{
-      getText:(title)=>''+(this.facets.getTargetState(
-        SelectingTitles.EDIT+TextContentType.ShowChars.titleTail)as string).length,
-    })
-  }
   getType(indexed:TextContent){
     return TextContentType.getContentType(indexed);
   }
@@ -163,7 +163,7 @@ class ContentingTest extends SurfaceApp{
       f.newTextualTarget(SimpleTitles.INDEX,{
         passText:'For onRetargeted',
       }),
-      f.newTriggerTarget(SelectingTitles.EDIT,{
+      f.newTriggerTarget(SelectingTitles.OPEN_EDIT,{
         targetStateUpdated:()=>{
           this.active=this.facets.getIndexingState(this.indexingTitle)
             .indexed;
@@ -212,18 +212,18 @@ class ContentingTest extends SurfaceApp{
   }
   buildLayout(){
     function newEditField(tail){
-      return false?null:<PanelRow>
-        <TextualField title={SelectingTitles.EDIT+tail} facets={f} cols={30}/>
-      </PanelRow>;
+      return (<PanelRow>
+        <TextualField title={SelectingTitles.EDIT_FIELD+tail} facets={f} cols={30}/>
+      </PanelRow>)
     }
-    let tail=TextContentType.ShowChars.titleTail;
-    let f=this.facets;
     function newSaveCancelRow(){
       return (<PanelRow>
         <TriggerButton title={SelectingTitles.SAVE} facets={f}/>
         <TriggerButton title={SelectingTitles.CANCEL} facets={f}/>
       </PanelRow>)
     }
+    let tail=TextContentType.ShowChars.titleTail;
+    let f=this.facets;
     ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={f}>
         <RowPanel title={SelectingTitles.CHOOSER}>
           <IndexingList
@@ -235,10 +235,10 @@ class ContentingTest extends SurfaceApp{
               <TriggerButton title={SelectingTitles.DOWN} facets={f}/>
               <TriggerButton title={SelectingTitles.DELETE} facets={f}/>
               <TriggerButton title={SelectingTitles.NEW} facets={f}/>
-              <TriggerButton title={SelectingTitles.EDIT} facets={f}/>
+              <TriggerButton title={SelectingTitles.OPEN_EDIT} facets={f}/>
             </PanelRow>
             :<PanelRow>
-              <TriggerButton title={SelectingTitles.EDIT} facets={f}/>
+              <TriggerButton title={SelectingTitles.OPEN_EDIT} facets={f}/>
             </PanelRow>
           }
         </RowPanel>
@@ -253,7 +253,6 @@ class ContentingTest extends SurfaceApp{
         </PanelRow>
           {newSaveCancelRow()}
         </RowPanel>
-      }
       </ShowPanel>,
       document.getElementById('root'),
     );
@@ -262,7 +261,7 @@ class ContentingTest extends SurfaceApp{
 function buildSelectingTyped(facets){
   function newEditField(tail){
     return false?null:<PanelRow>
-      <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
+      <TextualField title={SelectingTitles.OPEN_EDIT+tail} facets={facets} cols={30}/>
     </PanelRow>;
   }
   let tail=TextContentType.ShowChars.titleTail;
@@ -384,12 +383,12 @@ function newSelectingTypedTree(facets:Facets){
     newIndexedTree: (indexed:TextContent,title:string) =>{
       const tail=getType(indexed).titleTail;
       return facets.newTargetGroup(title,tail===''?[
-        facets.newTextualTarget(SelectingTitles.EDIT, {
+        facets.newTextualTarget(SelectingTitles.OPEN_EDIT, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
       ]:[
-        facets.newTextualTarget(SelectingTitles.EDIT+tail, {
+        facets.newTextualTarget(SelectingTitles.OPEN_EDIT+tail, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
@@ -412,12 +411,12 @@ function newSelectingShowableTree(facets){
     newIndexedTree: (indexed:TextContent,title:string) => {
       traceThing('^newIndexedTargets',{indexed:indexed});
       return facets.newTargetGroup(title,[
-        facets.newTextualTarget(SelectingTitles.EDIT, {
+        facets.newTextualTarget(SelectingTitles.OPEN_EDIT, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
         facets.newTextualTarget(SelectingTitles.CHARS, {
-          getText: () => ''+(facets.getTargetState(SelectingTitles.EDIT)as string
+          getText: () => ''+(facets.getTargetState(SelectingTitles.OPEN_EDIT)as string
           ).length,
         }),
       ])
@@ -508,7 +507,7 @@ function buildSelectingShowable(facets){
         <TriggerButton title={SelectingTitles.NEW} facets={facets}/>
       </PanelRow>
       <PanelRow>
-        <TextualField title={SelectingTitles.EDIT} facets={facets} cols={30}/>
+        <TextualField title={SelectingTitles.OPEN_EDIT} facets={facets} cols={30}/>
       </PanelRow>
     </RowPanel>
     </RowPanel>,

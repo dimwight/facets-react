@@ -13,7 +13,8 @@ export namespace SelectingTitles {
     UP='Move Up',
     DOWN='Move Down',
     DELETE='Delete',
-    EDIT='Edit',
+    OPEN_EDIT='Edit',
+    EDIT_FIELD='Edit Text',
     SAVE='Save',
     CANCEL='Cancel',
     CHARS='Characters';
