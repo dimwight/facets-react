@@ -66,7 +66,7 @@ const SimpleTests={
   SelectingShowable:new SimpleTest('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
 };
 export function doTest(){
-  if(true)new TestApp(SimpleTests.SelectingTyped).buildSurface();
+  if(false)new TestApp(SimpleTests.SelectingTyped).buildSurface();
   else new ContentingTest(newInstance(true)).buildSurface();
 }
 class TestApp extends SurfaceApp{
@@ -211,7 +211,19 @@ class ContentingTest extends SurfaceApp{
     this.facets.updateTargetState(SimpleTitles.INDEX,activeTitle);
   }
   buildLayout(){
+    function newEditField(tail){
+      return false?null:<PanelRow>
+        <TextualField title={SelectingTitles.EDIT+tail} facets={f} cols={30}/>
+      </PanelRow>;
+    }
+    let tail=TextContentType.ShowChars.titleTail;
     let f=this.facets;
+    function newSaveCancelRow(){
+      return (<PanelRow>
+        <TriggerButton title={SelectingTitles.SAVE} facets={f}/>
+        <TriggerButton title={SelectingTitles.CANCEL} facets={f}/>
+      </PanelRow>)
+    }
     ReactDOM.render(<ShowPanel title={SimpleTitles.INDEX} facets={f}>
         <RowPanel title={SelectingTitles.CHOOSER}>
           <IndexingList
@@ -230,18 +242,54 @@ class ContentingTest extends SurfaceApp{
             </PanelRow>
           }
         </RowPanel>
-      {!this.contentTrees?<RowPanel title={SimpleTitles.TEXTUAL_FIRST}>
-          <TextualLabel title={SimpleTitles.INDEXED} facets={f}/>
-          <PanelRow>
-            <TriggerButton title={SelectingTitles.SAVE} facets={f}/>
-            <TriggerButton title={SelectingTitles.CANCEL} facets={f}/>
-          </PanelRow>
+        <RowPanel title={TextContentType.Standard.name}>
+          {newEditField('')}
+          {newSaveCancelRow()}
         </RowPanel>
-      :null}
+        <RowPanel title={TextContentType.ShowChars.name}>
+          {newEditField(tail)}
+        <PanelRow>
+        <TextualLabel title={SelectingTitles.CHARS+tail} facets={f}/>
+        </PanelRow>
+          {newSaveCancelRow()}
+        </RowPanel>
+      }
       </ShowPanel>,
       document.getElementById('root'),
     );
   }
+}
+function buildSelectingTyped(facets){
+  function newEditField(tail){
+    return false?null:<PanelRow>
+      <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
+    </PanelRow>;
+  }
+  let tail=TextContentType.ShowChars.titleTail;
+  let liveCheckbox=true?null:<PanelRow>
+    <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
+  </PanelRow>;
+  ReactDOM.render(<RowPanel title={SimpleTests.SelectingTyped.name} withRubric={true}>
+      {false?<IndexingDropdown title={SelectingTitles.CHOOSER} facets={facets}/>
+        :<IndexingList title={SelectingTitles.CHOOSER} facets={facets}/>}
+      {true?null:<PanelRow>
+        <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
+      </PanelRow>}
+      <ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
+        <RowPanel title={TextContentType.Standard.name}>
+          {newEditField('')}
+        </RowPanel>
+        <RowPanel title={TextContentType.ShowChars.name}>
+          {newEditField(tail)}
+          <PanelRow>
+            <TextualLabel title={SelectingTitles.CHARS+tail} facets={facets}/>
+          </PanelRow>
+        </RowPanel>
+      </ShowPanel>
+
+    </RowPanel>,
+    document.getElementById('root'),
+  );
 }
 function newTextualTree(facets){
   const first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
@@ -442,40 +490,6 @@ function buildAllSimples(facets){
         <TextualLabel title={SimpleTitles.TRIGGEREDS} facets={facets}/>
       </RowPanel>
     </div>,
-    document.getElementById('root'),
-  );
-}
-function buildSelectingTyped(facets){
-  function newEditField(tail){
-    return false?null:<PanelRow>
-      <TextualField title={SelectingTitles.EDIT+tail} facets={facets} cols={30}/>
-    </PanelRow>;
-  }
-  let tail=TextContentType.ShowChars.titleTail;
-  let liveCheckbox=true?null:<PanelRow>
-    <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
-  </PanelRow>;
-  ReactDOM.render(<RowPanel title={SimpleTests.SelectingTyped.name} withRubric={true}>
-      {false?<IndexingDropdown title={SelectingTitles.CHOOSER} facets={facets}/>
-        :<IndexingList title={SelectingTitles.CHOOSER} facets={facets}/>}
-      {true?null:<PanelRow>
-        <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
-      </PanelRow>}
-      <ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
-        <RowPanel title={TextContentType.Standard.name}>
-          {newEditField('')}
-          {liveCheckbox}
-        </RowPanel>
-        <RowPanel title={TextContentType.ShowChars.name}>
-          {newEditField(tail)}
-          <PanelRow>
-            <TextualLabel title={SelectingTitles.CHARS+tail} facets={facets}/>
-          </PanelRow>
-          {liveCheckbox}
-        </RowPanel>
-      </ShowPanel>
-
-    </RowPanel>,
     document.getElementById('root'),
   );
 }
