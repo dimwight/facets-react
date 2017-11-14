@@ -1844,7 +1844,7 @@ class Facets extends Tracer {
         }, '__interfaces', { configurable: true, value: ["fjs.globals.Facets.IndexingState"] });
     }
     newIndexingFrame(p) {
-        let frameTitle = p.frameTitle != null ? p.frameTitle : "IndexingFrame" + this.indexingFrames++;
+        let frameTitle = p.chooserTitle != null ? p.chooserTitle : "IndexingFrame" + this.indexingFrames++;
         let indexingTitle = p.indexingTitle != null ? p.indexingTitle : frameTitle + ".Indexing";
         let indexing = new SIndexing(indexingTitle, new Facets.Facets$7(this, p));
         indexing.setIndex(0);
