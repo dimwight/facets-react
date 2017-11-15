@@ -26,14 +26,14 @@ ShowableList,
 import {traceThing}from './util/export';
 import {SurfaceApp} from './facets/Surface';
 export namespace SimpleTitles{
-  export const TEXTUAL_FIRST='First',TEXTUAL_SECOND='Second',
-    INDEXING='Choose Item',
-    INDEX='Index',INDEXED='Indexed',INDEX_START=0,
-    INDEXABLES=[TEXTUAL_FIRST,TEXTUAL_SECOND],
-    TOGGLING='Click to toggle',TOGGLED='TogglingLive state',
-    TRIGGER='Click Me!',TRIGGEREDS='Button presses',
-    TOGGLE_START=false,
-    NUMERIC_FIELD='Number',NUMERIC_LABEL='Value',NUMERIC_START=123;
+  export const FirstTextual='First',SecondTextual='Second',
+    Indexing='Choose Item',
+    Index='Index',Indexed='Indexed',IndexStart=0,
+    TextualIndexables=[FirstTextual,SecondTextual],
+    Toggling='Click to toggle',Toggled='TogglingLive state',
+    Trigger='Click Me!',Triggereds='Button presses',
+    ToggleStart=false,
+    NumericField='Number',NumericLabel='Value',NumericStart=123;
 }
 class SimpleTest{
   constructor(
@@ -47,8 +47,8 @@ const SimpleTests={
   Textual:new SimpleTest('Textual',newTextualTree,buildTextual),
   TogglingLive:new SimpleTest('TogglingLive',newTogglingTree,buildToggling,
     (facets:Facets)=>{
-      facets.setTargetLive(SimpleTitles.TOGGLED,
-        facets.getTargetState(SimpleTitles.TOGGLING)as boolean);
+      facets.setTargetLive(SimpleTitles.Toggled,
+        facets.getTargetState(SimpleTitles.Toggling)as boolean);
     }),
   Indexing:new SimpleTest('Indexing',newIndexingTree,buildIndexing),
   Trigger:new SimpleTest('Trigger',newTriggerTree,buildTrigger),
@@ -56,8 +56,8 @@ const SimpleTests={
   SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
     (facets,activeTitle)=>{
       traceThing('^onRetargeted',{activeTitle:activeTitle});
-      const live=facets.getTargetState(SelectingTitles.LIVE) as boolean;
-      if(false)[SelectingTitles.OPEN_EDIT,SelectingTitles.CHARS].forEach(title=>
+      const live=facets.getTargetState(SelectingTitles.Live) as boolean;
+      if(false)[SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
           facets.setTargetLive(title+tail,live),
         ),
@@ -112,8 +112,8 @@ class TextContentType{
 }
 class ContentingTest extends SurfaceApp{
   readonly fullChooserTargets=false;
-  readonly chooserTitle=SelectingTitles.CHOOSER;
-  readonly indexingTitle=SimpleTitles.INDEXING;
+  readonly chooserTitle=SelectingTitles.Chooser;
+  readonly indexingTitle=SimpleTitles.Indexing;
   readonly list;
   constructor(){
     super(newInstance(false));
@@ -121,19 +121,19 @@ class ContentingTest extends SurfaceApp{
   }
   getContentTrees():Target|Target[]{
     function activateChooser(){
-      f.activateContentTree(SelectingTitles.CHOOSER);
+      f.activateContentTree(SelectingTitles.Chooser);
     }
     function newContentTree(content:TextContent):Target {
       function newEditTarget(indexed:TextContent,tail){
-        return f.newTextualTarget(SelectingTitles.EDIT_FIELD+tail,{
+        return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
           passText:indexed.text,
           targetStateUpdated:(state,title)=>indexed.text=state as string,
         })
       }
       function newCharsTarget(tail){
-        return f.newTextualTarget(SelectingTitles.CHARS+tail,{
+        return f.newTextualTarget(SelectingTitles.CharsCount+tail,{
           getText:(title)=>''+(f.getTargetState(
-            SelectingTitles.EDIT_FIELD+TextContentType.ShowChars.titleTail)as string).length,
+            SelectingTitles.TextEditField+TextContentType.ShowChars.titleTail)as string).length,
         })
       }
       let type=TextContentType.getContentType(content);
@@ -141,13 +141,13 @@ class ContentingTest extends SurfaceApp{
       let members=[];
       members.push(newEditTarget(content,tail));
       if(type==TextContentType.ShowChars)members.push(newCharsTarget(tail));
-      members.push(f.newTriggerTarget(SelectingTitles.SAVE+tail,{
+      members.push(f.newTriggerTarget(SelectingTitles.SaveEditButton+tail,{
         targetStateUpdated:(state,title)=>{
           active.copyClone(edit);
           activateChooser();
         },
       }));
-      members.push(f.newTriggerTarget(SelectingTitles.CANCEL+tail,{
+      members.push(f.newTriggerTarget(SelectingTitles.CancelEditButton+tail,{
         targetStateUpdated:(state,title)=>activateChooser(),
       }));
       return f.newTargetGroup(type.name, members);
@@ -156,7 +156,7 @@ class ContentingTest extends SurfaceApp{
     let active:TextContent,edit:TextContent;
     let chooserTargets=this.fullChooserTargets?this.list.newActionTargets():[];
     chooserTargets.push(
-      f.newTriggerTarget(SelectingTitles.OPEN_EDIT,{
+      f.newTriggerTarget(SelectingTitles.OpenEditButton,{
         targetStateUpdated:()=>{
           active=this.facets.getIndexingState(this.indexingTitle)
             .indexed;
@@ -184,32 +184,32 @@ class ContentingTest extends SurfaceApp{
   buildLayout(){
     function newEditField(tail){
       return (<PanelRow>
-        <TextualField title={SelectingTitles.EDIT_FIELD+tail} facets={f} cols={30}/>
+        <TextualField title={SelectingTitles.TextEditField+tail} facets={f} cols={30}/>
       </PanelRow>)
     }
     function newSaveCancelRow(){
       return (<PanelRow>
-        <TriggerButton title={SelectingTitles.SAVE} facets={f}/>
-        <TriggerButton title={SelectingTitles.CANCEL} facets={f}/>
+        <TriggerButton title={SelectingTitles.SaveEditButton} facets={f}/>
+        <TriggerButton title={SelectingTitles.CancelEditButton} facets={f}/>
       </PanelRow>)
     }
     let tail=TextContentType.ShowChars.titleTail;
     let f=this.facets;
     ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
-        <RowPanel title={SelectingTitles.CHOOSER}>
+        <RowPanel title={SelectingTitles.Chooser}>
           <IndexingList
-            title={SimpleTitles.INDEXING}
+            title={SimpleTitles.Indexing}
             facets={f}
             listWidth={200}/>
           {this.fullChooserTargets?<PanelRow>
-              <TriggerButton title={SelectingTitles.UP} facets={f}/>
-              <TriggerButton title={SelectingTitles.DOWN} facets={f}/>
-              <TriggerButton title={SelectingTitles.DELETE} facets={f}/>
-              <TriggerButton title={SelectingTitles.NEW} facets={f}/>
-              <TriggerButton title={SelectingTitles.OPEN_EDIT} facets={f}/>
+              <TriggerButton title={SelectingTitles.UpButton} facets={f}/>
+              <TriggerButton title={SelectingTitles.DownButton} facets={f}/>
+              <TriggerButton title={SelectingTitles.DeleteButton} facets={f}/>
+              <TriggerButton title={SelectingTitles.NewButton} facets={f}/>
+              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
             </PanelRow>
             :<PanelRow>
-              <TriggerButton title={SelectingTitles.OPEN_EDIT} facets={f}/>
+              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
             </PanelRow>
           }
         </RowPanel>
@@ -220,7 +220,7 @@ class ContentingTest extends SurfaceApp{
         <RowPanel title={TextContentType.ShowChars.name}>
           {newEditField(tail)}
         <PanelRow>
-        <TextualLabel title={SelectingTitles.CHARS+tail} facets={f}/>
+        <TextualLabel title={SelectingTitles.CharsCount+tail} facets={f}/>
         </PanelRow>
           {newSaveCancelRow()}
         </RowPanel>
@@ -232,27 +232,27 @@ class ContentingTest extends SurfaceApp{
 function buildSelectingTyped(facets){
   function newEditField(tail){
     return false?null:<PanelRow>
-      <TextualField title={SelectingTitles.OPEN_EDIT+tail} facets={facets} cols={30}/>
+      <TextualField title={SelectingTitles.OpenEditButton+tail} facets={facets} cols={30}/>
     </PanelRow>;
   }
   let tail=TextContentType.ShowChars.titleTail;
   let liveCheckbox=true?null:<PanelRow>
-    <TogglingCheckbox title={SelectingTitles.LIVE} facets={facets}/>
+    <TogglingCheckbox title={SelectingTitles.Live} facets={facets}/>
   </PanelRow>;
   ReactDOM.render(<RowPanel title={SimpleTests.SelectingTyped.name} withRubric={true}>
-      {false?<IndexingDropdown title={SelectingTitles.CHOOSER} facets={facets}/>
-        :<IndexingList title={SelectingTitles.CHOOSER} facets={facets}/>}
+      {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>
+        :<IndexingList title={SelectingTitles.Chooser} facets={facets}/>}
       {true?null:<PanelRow>
-        <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
       </PanelRow>}
-      <ShowPanel title={SimpleTitles.INDEXED} facets={facets}>
+      <ShowPanel title={SimpleTitles.Indexed} facets={facets}>
         <RowPanel title={TextContentType.Standard.name}>
           {newEditField('')}
         </RowPanel>
         <RowPanel title={TextContentType.ShowChars.name}>
           {newEditField(tail)}
           <PanelRow>
-            <TextualLabel title={SelectingTitles.CHARS+tail} facets={facets}/>
+            <TextualLabel title={SelectingTitles.CharsCount+tail} facets={facets}/>
           </PanelRow>
         </RowPanel>
       </ShowPanel>
@@ -262,65 +262,65 @@ function buildSelectingTyped(facets){
   );
 }
 function newTextualTree(facets){
-  const first=facets.newTextualTarget(SimpleTitles.TEXTUAL_FIRST,{
-      passText:'Some text for '+SimpleTitles.TEXTUAL_FIRST,
+  const first=facets.newTextualTarget(SimpleTitles.FirstTextual,{
+      passText:'Some text for '+SimpleTitles.FirstTextual,
       targetStateUpdated:state=>{
-        facets.updateTargetState(SimpleTitles.TEXTUAL_SECOND,
-          SimpleTitles.TEXTUAL_FIRST+' has changed to: '+state);
+        facets.updateTargetState(SimpleTitles.SecondTextual,
+          SimpleTitles.FirstTextual+' has changed to: '+state);
       },
     }),
-    second=facets.newTextualTarget(SimpleTitles.TEXTUAL_SECOND,{
-      passText:'Some text for '+SimpleTitles.TEXTUAL_SECOND,
+    second=facets.newTextualTarget(SimpleTitles.SecondTextual,{
+      passText:'Some text for '+SimpleTitles.SecondTextual,
     });
   return facets.newTargetGroup('TextualTest',[first,second]);
 }
 function setSimplesLive(facets,state){
-  [SimpleTitles.TEXTUAL_FIRST,SimpleTitles.TEXTUAL_SECOND,
-    SimpleTitles.INDEXED,SimpleTitles.INDEXING,SimpleTitles.INDEX,
-    SimpleTitles.TRIGGER,SimpleTitles.TRIGGEREDS,
+  [SimpleTitles.FirstTextual,SimpleTitles.SecondTextual,
+    SimpleTitles.Indexed,SimpleTitles.Indexing,SimpleTitles.Index,
+    SimpleTitles.Trigger,SimpleTitles.Triggereds,
   ].forEach(title=>{
     facets.setTargetLive(title,state);
   })
 }
 function newTogglingTree(facets,setLive){
-  const toggling=facets.newTogglingTarget(SimpleTitles.TOGGLING,{
-    passSet:SimpleTitles.TOGGLE_START,
+  const toggling=facets.newTogglingTarget(SimpleTitles.Toggling,{
+    passSet:SimpleTitles.ToggleStart,
     targetStateUpdated:state=>{
       if(setLive)setSimplesLive(facets,state)
     },
   }),
-  toggled=facets.newTextualTarget(SimpleTitles.TOGGLED,{
-      getText:()=>facets.getTargetState(SimpleTitles.TOGGLING)as boolean?'Set':'Not set',
+  toggled=facets.newTextualTarget(SimpleTitles.Toggled,{
+      getText:()=>facets.getTargetState(SimpleTitles.Toggling)as boolean?'Set':'Not set',
     });
   return facets.newTargetGroup('TogglingTest',[toggling,toggled]);
 }
 function newTriggerTree(facets){
   let triggers:number=0;
-  const trigger=facets.newTriggerTarget(SimpleTitles.TRIGGER,{
+  const trigger=facets.newTriggerTarget(SimpleTitles.Trigger,{
       targetStateUpdated:(state,title)=>{
         if(++triggers>4)facets.setTargetLive(title,false);
       },
     }),
-    triggered=facets.newTextualTarget(SimpleTitles.TRIGGEREDS,{
+    triggered=facets.newTextualTarget(SimpleTitles.Triggereds,{
       getText:()=>{
         const count=triggers.toString();
-        return !facets.isTargetLive(SimpleTitles.TRIGGER)?
+        return !facets.isTargetLive(SimpleTitles.Trigger)?
           `No more than ${count}!`:count
       },
     });
   return facets.newTargetGroup('TriggerTest',[trigger,triggered]);
 }
 function newIndexingTree(facets){
-  const indexing=facets.newIndexingTarget(SimpleTitles.INDEXING,{
+  const indexing=facets.newIndexingTarget(SimpleTitles.Indexing,{
       passIndex:0,
-      getUiSelectables:(title)=> SimpleTitles.INDEXABLES,
-      getIndexables: (title)=> SimpleTitles.INDEXABLES,
+      getUiSelectables:(title)=> SimpleTitles.TextualIndexables,
+      getIndexables: (title)=> SimpleTitles.TextualIndexables,
     }),
-    index=facets.newTextualTarget(SimpleTitles.INDEX,{
-      getText:()=>''+facets.getTargetState(SimpleTitles.INDEXING),
+    index=facets.newTextualTarget(SimpleTitles.Index,{
+      getText:()=>''+facets.getTargetState(SimpleTitles.Indexing),
     }),
-    indexed=facets.newTextualTarget(SimpleTitles.INDEXED,{
-      getText:()=>SimpleTitles.INDEXABLES[facets.getTargetState(SimpleTitles.INDEXING)as number],
+    indexed=facets.newTextualTarget(SimpleTitles.Indexed,{
+      getText:()=>SimpleTitles.TextualIndexables[facets.getTargetState(SimpleTitles.Indexing)as number],
     });
   return facets.newTargetGroup('IndexingTest',[indexing,index,indexed]);
 }
@@ -339,31 +339,31 @@ function newSelectingTypedTree(facets:Facets){
     return TextContentType.getContentType(indexed);
   }
   const frame:IndexingFramePolicy={
-    frameTitle: SelectingTitles.FRAME,
-    indexingTitle: SelectingTitles.CHOOSER,
+    frameTitle: SelectingTitles.Frame,
+    indexingTitle: SelectingTitles.Chooser,
     getIndexables:()=>selectables,
     newUiSelectable:(item:TextContent)=>item.text,
     newFrameTargets:()=>[
-      facets.newTextualTarget(SimpleTitles.INDEXED,{
+      facets.newTextualTarget(SimpleTitles.Indexed,{
         getText:()=>getType(facets.getIndexingState(
-          SelectingTitles.CHOOSER).indexed).name,
+          SelectingTitles.Chooser).indexed).name,
       }),
     ]
     ,
-    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME+getType(indexed).titleTail,
+    newIndexedTreeTitle:indexed=>SelectingTitles.Frame+getType(indexed).titleTail,
     newIndexedTree: (indexed:TextContent,title:string) =>{
       const tail=getType(indexed).titleTail;
       return facets.newTargetGroup(title,tail===''?[
-        facets.newTextualTarget(SelectingTitles.OPEN_EDIT, {
+        facets.newTextualTarget(SelectingTitles.OpenEditButton, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
       ]:[
-        facets.newTextualTarget(SelectingTitles.OPEN_EDIT+tail, {
+        facets.newTextualTarget(SelectingTitles.OpenEditButton+tail, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
-        facets.newTextualTarget(SelectingTitles.CHARS+tail, {
+        facets.newTextualTarget(SelectingTitles.CharsCount+tail, {
           getText: () =>''+indexed.text.length,
         }),
       ])
@@ -373,21 +373,21 @@ function newSelectingTypedTree(facets:Facets){
 }
 function newSelectingShowableTree(facets){
   const frame:IndexingFramePolicy={
-    frameTitle: SelectingTitles.FRAME,
-    indexingTitle: SelectingTitles.CHOOSER,
+    frameTitle: SelectingTitles.Frame,
+    indexingTitle: SelectingTitles.Chooser,
     newFrameTargets:()=>list.newActionTargets(),
     getIndexables:()=>list.getShowables(),
     newUiSelectable: (item:TextContent)=>item.text,
-    newIndexedTreeTitle:indexed=>SelectingTitles.FRAME,
+    newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
     newIndexedTree: (indexed:TextContent,title:string) => {
       traceThing('^newIndexedTargets',{indexed:indexed});
       return facets.newTargetGroup(title,[
-        facets.newTextualTarget(SelectingTitles.OPEN_EDIT, {
+        facets.newTextualTarget(SelectingTitles.OpenEditButton, {
           passText: indexed.text,
           targetStateUpdated: state => indexed.text = state as string,
         }),
-        facets.newTextualTarget(SelectingTitles.CHARS, {
-          getText: () => ''+(facets.getTargetState(SelectingTitles.OPEN_EDIT)as string
+        facets.newTextualTarget(SelectingTitles.CharsCount, {
+          getText: () => ''+(facets.getTargetState(SelectingTitles.OpenEditButton)as string
           ).length,
         }),
       ])
@@ -397,7 +397,7 @@ function newSelectingShowableTree(facets){
   return facets.newIndexingFrame(frame);
 }
 function buildTextual(facets){
-  const first=SimpleTitles.TEXTUAL_FIRST,second=SimpleTitles.TEXTUAL_SECOND;
+  const first=SimpleTitles.FirstTextual,second=SimpleTitles.SecondTextual;
   ReactDOM.render(
     <RowPanel title={SimpleTests.Textual.name} withRubric={true}>
       <TextualField title={first} facets={facets}/>
@@ -411,8 +411,8 @@ function buildTextual(facets){
 function buildToggling(facets){
   ReactDOM.render(
     <RowPanel title={SimpleTests.TogglingLive.name} withRubric={true}>
-      <TogglingCheckbox title={SimpleTitles.TOGGLING} facets={facets}/>
-      <TextualLabel title={SimpleTitles.TOGGLED} facets={facets}/>
+      <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
+      <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
     </RowPanel>,
     document.getElementById('root'),
   );
@@ -421,8 +421,8 @@ function buildToggling(facets){
 function buildTrigger(facets){
   ReactDOM.render(
     <RowPanel title={SimpleTests.Trigger.name} withRubric={true}>
-      <TriggerButton title={SimpleTitles.TRIGGER} facets={facets}/>
-      <TextualLabel title={SimpleTitles.TRIGGEREDS} facets={facets}/>
+      <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
+      <TextualLabel title={SimpleTitles.Triggereds} facets={facets}/>
     </RowPanel>,
     document.getElementById('root'),
   )
@@ -430,15 +430,15 @@ function buildTrigger(facets){
 function buildIndexing(facets){
   ReactDOM.render(
     <RowPanel title={SimpleTests.Indexing.name} withRubric={true}>
-      <IndexingDropdown title={SimpleTitles.INDEXING} facets={facets}/>
-      <TextualLabel title={SimpleTitles.INDEX} facets={facets}/>
-      <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
+      <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
+      <TextualLabel title={SimpleTitles.Index} facets={facets}/>
+      <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
     </RowPanel>,
     document.getElementById('root'),
   );
 }
 function buildAllSimples(facets){
-  const textual1=SimpleTitles.TEXTUAL_FIRST,textual2=SimpleTitles.TEXTUAL_SECOND;
+  const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
   ReactDOM.render(<div>
       <RowPanel title={SimpleTests.Textual.name} withRubric={true}>
         <TextualField title={textual1} facets={facets}/>
@@ -447,17 +447,17 @@ function buildAllSimples(facets){
         <TextualLabel title={textual2} facets={facets}/>
       </RowPanel>
       <RowPanel title={SimpleTests.TogglingLive.name} withRubric={true}>
-        <TogglingCheckbox title={SimpleTitles.TOGGLING} facets={facets}/>
-        <TextualLabel title={SimpleTitles.TOGGLED} facets={facets}/>
+        <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
       </RowPanel>
       <RowPanel title={SimpleTests.Indexing.name} withRubric={true}>
-        <IndexingDropdown title={SimpleTitles.INDEXING} facets={facets}/>
-        <TextualLabel title={SimpleTitles.INDEX} facets={facets}/>
-        <TextualLabel title={SimpleTitles.INDEXED} facets={facets}/>
+        <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Index} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
       </RowPanel>
       <RowPanel title={SimpleTests.Trigger.name} withRubric={true}>
-        <TriggerButton title={SimpleTitles.TRIGGER} facets={facets}/>
-        <TextualLabel title={SimpleTitles.TRIGGEREDS} facets={facets}/>
+        <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Triggereds} facets={facets}/>
       </RowPanel>
     </div>,
     document.getElementById('root'),
@@ -465,20 +465,20 @@ function buildAllSimples(facets){
 }
 function buildSelectingShowable(facets){
   ReactDOM.render(<RowPanel title={SimpleTests.SelectingShowable.name} withRubric={true}>
-    <RowPanel title={SelectingTitles.FRAME}>
-      {false?<IndexingDropdown title={SelectingTitles.CHOOSER} facets={facets}/>:
+    <RowPanel title={SelectingTitles.Frame}>
+      {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>:
         <IndexingList
-          title={SelectingTitles.CHOOSER}
+          title={SelectingTitles.Chooser}
           facets={facets}
           listWidth={false?null:200}/>}
       <PanelRow>
-        <TriggerButton title={SelectingTitles.UP} facets={facets}/>
-        <TriggerButton title={SelectingTitles.DOWN} facets={facets}/>
-        <TriggerButton title={SelectingTitles.DELETE} facets={facets}/>
-        <TriggerButton title={SelectingTitles.NEW} facets={facets}/>
+        <TriggerButton title={SelectingTitles.UpButton} facets={facets}/>
+        <TriggerButton title={SelectingTitles.DownButton} facets={facets}/>
+        <TriggerButton title={SelectingTitles.DeleteButton} facets={facets}/>
+        <TriggerButton title={SelectingTitles.NewButton} facets={facets}/>
       </PanelRow>
       <PanelRow>
-        <TextualField title={SelectingTitles.OPEN_EDIT} facets={facets} cols={30}/>
+        <TextualField title={SelectingTitles.OpenEditButton} facets={facets} cols={30}/>
       </PanelRow>
     </RowPanel>
     </RowPanel>,

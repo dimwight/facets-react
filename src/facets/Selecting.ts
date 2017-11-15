@@ -5,19 +5,19 @@ import * as Array from '../util/Array';
 import {traceThing}from '../util/export';
 import {SimpleTitles} from '../surfaceTest';
 export namespace SelectingTitles {
-  export const FRAME='Selecting',
-    CHOOSER='Select Content',
-    ACTIONS='Actions',
-    LIVE='Live',
-    NEW='New',
-    UP='Move Up',
-    DOWN='Move Down',
-    DELETE='Delete',
-    OPEN_EDIT='Edit',
-    EDIT_FIELD='Edit Text',
-    SAVE='Save',
-    CANCEL='Cancel',
-    CHARS='Characters';
+  export const Frame='Selecting',
+    Chooser='Select Content',
+    Actions='Actions',
+    Live='Live',
+    NewButton='New',
+    UpButton='Move Up',
+    DownButton='Move Down',
+    DeleteButton='Delete',
+    OpenEditButton='Edit',
+    TextEditField='Edit Text',
+    SaveEditButton='Save',
+    CancelEditButton='Cancel',
+    CharsCount='Characters';
 }
 export interface ShowAtOvershoot{
   overshot(belowShowZero:boolean)
@@ -38,9 +38,9 @@ export class ShowableList<T>{
   onFacetsRetargeted=()=>{
     const contentAt=this.contentAt(this.getShowAt());
     const f=this.facets;
-    f.setTargetLive(SelectingTitles.DELETE,this.content.length>1);
-    f.setTargetLive(SelectingTitles.UP,contentAt>0);
-    f.setTargetLive(SelectingTitles.DOWN,
+    f.setTargetLive(SelectingTitles.DeleteButton,this.content.length>1);
+    f.setTargetLive(SelectingTitles.UpButton,contentAt>0);
+    f.setTargetLive(SelectingTitles.DownButton,
       contentAt<this.content.length-1);
     traceThing('^onRetargeted',this.content);
   };
@@ -60,7 +60,7 @@ export class ShowableList<T>{
       thenStop:thenStop,
       offset:this.showFrom-thenFrom,
     });
-    this.facets.notifyTargetUpdated(SelectingTitles.CHOOSER)
+    this.facets.notifyTargetUpdated(SelectingTitles.Chooser)
   }
   contentAt(showAt):number{
     return showAt+this.showFrom;
@@ -102,16 +102,16 @@ export class ShowableList<T>{
   }
   newActionTargets(){
     const f=this.facets;
-    return[f.newTriggerTarget(SelectingTitles.UP,{
+    return[f.newTriggerTarget(SelectingTitles.UpButton,{
           targetStateUpdated:()=>this.swapElementDown(),
         }),
-        f.newTriggerTarget(SelectingTitles.DOWN,{
+        f.newTriggerTarget(SelectingTitles.DownButton,{
           targetStateUpdated:()=>this.swapElementUp(),
         }),
-        f.newTriggerTarget(SelectingTitles.DELETE,{
+        f.newTriggerTarget(SelectingTitles.DeleteButton,{
           targetStateUpdated:()=>this.deleteElement(),
         }),
-        f.newTriggerTarget(SelectingTitles.NEW,{
+        f.newTriggerTarget(SelectingTitles.NewButton,{
           targetStateUpdated:()=>this.addElement(),
         }),
         ]
