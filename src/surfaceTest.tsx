@@ -5,6 +5,7 @@ import {
   newInstance,
   Target,
   IndexingFramePolicy,
+  IndexingCoupler,
 } from 'facets-js';
 import {
   RowPanel,
@@ -66,7 +67,7 @@ const SimpleTests={
   SelectingShowable:new SimpleTest('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
 };
 export function doTest(){
-  if(false)new TestApp(SimpleTests.SelectingTyped).buildSurface();
+  if(true)new TestApp(SimpleTests.Textual).buildSurface();
   else new ContentingTest().buildSurface();
 }
 class TestApp extends SurfaceApp{
@@ -313,9 +314,9 @@ function newTriggerTree(facets){
 function newIndexingTree(facets){
   const indexing=facets.newIndexingTarget(SimpleTitles.Indexing,{
       passIndex:0,
-      getUiSelectables:(title)=> SimpleTitles.TextualIndexables,
+      newUiSelectable:(indexable)=>indexable,
       getIndexables: (title)=> SimpleTitles.TextualIndexables,
-    }),
+    } as IndexingCoupler),
     index=facets.newTextualTarget(SimpleTitles.Index,{
       getText:()=>''+facets.getTargetState(SimpleTitles.Indexing),
     }),
