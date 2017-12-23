@@ -31,8 +31,13 @@ const main = Object.assign({}, common, {
     'react-dom':'ReactDOM'
   },
 });
+const fts = Object.assign({}, common, {
+  entry: 'fts/Facets.js',
+  moduleName: 'Facets',
+  dest: 'public/Facets.js',
+});
 
-const bundle = main;
+const bundle = fts;
 console.log('Bundling '+bundle.entry+' to '+bundle.dest+', format='+bundle.format);
 
 export default bundle;
