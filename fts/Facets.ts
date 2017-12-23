@@ -87,7 +87,10 @@ export class Facets{
     this.notifiable.notify(title);
   }
   getTargetState(title:string):SimpleState{
-    throw new Error('Not implemented');
+    return this.titleTarget(title).state();
+  }
+  isTargetLive(title:string):boolean{
+    return this.titleTarget(title).isLive();
   }
   titleTarget(title:string):Targety{
     return this.titleTargeters.get(title).target();

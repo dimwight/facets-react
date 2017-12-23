@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-import { log } from 'util';
 
 const _winBreak = /\r\n/, _params = /.*(\([^)]+\)).*/;
 const unmatchables=[

@@ -6,10 +6,10 @@ import {
   TargeterCore,
   NotifyingCore,
 } from './local';
-import { SimpleState } from '../../facets/Facets';
-import { Notifiable } from './Notifiable';
+import { SimpleState } from 'facets-js';
 export class TargetCore extends NotifyingCore implements Targety {
   private readonly type='TargetCore';
+  private live=true;
   protected static NoState='No state set';
   protected state_:SimpleState=TargetCore.NoState;
   state(): SimpleState {
@@ -33,5 +33,8 @@ export class TargetCore extends NotifyingCore implements Targety {
   updateState(update:SimpleState){
     this.state_=update;
     console.log('> Updated '+this.title()+' with state='+this.state());
+  }
+  isLive(){
+    return this.live;
   }
 }

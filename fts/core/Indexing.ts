@@ -3,7 +3,7 @@ import {
 } from './export';
 import { 
   IndexingCoupler 
-} from '../index';
+} from 'facets-js';
 import { SimpleState } from '../Facets';
 export class Indexing extends TargetCore {  
   private indexings: any[];  

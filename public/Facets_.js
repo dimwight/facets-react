@@ -99,6 +99,7 @@ class TargetCore extends NotifyingCore {
         this.title_ = title_;
         this.elements_ = elements_;
         this.type = 'TargetCore';
+        this.live = true;
         this.state_ = TargetCore.NoState;
     }
     state() {
@@ -120,9 +121,11 @@ class TargetCore extends NotifyingCore {
         this.state_ = update;
         console.log('> Updated ' + this.title() + ' with state=' + this.state());
     }
+    isLive() {
+        return this.live;
+    }
 }
 TargetCore.NoState = 'No state set';
-//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -238,7 +241,10 @@ class Facets {
         this.notifiable.notify(title);
     }
     getTargetState(title) {
-        throw new Error('Not implemented');
+        return this.titleTarget(title).state();
+    }
+    isTargetLive(title) {
+        return this.titleTarget(title).isLive();
     }
     titleTarget(title) {
         return this.titleTargeters.get(title).target();
@@ -260,6 +266,7 @@ class Facets {
             };
     }
 }
+//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;
