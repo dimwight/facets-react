@@ -1,2 +1,2 @@
-export * from './bits';
+export * from './Bits';
 export * from './SwapArrayElement';
