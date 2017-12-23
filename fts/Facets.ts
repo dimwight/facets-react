@@ -3,9 +3,10 @@ import {
   TargetCore,
   Targeter,
   Notifiable,
-  Indexing
+  Indexing,
+  Toggling
 } from './core/export';
-import{
+import {
   SimpleState,
   FacetUpdater,
   TextualCoupler,
@@ -13,7 +14,8 @@ import{
   Target,
   IndexingCoupler,
   IndexingState,
-}from 'facets-js';
+  TogglingCoupler,
+} from 'facets-js';
 import {traceThing} from './util/export';
 export function newInstance(trace:boolean):Facets{
   return new Facets();
@@ -52,6 +54,11 @@ export class Facets{
       (coupler.getText?coupler.getText(title):'No text supplied'));
     traceThing('> Created textual title='+title+' state='+textual.state());
     return textual;
+  }
+  newTogglingTarget(title:string,coupler:TogglingCoupler):Target{
+    let toggling=new Toggling(title,coupler);
+    traceThing('> Created toggling title='+title+' state='+toggling.state());
+    return toggling;
   }
   newTargetGroup(title:string,members:Target[]):Target{
     return new TargetCore(title,members as Targety[]);

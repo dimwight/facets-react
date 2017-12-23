@@ -15,7 +15,6 @@ class NotifyingCore {
         throw new Error('Method not implemented.');
     }
 }
-//# sourceMappingURL=NotifyingCore.js.map
 
 /**
  * Simplifies instrumenting code
@@ -33,11 +32,6 @@ function traceThing(top, thing) {
     // Issue complete message
     console.log(top, tail);
 }
-//# sourceMappingURL=bits.js.map
-
-//# sourceMappingURL=SwapArrayElement.js.map
-
-//# sourceMappingURL=export.js.map
 
 class TargeterCore {
     constructor() {
@@ -89,9 +83,6 @@ class TargeterCore {
         this.facets_.forEach(f => f.retarget(this.target_));
     }
 }
-//# sourceMappingURL=TargeterCore.js.map
-
-//# sourceMappingURL=local.js.map
 
 class TargetCore extends NotifyingCore {
     constructor(title_, elements_) {
@@ -126,7 +117,6 @@ class TargetCore extends NotifyingCore {
     }
 }
 TargetCore.NoState = 'No state set';
-//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -170,9 +160,14 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
-//# sourceMappingURL=Indexing.js.map
 
-//# sourceMappingURL=export.js.map
+class Toggling$$1 extends TargetCore {
+    constructor(title, coupler) {
+        super(title);
+        this.coupler = coupler;
+        this.state_ = coupler.passSet;
+    }
+}
 
 function newInstance(trace) {
     return new Facets();
@@ -213,6 +208,11 @@ class Facets {
             (coupler.getText ? coupler.getText(title) : 'No text supplied'));
         traceThing('> Created textual title=' + title + ' state=' + textual.state());
         return textual;
+    }
+    newTogglingTarget(title, coupler) {
+        let toggling = new Toggling$$1(title, coupler);
+        traceThing('> Created toggling title=' + title + ' state=' + toggling.state());
+        return toggling;
     }
     newTargetGroup(title, members) {
         return new TargetCore(title, members);
@@ -272,3 +272,4 @@ exports.newInstance = newInstance;
 exports.Facets = Facets;
 
 }((this.Facets = this.Facets || {})));
+//# sourceMappingURL=Facets_.js.map
