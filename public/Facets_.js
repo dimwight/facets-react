@@ -187,22 +187,6 @@ class Facets {
         };
         this.titleTargeters = new Map();
     }
-    addContentTree(tree) {
-        this.root = tree;
-    }
-    attachFacet(title, updater) {
-        let t = this.titleTargeters.get(title);
-        if (!t)
-            throw new Error('Missing targeter for ' + title);
-        traceThing('> Attaching facet: title=' + title);
-        let facet = {
-            retarget(ta) {
-                traceThing('> Facet retargeted title=' + ta.title() + ' state=' + ta.state());
-                updater(ta.state());
-            }
-        };
-        t.attachFacet(facet);
-    }
     buildApp(app) {
         let trees = app.getContentTrees();
         if (trees instanceof Array)
@@ -216,19 +200,8 @@ class Facets {
         this.addTitleTargeters(this.rootTargeter);
         app.buildLayout();
     }
-    buildTargeterTree(targetTree) {
-        traceThing('> Initial retargeting on ' + targetTree.title());
-        this.rootTargeter = targetTree.newTargeter();
-        this.rootTargeter.setNotifiable(this.notifiable);
-        this.rootTargeter.retarget(targetTree);
-        this.addTitleTargeters(this.rootTargeter);
-    }
-    addTitleTargeters(t) {
-        let title = t.title();
-        const elements = t.elements();
-        this.titleTargeters.set(title, t);
-        traceThing('> Added targeter: title=' + title + ': elements=' + elements.length);
-        elements.forEach((e) => this.addTitleTargeters(e));
+    addContentTree(tree) {
+        this.root = tree;
     }
     newTextualTarget(title, coupler) {
         let textual = new TargetCore(title);
@@ -239,6 +212,26 @@ class Facets {
     }
     newTargetGroup(title, members) {
         return new TargetCore(title, members);
+    }
+    addTitleTargeters(t) {
+        let title = t.title();
+        const elements = t.elements();
+        this.titleTargeters.set(title, t);
+        traceThing('> Added targeter: title=' + title + ': elements=' + elements.length);
+        elements.forEach((e) => this.addTitleTargeters(e));
+    }
+    attachFacet(title, updater) {
+        let t = this.titleTargeters.get(title);
+        if (!t)
+            throw new Error('Missing targeter for ' + title);
+        traceThing('> Attaching facet: title=' + title);
+        let facet = {
+            retarget(ta) {
+                traceThing('> Facet retargeted title=' + ta.title() + ' state=' + ta.state());
+                updater(ta.state());
+            }
+        };
+        t.attachFacet(facet);
     }
     updateTargetState(title, update) {
         this.titleTarget(title).updateState(update);
