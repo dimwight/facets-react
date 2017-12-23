@@ -1,6 +1,8 @@
 /.idea/workspace.xml
 node_modules
 *.log
+fts/**/*.js
+fts/**/*.js.map
 src/**/*.js
 src/**/*.js.map
 src/**/*.jsx

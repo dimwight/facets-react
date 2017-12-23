@@ -34,7 +34,7 @@ const main = Object.assign({}, common, {
 const fts = Object.assign({}, common, {
   entry: 'fts/Facets.js',
   moduleName: 'Facets',
-  dest: 'public/Facets.js',
+  dest: 'public/Facets_.js',
 });
 
 const bundle = fts;
