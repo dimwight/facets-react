@@ -2,10 +2,10 @@ import {
    TargetCore
 } from './export';
 import { 
-  IndexingCoupler 
+  IndexingCoupler,
+  SimpleState
 } from 'facets-js';
-import { SimpleState } from '../Facets';
-export class Indexing extends TargetCore {  
+export class Indexing extends TargetCore {
   private indexings: any[];  
   constructor (title: string, private coupler: IndexingCoupler){
     super(title);

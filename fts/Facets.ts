@@ -14,13 +14,6 @@ import{
   IndexingCoupler,
   IndexingState,
 }from 'facets-js';
-export{
-  SimpleState,
-  FacetUpdater,
-  TextualCoupler,
-  FacetsApp,
-  Target
-};
 import {traceThing} from './util/export';
 export function newInstance(trace:boolean):Facets{
   return new Facets();
@@ -53,14 +46,14 @@ export class Facets{
   addContentTree(tree:Targety){
     this.root=tree;
   }
-  newTextualTarget(title:string,coupler:TextualCoupler):Targety{
+  newTextualTarget(title:string,coupler:TextualCoupler):Target{
     let textual=new TargetCore(title);
     textual.updateState(coupler.passText||
       (coupler.getText?coupler.getText(title):'No text supplied'));
     traceThing('> Created textual title='+title+' state='+textual.state());
     return textual;
   }
-  newTargetGroup(title:string,members:Target[]):Targety{
+  newTargetGroup(title:string,members:Target[]):Target{
     return new TargetCore(title,members as Targety[]);
   }
   addTitleTargeters(t:Targeter){
