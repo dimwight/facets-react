@@ -1,11 +1,11 @@
 import React from 'react';
-import {traceThing} from '../util/export';
+import {traceThing} from '../util/_globals';
 import {
   TargetValues,
   Facet,
   LabelRubric,
-} from './local';
-import {ShowAtOvershoot} from "../facets/export";
+} from './_locals';
+import {ShowAtOvershoot} from "../facets/_globals";
 interface IndexingValues extends TargetValues{
   selectables?:string[]
   index?:number

@@ -2,7 +2,7 @@ import {
   Facets,
 } from 'facets-js';
 import * as Array from '../util/Array';
-import {traceThing}from '../util/export';
+import {traceThing}from '../util/_globals';
 import {SimpleTitles} from '../surfaceTest';
 export namespace SelectingTitles {
   export const Frame='Selecting',

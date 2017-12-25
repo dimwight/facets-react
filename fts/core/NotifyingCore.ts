@@ -1,5 +1,5 @@
-import {Notifiable} from './export';
-import {Notifying} from './local';
+import {Notifiable} from './_globals';
+import {Notifying} from './_locals';
 export abstract class NotifyingCore implements Notifying{
   private notifiable_: Notifiable;
   setNotifiable(n: Notifiable) {

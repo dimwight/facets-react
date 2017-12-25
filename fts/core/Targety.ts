@@ -1,4 +1,4 @@
-import {Notifying} from './local';
+import {Notifying} from './_locals';
 import { SimpleState,Target} from 'facets-js';
 export interface Targety extends Notifying,Target{
   title():string;

@@ -17,14 +17,14 @@ import {
   IndexingDropdown,
   IndexingList,
   ShowPanel,
-} from './react/export';
+} from './react/_globals';
 import {
-} from './facets/export';
+} from './facets/_globals';
 import {
 SelectingTitles,
 ShowableList,
 } from './facets/Selecting';
-import {traceThing}from './util/export';
+import {traceThing}from './util/_globals';
 import {SurfaceApp} from './facets/Surface';
 export namespace SimpleTitles{
   export const FirstTextual='First',SecondTextual='Second',

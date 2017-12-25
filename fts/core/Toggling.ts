@@ -1,7 +1,7 @@
 import {
   TogglingCoupler
 } from 'facets-js';
-import {TargetCore} from './export';
+import {TargetCore} from './_globals';
 export class Toggling extends TargetCore{
   constructor(title:string, private readonly coupler:TogglingCoupler){
     super(title);

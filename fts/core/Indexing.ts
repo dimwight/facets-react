@@ -1,6 +1,6 @@
 import {
    TargetCore
-} from './export';
+} from './_globals';
 import { 
   IndexingCoupler,
   SimpleState

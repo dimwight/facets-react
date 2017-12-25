@@ -1,4 +1,4 @@
-import {traceThing} from './export';
+import {traceThing} from './_globals';
 export function swapArrayElement(source: any[], index, down) {
   /* 
   1. Define source indices of elements to be swapped.

@@ -1,5 +1,5 @@
-import {Targety,Targeter,TargetCore,Facet} from './export';
-import { traceThing } from '../util/export';
+import {Targety,Targeter,TargetCore,Facet} from './_globals';
+import { traceThing } from '../util/_globals';
 export class TargeterCore implements Targeter{
   private notifiable: any;
   private elements_: Targeter[];

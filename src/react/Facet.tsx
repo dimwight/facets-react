@@ -1,7 +1,7 @@
 import React from 'react';
-import {traceThing} from '../util/export';
+import {traceThing} from '../util/_globals';
 import {Facets,SimpleState} from 'facets-js';
-import {SmartTextField} from './local';
+import {SmartTextField} from './_locals';
 import './Facet.css';
 export type FnGetBoolean=()=>boolean
 export type FnPassString=(string)=>void

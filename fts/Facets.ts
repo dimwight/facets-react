@@ -5,7 +5,7 @@ import {
   Notifiable,
   Indexing,
   Toggling
-} from './core/export';
+} from './core/_globals';
 import {
   SimpleState,
   FacetUpdater,
@@ -16,7 +16,7 @@ import {
   IndexingState,
   TogglingCoupler,
 } from 'facets-js';
-import {traceThing} from './util/export';
+import {traceThing} from './util/_globals';
 export function newInstance(trace:boolean):Facets{
   return new Facets();
 }
