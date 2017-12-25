@@ -29,6 +29,7 @@ export class Facets{
     notify:notice=>{
       traceThing('> Notified with '+this.rootTargeter.title());
       this.rootTargeter.retarget(this.rootTargeter.target());
+      this.callOnRetargeted();
       this.rootTargeter.retargetFacets();
     }
   };
@@ -53,7 +54,7 @@ export class Facets{
   }
   private callOnRetargeted(){
     let title=this.root.title();
-    traceThing(" > Calling onRetargeted with active="+title);
+    traceThing("> Calling onRetargeted with active="+title);
     this.onRetargeted(title);
   }
   addContentTree(tree:Targety){
