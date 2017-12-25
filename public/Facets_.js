@@ -242,6 +242,11 @@ class Facets {
         traceThing('> Created toggling title=' + title);
         return toggling;
     }
+    newTriggerTarget(title, coupler) {
+        let trigger = new TargetCore(title, coupler);
+        traceThing('> Created trigger title=' + title);
+        return trigger;
+    }
     newTargetGroup(title, members) {
         return new TargetCore(title, members);
     }

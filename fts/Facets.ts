@@ -16,6 +16,7 @@ import {
   IndexingCoupler,
   IndexingState,
   TogglingCoupler,
+  TargetCoupler,
 } from 'facets-js';
 import {traceThing} from './util/_globals';
 export function newInstance(trace:boolean):Facets{
@@ -69,6 +70,11 @@ export class Facets{
     let toggling=new Toggling(title,coupler);
     traceThing('> Created toggling title='+title);
     return toggling;
+  }
+  newTriggerTarget (title,coupler:TargetCoupler):Target{
+    let trigger=new TargetCore(title,coupler);
+    traceThing('> Created trigger title='+title);
+    return trigger;
   }
   newTargetGroup(title,members:Target[]):Target{
     return new TargetCore(title,members as Targety[]);
