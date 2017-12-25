@@ -7,7 +7,7 @@ import {
 } from 'facets-js';
 export class Indexing extends TargetCore {
   private indexings: any[];  
-  constructor (title: string, private coupler: IndexingCoupler){
+  constructor (title: string, coupler: IndexingCoupler){
     super(title,coupler);
     this.setIndex(coupler.passIndex?coupler.passIndex:0);
   }
@@ -17,17 +17,20 @@ export class Indexing extends TargetCore {
   setIndex(index: number) {
     const first = this.state_===TargetCore.NoState;
     this.state_ = index;
-    if (!first)this.coupler.targetStateUpdated(this.state_,this.title());
+    if (!first)(this.extra as IndexingCoupler).targetStateUpdated(this.state_,this.title());
   }
   indexables(): any[] {
-    const indexables: any[] = this.coupler.getIndexables(this.title());
+    const indexables: any[] = (this.extra as IndexingCoupler).getIndexables(this.title());
     if (!indexables||indexables.length === 0) 
         throw new Error('Missing or empty indexables in ' + this);
     else return indexables;
   }
   uiSelectables(): string[] {
-    const getSelectable=this.coupler.newUiSelectable||((i)=>(i as string));
+    const getSelectable=this.thisCoupler().newUiSelectable||((i)=>(i as string));
     return this.indexables().map(i=>getSelectable(i));      
+  }
+  private thisCoupler(){
+    return (this.extra as IndexingCoupler);
   }
   indexed(): any {
     if (this.state_===TargetCore.NoState)

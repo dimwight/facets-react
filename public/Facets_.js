@@ -15,6 +15,7 @@ class NotifyingCore {
         throw new Error('Method not implemented.');
     }
 }
+//# sourceMappingURL=NotifyingCore.js.map
 
 /**
  * Simplifies instrumenting code
@@ -32,6 +33,11 @@ function traceThing(top, thing) {
     // Issue complete message
     console.log(top, tail);
 }
+//# sourceMappingURL=Bits.js.map
+
+//# sourceMappingURL=SwapArrayElement.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 class TargeterCore {
     constructor() {
@@ -83,6 +89,9 @@ class TargeterCore {
         this.facets_.forEach(f => f.retarget(this.target_));
     }
 }
+//# sourceMappingURL=TargeterCore.js.map
+
+//# sourceMappingURL=_locals.js.map
 
 class TargetCore extends NotifyingCore {
     constructor(title_, extra) {
@@ -124,11 +133,11 @@ class TargetCore extends NotifyingCore {
     }
 }
 TargetCore.NoState = 'No state set';
+//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
         super(title, coupler);
-        this.coupler = coupler;
         this.setIndex(coupler.passIndex ? coupler.passIndex : 0);
     }
     index() {
@@ -138,18 +147,21 @@ class Indexing$$1 extends TargetCore {
         const first = this.state_ === TargetCore.NoState;
         this.state_ = index;
         if (!first)
-            this.coupler.targetStateUpdated(this.state_, this.title());
+            this.extra.targetStateUpdated(this.state_, this.title());
     }
     indexables() {
-        const indexables = this.coupler.getIndexables(this.title());
+        const indexables = this.extra.getIndexables(this.title());
         if (!indexables || indexables.length === 0)
             throw new Error('Missing or empty indexables in ' + this);
         else
             return indexables;
     }
     uiSelectables() {
-        const getSelectable = this.coupler.newUiSelectable || ((i) => i);
+        const getSelectable = this.thisCoupler().newUiSelectable || ((i) => i);
         return this.indexables().map(i => getSelectable(i));
+    }
+    thisCoupler() {
+        return this.extra;
     }
     indexed() {
         if (this.state_ === TargetCore.NoState)
@@ -176,6 +188,7 @@ class Toggling$$1 extends TargetCore {
         this.state_ = coupler.passSet;
     }
 }
+//# sourceMappingURL=Toggling.js.map
 
 class Textual$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -188,6 +201,9 @@ class Textual$$1 extends TargetCore {
             : this.extra.getText(this.title());
     }
 }
+//# sourceMappingURL=Textual.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 function newInstance(trace) {
     return new Facets();
@@ -308,6 +324,7 @@ class Facets {
             };
     }
 }
+//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;
