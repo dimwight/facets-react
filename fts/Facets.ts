@@ -121,7 +121,7 @@ export class Facets{
   }
   newIndexingTarget(title,coupler:IndexingCoupler):Targety{
     let indexing=new Indexing(title,coupler);
-    traceThing('> Created indexing title='+title);
+    traceThing('> Created indexing title='+title,{coupler:!coupler.targetStateUpdated});
     return indexing;
   }
   getIndexingState(title: string): IndexingState{

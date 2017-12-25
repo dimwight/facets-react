@@ -146,21 +146,24 @@ class Indexing$$1 extends TargetCore {
     setIndex(index) {
         const first = this.state_ === TargetCore.NoState;
         this.state_ = index;
-        if (!first)
-            this.extra.targetStateUpdated(this.state_, this.title());
+        if (!first) {
+            const updated = this.coupler().targetStateUpdated;
+            if (updated)
+                updated(this.state_, this.title());
+        }
     }
     indexables() {
-        const indexables = this.extra.getIndexables(this.title());
+        const indexables = this.coupler().getIndexables(this.title());
         if (!indexables || indexables.length === 0)
             throw new Error('Missing or empty indexables in ' + this);
         else
             return indexables;
     }
     uiSelectables() {
-        const getSelectable = this.thisCoupler().newUiSelectable || ((i) => i);
+        const getSelectable = this.coupler().newUiSelectable || ((i) => i);
         return this.indexables().map(i => getSelectable(i));
     }
-    thisCoupler() {
+    coupler() {
         return this.extra;
     }
     indexed() {
@@ -310,7 +313,7 @@ class Facets {
     }
     newIndexingTarget(title, coupler) {
         let indexing = new Indexing$$1(title, coupler);
-        traceThing('> Created indexing title=' + title);
+        traceThing('> Created indexing title=' + title, { coupler: !coupler.targetStateUpdated });
         return indexing;
     }
     getIndexingState(title) {
