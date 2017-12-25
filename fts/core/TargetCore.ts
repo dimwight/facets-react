@@ -8,7 +8,6 @@ import {
 } from './_locals';
 import { SimpleState } from 'facets-js';
 export class TargetCore extends NotifyingCore implements Targety {
-  // private readonly type='TargetCore';
   private live=true;
   protected static NoState='No state set';
   protected state_:SimpleState=TargetCore.NoState;

@@ -15,7 +15,6 @@ class NotifyingCore {
         throw new Error('Method not implemented.');
     }
 }
-//# sourceMappingURL=NotifyingCore.js.map
 
 /**
  * Simplifies instrumenting code
@@ -33,11 +32,6 @@ function traceThing(top, thing) {
     // Issue complete message
     console.log(top, tail);
 }
-//# sourceMappingURL=Bits.js.map
-
-//# sourceMappingURL=SwapArrayElement.js.map
-
-//# sourceMappingURL=_globals.js.map
 
 class TargeterCore {
     constructor() {
@@ -89,16 +83,12 @@ class TargeterCore {
         this.facets_.forEach(f => f.retarget(this.target_));
     }
 }
-//# sourceMappingURL=TargeterCore.js.map
-
-//# sourceMappingURL=_locals.js.map
 
 class TargetCore extends NotifyingCore {
     constructor(title_, elements_) {
         super();
         this.title_ = title_;
         this.elements_ = elements_;
-        // private readonly type='TargetCore';
         this.live = true;
         this.state_ = TargetCore.NoState;
     }
@@ -129,7 +119,6 @@ class TargetCore extends NotifyingCore {
     }
 }
 TargetCore.NoState = 'No state set';
-//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -174,7 +163,6 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
-//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -189,7 +177,6 @@ class Toggling$$1 extends TargetCore {
             updater(this.state(), this.title());
     }
 }
-//# sourceMappingURL=Toggling.js.map
 
 class Textual$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -209,9 +196,6 @@ class Textual$$1 extends TargetCore {
             updater(this.state(), this.title());
     }
 }
-//# sourceMappingURL=Textual.js.map
-
-//# sourceMappingURL=_globals.js.map
 
 function newInstance(trace) {
     return new Facets();
