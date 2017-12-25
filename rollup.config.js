@@ -38,7 +38,7 @@ const fts = Object.assign({}, common, {
   dest: 'public/Facets_.js',
 });
 
-const bundle = true?fts:main;
+const bundle = false?fts:main;
 console.log('Bundling '+bundle.entry+' to '+bundle.dest+', format='+bundle.format);
 
 export default bundle;

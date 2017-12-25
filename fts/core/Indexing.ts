@@ -8,7 +8,7 @@ import {
 export class Indexing extends TargetCore {
   private indexings: any[];  
   constructor (title: string, private coupler: IndexingCoupler){
-    super(title);
+    super(title,coupler);
     this.setIndex(coupler.passIndex?coupler.passIndex:0);
   }
   index(): number {

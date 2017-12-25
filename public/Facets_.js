@@ -85,10 +85,10 @@ class TargeterCore {
 }
 
 class TargetCore extends NotifyingCore {
-    constructor(title_, elements_) {
+    constructor(title_, extra) {
         super();
         this.title_ = title_;
-        this.elements_ = elements_;
+        this.extra = extra;
         this.live = true;
         this.state_ = TargetCore.NoState;
     }
@@ -96,20 +96,17 @@ class TargetCore extends NotifyingCore {
         return this.state_;
     }
     notifiesTargeter() {
-        return this.elements_ !== null;
+        return this.extra !== null;
     }
     newTargeter() {
         return new TargeterCore();
     }
     elements() {
-        return this.elements_ ? this.elements_ : [];
+        const extra = this.extra;
+        return extra instanceof Array ? extra : [];
     }
     title() {
         return this.title_;
-    }
-    updateState(update) {
-        this.state_ = update;
-        console.log('> Updated ' + this.title() + ' with state=' + this.state());
     }
     isLive() {
         return this.live;
@@ -117,12 +114,20 @@ class TargetCore extends NotifyingCore {
     setLive(live) {
         this.live = live;
     }
+    updateState(update) {
+        this.state_ = update;
+        const extra = this.extra;
+        const updater = extra instanceof Array ? null
+            : extra.targetStateUpdated;
+        if (updater)
+            updater(this.state(), this.title());
+    }
 }
 TargetCore.NoState = 'No state set';
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
-        super(title);
+        super(title, coupler);
         this.coupler = coupler;
         this.setIndex(coupler.passIndex ? coupler.passIndex : 0);
     }
@@ -166,34 +171,21 @@ class Indexing$$1 extends TargetCore {
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
-        super(title);
+        super(title, coupler);
         this.coupler = coupler;
         this.state_ = coupler.passSet;
-    }
-    updateState(update) {
-        super.updateState(update);
-        const updater = this.coupler.targetStateUpdated;
-        if (updater)
-            updater(this.state(), this.title());
     }
 }
 
 class Textual$$1 extends TargetCore {
     constructor(title, coupler) {
-        super(title);
-        this.coupler = coupler;
+        super(title, coupler);
         if (coupler.passText)
             this.state_ = coupler.passText;
     }
     state() {
         return this.state_ !== TargetCore.NoState ? this.state_
-            : this.coupler.getText(this.title());
-    }
-    updateState(update) {
-        super.updateState(update);
-        const updater = this.coupler.targetStateUpdated;
-        if (updater)
-            updater(this.state(), this.title());
+            : this.extra.getText(this.title());
     }
 }
 

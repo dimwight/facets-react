@@ -6,7 +6,10 @@ import {
   TargeterCore,
   NotifyingCore,
 } from './_locals';
-import { SimpleState } from 'facets-js';
+import {
+  SimpleState,
+  TargetCoupler,
+} from 'facets-js';
 export class TargetCore extends NotifyingCore implements Targety {
   private live=true;
   protected static NoState='No state set';
@@ -14,29 +17,34 @@ export class TargetCore extends NotifyingCore implements Targety {
   state(): SimpleState {
     return this.state_;
   }
-  constructor(protected readonly title_:string,private readonly elements_?:Targety[]){
+  constructor(protected readonly title_:string,
+              protected readonly extra:Targety[]|TargetCoupler){
     super();
   }
   notifiesTargeter():boolean{
-    return this.elements_!==null;
+    return this.extra!==null;
   }
   newTargeter():Targeter{
     return new TargeterCore();
   }
   elements():Targety[]{
-    return this.elements_?this.elements_:[];
+    const extra=this.extra;
+    return extra instanceof Array?extra:[];
   }
   title(){
     return this.title_;
-  }
-  updateState(update:SimpleState){
-    this.state_=update;
-    console.log('> Updated '+this.title()+' with state='+this.state());
   }
   isLive(){
     return this.live;
   }
   setLive(live:boolean){
     this.live=live;
+  }
+  updateState(update:SimpleState){
+    this.state_=update;
+    const extra=this.extra;
+    const updater=extra instanceof Array?null
+      :(extra as TargetCoupler).targetStateUpdated;
+    if(updater)updater(this.state(),this.title())
   }
 }
