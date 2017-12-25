@@ -6,4 +6,5 @@ export interface Targety extends Notifying,Target{
   updateState(update:SimpleState);
   state():SimpleState;
   isLive():boolean;
+  setLive(live:boolean)
 }

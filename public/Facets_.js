@@ -98,7 +98,7 @@ class TargetCore extends NotifyingCore {
         super();
         this.title_ = title_;
         this.elements_ = elements_;
-        this.type = 'TargetCore';
+        // private readonly type='TargetCore';
         this.live = true;
         this.state_ = TargetCore.NoState;
     }
@@ -124,9 +124,11 @@ class TargetCore extends NotifyingCore {
     isLive() {
         return this.live;
     }
+    setLive(live) {
+        this.live = live;
+    }
 }
 TargetCore.NoState = 'No state set';
-//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -179,6 +181,12 @@ class Toggling$$1 extends TargetCore {
         this.coupler = coupler;
         this.state_ = coupler.passSet;
     }
+    updateState(update) {
+        super.updateState(update);
+        const updater = this.coupler.targetStateUpdated;
+        if (updater)
+            updater(this.state(), this.title());
+    }
 }
 //# sourceMappingURL=Toggling.js.map
 
@@ -200,6 +208,7 @@ class Textual$$1 extends TargetCore {
             updater(this.state(), this.title());
     }
 }
+//# sourceMappingURL=Textual.js.map
 
 //# sourceMappingURL=_globals.js.map
 
@@ -221,6 +230,9 @@ class Facets {
         this.titleTargeters = new Map();
     }
     buildApp(app) {
+        this.onRetargeted = title => {
+            app.onRetargeted(title);
+        };
         let trees = app.getContentTrees();
         if (trees instanceof Array)
             throw new Error('Not implemented for ' + trees.length);
@@ -231,14 +243,20 @@ class Facets {
         this.rootTargeter.setNotifiable(this.notifiable);
         this.rootTargeter.retarget(this.root);
         this.addTitleTargeters(this.rootTargeter);
+        this.callOnRetargeted();
         app.buildLayout();
+    }
+    callOnRetargeted() {
+        let title = this.root.title();
+        traceThing(" > Calling onRetargeted with active=" + title);
+        this.onRetargeted(title);
     }
     addContentTree(tree) {
         this.root = tree;
     }
     newTextualTarget(title, coupler) {
         let textual = new Textual$$1(title, coupler);
-        traceThing('> Created textual title=' + title, { 'targetStateUpdated?': !coupler.targetStateUpdated });
+        traceThing('> Created textual title=' + title);
         return textual;
     }
     newTogglingTarget(title, coupler) {
@@ -278,6 +296,9 @@ class Facets {
     }
     isTargetLive(title) {
         return this.titleTarget(title).isLive();
+    }
+    setTargetLive(title, live) {
+        this.titleTarget(title).setLive(live);
     }
     notifyTargetUpdated(title) {
         let target = this.titleTarget(title);

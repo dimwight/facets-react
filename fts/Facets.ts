@@ -32,10 +32,14 @@ export class Facets{
       this.rootTargeter.retargetFacets();
     }
   };
+  private onRetargeted;
   titleTargeters=new Map<string,Targeter>();
   root:Targety;
   rootTargeter:Targeter;
   buildApp(app: FacetsApp){
+    this.onRetargeted=title=>{
+      app.onRetargeted(title);
+    };
     let trees=app.getContentTrees();
     if(trees instanceof Array)
       throw new Error('Not implemented for '+(trees as Array<Targety>).length);
@@ -44,23 +48,28 @@ export class Facets{
     this.rootTargeter.setNotifiable(this.notifiable);
     this.rootTargeter.retarget(this.root);
     this.addTitleTargeters(this.rootTargeter);
+    this.callOnRetargeted();
     app.buildLayout();
+  }
+  private callOnRetargeted(){
+    let title=this.root.title();
+    traceThing(" > Calling onRetargeted with active="+title);
+    this.onRetargeted(title);
   }
   addContentTree(tree:Targety){
     this.root=tree;
   }
-  newTextualTarget(title:string,coupler:TextualCoupler):Target{
+  newTextualTarget(title,coupler:TextualCoupler):Target{
     let textual=new Textual(title,coupler);
-    traceThing('> Created textual title='+title,
-      {'targetStateUpdated?':!coupler.targetStateUpdated});
+    traceThing('> Created textual title='+title);
     return textual;
   }
-  newTogglingTarget(title:string,coupler:TogglingCoupler):Target{
+  newTogglingTarget(title,coupler:TogglingCoupler):Target{
     let toggling=new Toggling(title,coupler);
     traceThing('> Created toggling title='+title);
     return toggling;
   }
-  newTargetGroup(title:string,members:Target[]):Target{
+  newTargetGroup(title,members:Target[]):Target{
     return new TargetCore(title,members as Targety[]);
   }
   addTitleTargeters(t:Targeter){
@@ -70,7 +79,7 @@ export class Facets{
     traceThing('> Added targeter: title='+title+': elements='+elements.length);
     elements.forEach((e)=>this.addTitleTargeters(e));
   }
-  attachFacet(title:string,updater:FacetUpdater):void{
+  attachFacet(title,updater:FacetUpdater):void{
     let t:Targeter=this.titleTargeters.get(title);
     if(!t)throw new Error('Missing targeter for '+title);
     traceThing('> Attaching facet: title='+title);
@@ -82,25 +91,28 @@ export class Facets{
     };
     t.attachFacet(facet);
   }
-  updateTargetState(title:string,update:SimpleState):void{
+  updateTargetState(title,update:SimpleState):void{
     this.titleTarget(title).updateState(update);
     this.notifiable.notify(title);
   }
-  getTargetState(title:string):SimpleState{
+  getTargetState(title):SimpleState{
     return this.titleTarget(title).state();
   }
-  isTargetLive(title:string):boolean{
+  isTargetLive(title):boolean{
     return this.titleTarget(title).isLive();
+  }
+  setTargetLive(title,live){
+    this.titleTarget(title).setLive(live);
   }
   notifyTargetUpdated(title){
     let target=this.titleTarget(title);
     if(!target)throw new Error('No target for '+title);
     target.notifyParent();
   }
-  titleTarget(title:string):Targety{
+  titleTarget(title):Targety{
     return this.titleTargeters.get(title).target();
   }
-  newIndexingTarget(title:string,coupler:IndexingCoupler):Targety{
+  newIndexingTarget(title,coupler:IndexingCoupler):Targety{
     let indexing=new Indexing(title,coupler);
     traceThing('> Created indexing title='+title);
     return indexing;
