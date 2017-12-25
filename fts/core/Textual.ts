@@ -12,5 +12,9 @@ export class Textual extends TargetCore{
     return this.state_!==TargetCore.NoState?this.state_
       :this.coupler.getText(this.title());
   }
-
+  updateState(update:SimpleState){
+    super.updateState(update);
+    const updater=this.coupler.targetStateUpdated;
+    if(updater)updater(this.state(),this.title())
+  }
 }

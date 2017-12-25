@@ -6,7 +6,7 @@ export class TargeterCore implements Targeter{
   private title_='Untargeted';
   private target_:Targety;
   notify(notice){
-    throw new Error('Not implemented in TargeterCore');
+    this.notifiable.notify(notice);
   }
   setNotifiable(notifiable){
     this.notifiable=notifiable;

@@ -51,7 +51,8 @@ export class Facets{
   }
   newTextualTarget(title:string,coupler:TextualCoupler):Target{
     let textual=new Textual(title,coupler);
-    traceThing('> Created textual title='+title);
+    traceThing('> Created textual title='+title,
+      {'targetStateUpdated?':!coupler.targetStateUpdated});
     return textual;
   }
   newTogglingTarget(title:string,coupler:TogglingCoupler):Target{
@@ -93,7 +94,8 @@ export class Facets{
   }
   notifyTargetUpdated(title){
     let target=this.titleTarget(title);
-    throw new Error('Not implemented for '+target.title());
+    if(!target)throw new Error('No target for '+title);
+    target.notifyParent();
   }
   titleTarget(title:string):Targety{
     return this.titleTargeters.get(title).target();

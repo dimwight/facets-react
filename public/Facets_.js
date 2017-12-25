@@ -45,7 +45,7 @@ class TargeterCore {
         this.facets_ = [];
     }
     notify(notice) {
-        throw new Error('Not implemented in TargeterCore');
+        this.notifiable.notify(notice);
     }
     setNotifiable(notifiable) {
         this.notifiable = notifiable;
@@ -193,8 +193,13 @@ class Textual$$1 extends TargetCore {
         return this.state_ !== TargetCore.NoState ? this.state_
             : this.coupler.getText(this.title());
     }
+    updateState(update) {
+        super.updateState(update);
+        const updater = this.coupler.targetStateUpdated;
+        if (updater)
+            updater(this.state(), this.title());
+    }
 }
-//# sourceMappingURL=Textual.js.map
 
 //# sourceMappingURL=_globals.js.map
 
@@ -233,7 +238,7 @@ class Facets {
     }
     newTextualTarget(title, coupler) {
         let textual = new Textual$$1(title, coupler);
-        traceThing('> Created textual title=' + title);
+        traceThing('> Created textual title=' + title, { 'targetStateUpdated?': !coupler.targetStateUpdated });
         return textual;
     }
     newTogglingTarget(title, coupler) {
@@ -276,7 +281,9 @@ class Facets {
     }
     notifyTargetUpdated(title) {
         let target = this.titleTarget(title);
-        throw new Error('Not implemented for ' + target.title());
+        if (!target)
+            throw new Error('No target for ' + title);
+        target.notifyParent();
     }
     titleTarget(title) {
         return this.titleTargeters.get(title).target();
@@ -297,6 +304,7 @@ class Facets {
             };
     }
 }
+//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;

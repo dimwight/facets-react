@@ -66,10 +66,6 @@ const SimpleTests={
     }),
   SelectingShowable:new SimpleTest('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
 };
-export function doTest(){
-  if(true)new TestApp(SimpleTests.TogglingLive).buildSurface();
-  else new ContentingTest().buildSurface();
-}
 class TestApp extends SurfaceApp{
   constructor(readonly test:SimpleTest){
     super(newInstance(true));
@@ -485,4 +481,8 @@ function buildSelectingShowable(facets){
     </RowPanel>,
     document.getElementById('root'),
   );
+}
+export function doTest(){
+  if(true)new TestApp(SimpleTests.Textual).buildSurface();
+  else new ContentingTest().buildSurface();
 }
