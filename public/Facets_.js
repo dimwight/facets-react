@@ -15,6 +15,7 @@ class NotifyingCore {
         throw new Error('Method not implemented.');
     }
 }
+//# sourceMappingURL=NotifyingCore.js.map
 
 /**
  * Simplifies instrumenting code
@@ -32,6 +33,11 @@ function traceThing(top, thing) {
     // Issue complete message
     console.log(top, tail);
 }
+//# sourceMappingURL=Bits.js.map
+
+//# sourceMappingURL=SwapArrayElement.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 class TargeterCore {
     constructor() {
@@ -83,6 +89,9 @@ class TargeterCore {
         this.facets_.forEach(f => f.retarget(this.target_));
     }
 }
+//# sourceMappingURL=TargeterCore.js.map
+
+//# sourceMappingURL=_locals.js.map
 
 class TargetCore extends NotifyingCore {
     constructor(title_, elements_) {
@@ -117,11 +126,13 @@ class TargetCore extends NotifyingCore {
     }
 }
 TargetCore.NoState = 'No state set';
+//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
         super(title);
         this.coupler = coupler;
+        this.setIndex(coupler.passIndex ? coupler.passIndex : 0);
     }
     index() {
         return this.state_;
@@ -160,6 +171,7 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
+//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -168,6 +180,23 @@ class Toggling$$1 extends TargetCore {
         this.state_ = coupler.passSet;
     }
 }
+//# sourceMappingURL=Toggling.js.map
+
+class Textual$$1 extends TargetCore {
+    constructor(title, coupler) {
+        super(title);
+        this.coupler = coupler;
+        if (coupler.passText)
+            this.state_ = coupler.passText;
+    }
+    state() {
+        return this.state_ !== TargetCore.NoState ? this.state_
+            : this.coupler.getText(this.title());
+    }
+}
+//# sourceMappingURL=Textual.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 function newInstance(trace) {
     return new Facets();
@@ -203,15 +232,13 @@ class Facets {
         this.root = tree;
     }
     newTextualTarget(title, coupler) {
-        let textual = new TargetCore(title);
-        textual.updateState(coupler.passText ||
-            (coupler.getText ? coupler.getText(title) : 'No text supplied'));
-        traceThing('> Created textual title=' + title + ' state=' + textual.state());
+        let textual = new Textual$$1(title, coupler);
+        traceThing('> Created textual title=' + title);
         return textual;
     }
     newTogglingTarget(title, coupler) {
         let toggling = new Toggling$$1(title, coupler);
-        traceThing('> Created toggling title=' + title + ' state=' + toggling.state());
+        traceThing('> Created toggling title=' + title);
         return toggling;
     }
     newTargetGroup(title, members) {
@@ -247,13 +274,16 @@ class Facets {
     isTargetLive(title) {
         return this.titleTarget(title).isLive();
     }
+    notifyTargetUpdated(title) {
+        let target = this.titleTarget(title);
+        throw new Error('Not implemented for ' + target.title());
+    }
     titleTarget(title) {
         return this.titleTargeters.get(title).target();
     }
     newIndexingTarget(title, coupler) {
         let indexing = new Indexing$$1(title, coupler);
-        indexing.updateState(coupler.passIndex || 0);
-        traceThing('> Created indexing title=' + title + ' state=' + indexing.state());
+        traceThing('> Created indexing title=' + title);
         return indexing;
     }
     getIndexingState(title) {

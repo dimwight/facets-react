@@ -4,7 +4,8 @@ import {
   Targeter,
   Notifiable,
   Indexing,
-  Toggling
+  Toggling,
+  Textual
 } from './core/_globals';
 import {
   SimpleState,
@@ -49,15 +50,13 @@ export class Facets{
     this.root=tree;
   }
   newTextualTarget(title:string,coupler:TextualCoupler):Target{
-    let textual=new TargetCore(title);
-    textual.updateState(coupler.passText||
-      (coupler.getText?coupler.getText(title):'No text supplied'));
-    traceThing('> Created textual title='+title+' state='+textual.state());
+    let textual=new Textual(title,coupler);
+    traceThing('> Created textual title='+title);
     return textual;
   }
   newTogglingTarget(title:string,coupler:TogglingCoupler):Target{
     let toggling=new Toggling(title,coupler);
-    traceThing('> Created toggling title='+title+' state='+toggling.state());
+    traceThing('> Created toggling title='+title);
     return toggling;
   }
   newTargetGroup(title:string,members:Target[]):Target{
@@ -92,13 +91,16 @@ export class Facets{
   isTargetLive(title:string):boolean{
     return this.titleTarget(title).isLive();
   }
+  notifyTargetUpdated(title){
+    let target=this.titleTarget(title);
+    throw new Error('Not implemented for '+target.title());
+  }
   titleTarget(title:string):Targety{
     return this.titleTargeters.get(title).target();
   }
   newIndexingTarget(title:string,coupler:IndexingCoupler):Targety{
     let indexing=new Indexing(title,coupler);
-    indexing.updateState(coupler.passIndex||0);
-    traceThing('> Created indexing title='+title+' state='+indexing.state());
+    traceThing('> Created indexing title='+title);
     return indexing;
   }
   getIndexingState(title: string): IndexingState{
