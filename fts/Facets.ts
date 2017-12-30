@@ -6,6 +6,7 @@ import {
   Indexing,
   Toggling,
   Textual,
+  IndexingFrame,
 } from './core/_globals';
 import {
   SimpleState,

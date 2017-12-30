@@ -1,54 +1,58 @@
-import {TargeterCore} from './TargeterCore';
-export class IndexingFrameTargeter extends TargeterCore {
-private val titleTargeters = HashMap()
-private val indexing:STargeter
-private val indexed:STargeter
-private val indexingTarget:SIndexing
-private val indexedTarget:STarget
-private val indexedTitle:String
-  fun retarget(target:STarget) {
-    super.retarget(target)
-    updateToTarget()
-    if (indexing == null)
-    {
-      indexing = indexingTarget.newTargeter()
-      indexing.setNotifiable(this)
+import {
+  Indexing,
+  TargetCore,
+  Targeter,
+  Targety,
+} from './_globals';
+import {TargeterCore} from './_locals';
+import {IndexingFrame} from './IndexingFrame';
+export class IndexingFrameTargeter extends TargeterCore{
+  titleTargeters=new Map<string,Targeter>();
+  indexing:Targeter;
+  indexed:Targeter;
+  indexingTarget:Indexing;
+  indexedTarget:Targety;
+  indexedTitle:string;
+  retarget(Targety:Targety){
+    super.retarget(Targety);
+    this.updateToTarget();
+    if(!this.indexing){
+      this.indexing=this.indexingTarget.newTargeter();
+      this.indexing.setNotifiable(this)
     }
-    if (titleTargeters.isEmpty())
-    {
-      val atThen = indexingTarget.index()
-      for (at in 0 until indexingTarget.indexables().length)
-      {
-        indexingTarget.setIndex(at)
-        updateToTarget()
-        indexed = (indexedTarget as TargetCore).newTargeter()
-        indexed.setNotifiable(this)
-        indexed.retarget(indexedTarget)
-        titleTargeters.put(indexedTitle, indexed)
+    if(this.titleTargeters.size===0){
+      let atThen=this.indexingTarget.index();
+      for(let at=0; at<this.indexingTarget.indexables().length; at++){
+        this.indexingTarget.setIndex(at);
+        this.updateToTarget();
+        this.indexed=(this.indexedTarget as TargetCore).newTargeter();
+        this.indexed.setNotifiable(this);
+        this.indexed.retarget(this.indexedTarget);
+        this.titleTargeters.set(this.indexedTitle,this.indexed)
       }
-      indexingTarget.setIndex(atThen)
-      updateToTarget()
+      this.indexingTarget.setIndex(atThen);
+      this.updateToTarget()
     }
-    indexing.retarget(indexingTarget)
-    indexed = titleTargeters.get(indexedTitle)
-    if (indexed == null) throw IllegalStateException("Null indexed in " + this)
-    indexed.retarget(indexedTarget)
+    this.indexing.retarget(this.indexingTarget);
+    this.indexed=this.titleTargeters.get(this.indexedTitle);
+    if(!this.indexed) throw new Error('No indexed for '+this.indexedTitle);
+    this.indexed.retarget(this.indexedTarget)
   }
-private fun updateToTarget() {
-    val frame = target() as IndexingFrame
-    indexingTarget = frame.indexing()
-    indexedTarget = frame.indexedTarget()
-    indexedTitle = indexedTarget.title()
+  retargetFacets(){
+    super.retargetFacets();
+    this.indexing.retargetFacets();
+    for(let t in this.titleTargeters.values()) t.retargetFacets()
   }
-  fun retargetFacets() {
-    super.retargetFacets()
-    indexing.retargetFacets()
-    for (t in titleTargeters.values()) t.retargetFacets()
+  titleElements():Array<Targeter>{
+    let list=this.elements();
+    list.push(this.indexing);
+    for(let t in this.titleTargeters.values()) list.push(t);
+    return list
   }
-  fun titleElements():Array<STargeter> {
-    val list = ArrayList<STargeter>(Arrays.asList(elements))
-    list.add(indexing)
-  for (t in titleTargeters.values()) list.add(t)
-  return list.toArray(arrayOf<STargeter>())
-}
+  private updateToTarget(){
+    let frame=this.target() as IndexingFrame;
+    this.indexingTarget=frame.indexing();
+    this.indexedTarget=frame.indexedTarget();
+    this.indexedTitle=this.indexedTarget.title()
+  }
 }
