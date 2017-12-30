@@ -3,9 +3,9 @@ import {
   TargetCore,
   Targeter,
   Targety,
+  IndexingFrame,
 } from './_globals';
 import {TargeterCore} from './_locals';
-import {IndexingFrame} from './IndexingFrame';
 export class IndexingFrameTargeter extends TargeterCore{
   titleTargeters=new Map<string,Targeter>();
   indexing:Targeter;
@@ -41,12 +41,12 @@ export class IndexingFrameTargeter extends TargeterCore{
   retargetFacets(){
     super.retargetFacets();
     this.indexing.retargetFacets();
-    for(let t in this.titleTargeters.values()) t.retargetFacets()
+    this.titleTargeters.forEach(t=>t.retargetFacets())
   }
-  titleElements():Array<Targeter>{
+  titleElements():Targeter[]{
     let list=this.elements();
     list.push(this.indexing);
-    for(let t in this.titleTargeters.values()) list.push(t);
+    this.titleTargeters.forEach(t=>list.push(t));
     return list
   }
   private updateToTarget(){

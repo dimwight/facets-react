@@ -91,6 +91,60 @@ class TargeterCore {
 }
 //# sourceMappingURL=TargeterCore.js.map
 
+class IndexingFrameTargeter$$1 extends TargeterCore {
+    constructor() {
+        super(...arguments);
+        this.titleTargeters = new Map();
+    }
+    retarget(Targety) {
+        super.retarget(Targety);
+        this.updateToTarget();
+        if (!this.indexing) {
+            this.indexing = this.indexingTarget.newTargeter();
+            this.indexing.setNotifiable(this);
+        }
+        if (this.titleTargeters.size === 0) {
+            let atThen = this.indexingTarget.index();
+            for (let at = 0; at < this.indexingTarget.indexables().length; at++) {
+                this.indexingTarget.setIndex(at);
+                this.updateToTarget();
+                this.indexed = this.indexedTarget.newTargeter();
+                this.indexed.setNotifiable(this);
+                this.indexed.retarget(this.indexedTarget);
+                this.titleTargeters.set(this.indexedTitle, this.indexed);
+            }
+            this.indexingTarget.setIndex(atThen);
+            this.updateToTarget();
+        }
+        this.indexing.retarget(this.indexingTarget);
+        this.indexed = this.titleTargeters.get(this.indexedTitle);
+        if (!this.indexed)
+            throw new Error('No indexed for ' + this.indexedTitle);
+        this.indexed.retarget(this.indexedTarget);
+    }
+    retargetFacets() {
+        super.retargetFacets();
+        this.indexing.retargetFacets();
+        for (let t in this.titleTargeters.values())
+            t.retargetFacets();
+    }
+    titleElements() {
+        let list = this.elements();
+        list.push(this.indexing);
+        for (let t in this.titleTargeters.values())
+            list.push(t);
+        return list;
+    }
+    updateToTarget() {
+        let frame = this.target();
+        this.indexingTarget = frame.indexing();
+        this.indexedTarget = frame.indexedTarget();
+        this.indexedTitle = this.indexedTarget.title();
+    }
+}
+
+//# sourceMappingURL=_locals.js.map
+
 class TargetCore extends NotifyingCore {
     constructor(title_, extra) {
         super();
@@ -210,6 +264,32 @@ class Textual$$1 extends TargetCore {
     }
 }
 //# sourceMappingURL=Textual.js.map
+
+class IndexingFrame$$1 extends TargetCore {
+    constructor(title, indexing_) {
+        super(title);
+        this.indexing_ = indexing_;
+        this.indexing_.setNotifiable(this);
+    }
+    indexedTarget() {
+        let indexed = this.indexing_.indexed();
+        const type = indexed.type;
+        return type && type === 'Targety' ? indexed : this.newIndexedTargets(indexed);
+    }
+    newIndexedTargets(indexed) {
+        throw new Error("Not implemented in " + this.title());
+    }
+    indexing() {
+        return this.indexing_;
+    }
+    newTargeter() {
+        return new IndexingFrameTargeter$$1();
+    }
+    notifiesTargeter() {
+        return true;
+    }
+}
+//# sourceMappingURL=IndexingFrame.js.map
 
 //# sourceMappingURL=_globals.js.map
 
@@ -340,7 +420,7 @@ class Facets {
             getIndexables: title => p.getIndexables(),
             newUiSelectable: i => p.newUiSelectable(i)
         });
-        let frame = new IndexingFrame(frameTitle, indexing);
+        let frame = new IndexingFrame$$1(frameTitle, indexing);
         traceThing(' > Created indexing frame ', frame);
         return frame;
     }
