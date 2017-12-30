@@ -139,6 +139,7 @@ class TargetCore extends NotifyingCore {
     }
 }
 TargetCore.NoState = 'No state set';
+//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -352,7 +353,6 @@ class IndexingFrame extends TargetCore {
         this.indexing = indexing;
     }
 }
-//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;

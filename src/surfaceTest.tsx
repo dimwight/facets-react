@@ -56,7 +56,7 @@ const SimpleTests={
   AllNonSelecting:new SimpleTest('AllNonSelecting',newAllSimplesTree,buildAllSimples),
   SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
     (facets,activeTitle)=>{
-      traceThing('onRetargeted:no live',{activeTitle:activeTitle});
+      traceThing('^onRetargeted:no live',{activeTitle:activeTitle});
       const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
       if(live!==null)[SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
