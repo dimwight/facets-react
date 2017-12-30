@@ -56,9 +56,9 @@ const SimpleTests={
   AllNonSelecting:new SimpleTest('AllNonSelecting',newAllSimplesTree,buildAllSimples),
   SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
     (facets,activeTitle)=>{
-      traceThing('^onRetargeted',{activeTitle:activeTitle});
-      const live=facets.getTargetState(SelectingTitles.Live) as boolean;
-      if(false)[SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
+      traceThing('onRetargeted:no live',{activeTitle:activeTitle});
+      const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
+      if(live!==null)[SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
           facets.setTargetLive(title+tail,live),
         ),
@@ -483,6 +483,6 @@ function buildSelectingShowable(facets){
   );
 }
 export function doTest(){
-  if(true)new TestApp(SimpleTests.TogglingLive).buildSurface();
+  if(true)new TestApp(SimpleTests.SelectingTyped).buildSurface();
   else new ContentingTest().buildSurface();
 }

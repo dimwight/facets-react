@@ -15,9 +15,8 @@ const common = {
   ]
 };
 
-const entry = 'src/main.js';
 const main = Object.assign({}, common, {
-  entry: entry,
+  entry: 'src/main.js',
   dest: 'public/index.js',
   sourceMap: true,
   external: [
@@ -38,7 +37,7 @@ const fts = Object.assign({}, common, {
   dest: 'public/Facets_.js',
 });
 
-const bundle = true?fts:main;
+const bundle = false?fts:main;
 console.log('Bundling '+bundle.entry+' to '+bundle.dest+', format='+bundle.format);
 
 export default bundle;
