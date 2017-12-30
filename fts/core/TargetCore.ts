@@ -18,7 +18,7 @@ export class TargetCore extends NotifyingCore implements Targety {
     return this.state_;
   }
   constructor(protected readonly title_:string,
-              protected readonly extra?:Targety[]|TargetCoupler){
+              protected extra?:Targety[]|TargetCoupler){
     super();
   }
   notifiesTargeter():boolean{
@@ -26,12 +26,15 @@ export class TargetCore extends NotifyingCore implements Targety {
     return extra&&extra instanceof Array;
   }
   elements():Targety[]{
-    const extra=this.extra;
-    if(extra&&extra instanceof Array){
-      extra.forEach(e=>e.setNotifiable(this));
-      return extra;
+    if(!this.extra)this.extra=this.lazyElements();
+    if(this.extra instanceof Array){
+      this.extra.forEach(e=>e.setNotifiable(this));
+      return this.extra;
     }
-    else return[];
+    else return [];
+  }
+  lazyElements():Targety[]{
+    return []
   }
   updateState(update:SimpleState){
     this.state_=update;

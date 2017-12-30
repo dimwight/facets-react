@@ -9,7 +9,7 @@ export function traceThing(top:string, thing?) {
   if(top.charAt(0)==='^')return;
 
   // Allow for callback eg to find and kill circular references
-  const callback=true ? null : (key, value) => {
+  const callback=false ? null : (key, value) => {
     if(false)console.log(key);
     return '|notifiable_|elements_|'.includes(key)?key:value;
   };

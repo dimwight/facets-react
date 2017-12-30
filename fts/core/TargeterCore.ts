@@ -33,7 +33,10 @@ export class TargeterCore implements Targeter{
     else return this.target_;
   }
   elements():Targeter[]{
-    return this.elements_;
+    return this.elements_
+  }
+  titleElements():Targeter[]{
+    return this.elements()
   }
   private facets_:Facet[]=[];
   attachFacet(f:Facet){

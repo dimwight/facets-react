@@ -27,7 +27,9 @@ function traceThing(top, thing) {
     if (top.charAt(0) === '^')
         return;
     // Allow for callback eg to find and kill circular references
-    const callback = null;
+    const callback = (key, value) => {
+        return '|notifiable_|elements_|'.includes(key) ? key : value;
+    };
     // Construct body
     const tail = !thing ? '' : JSON.stringify(thing, callback, 1);
     // Issue complete message
@@ -79,6 +81,9 @@ class TargeterCore {
     elements() {
         return this.elements_;
     }
+    titleElements() {
+        return this.elements();
+    }
     attachFacet(f) {
         if (!this.facets_.includes(f))
             this.facets_.push(f);
@@ -125,14 +130,12 @@ class IndexingFrameTargeter$$1 extends TargeterCore {
     retargetFacets() {
         super.retargetFacets();
         this.indexing.retargetFacets();
-        for (let t in this.titleTargeters.values())
-            t.retargetFacets();
+        this.titleTargeters.forEach(t => t.retargetFacets());
     }
     titleElements() {
         let list = this.elements();
         list.push(this.indexing);
-        for (let t in this.titleTargeters.values())
-            list.push(t);
+        this.titleTargeters.forEach(t => list.push(t));
         return list;
     }
     updateToTarget() {
@@ -142,6 +145,7 @@ class IndexingFrameTargeter$$1 extends TargeterCore {
         this.indexedTitle = this.indexedTarget.title();
     }
 }
+//# sourceMappingURL=IndexingFrameTargeter.js.map
 
 //# sourceMappingURL=_locals.js.map
 
@@ -161,13 +165,17 @@ class TargetCore extends NotifyingCore {
         return extra && extra instanceof Array;
     }
     elements() {
-        const extra = this.extra;
-        if (extra && extra instanceof Array) {
-            extra.forEach(e => e.setNotifiable(this));
-            return extra;
+        if (!this.extra)
+            this.extra = this.lazyElements();
+        if (this.extra instanceof Array) {
+            this.extra.forEach(e => e.setNotifiable(this));
+            return this.extra;
         }
         else
             return [];
+    }
+    lazyElements() {
+        return [];
     }
     updateState(update) {
         this.state_ = update;
@@ -191,7 +199,6 @@ class TargetCore extends NotifyingCore {
     }
 }
 TargetCore.NoState = 'No state set';
-//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -315,7 +322,7 @@ class Facets {
         this.onRetargeted = title => {
             app.onRetargeted(title);
         };
-        let trees = app.getContentTrees();
+        const trees = app.getContentTrees();
         if (trees instanceof Array)
             throw new Error('Not implemented for ' + trees.length);
         else
@@ -329,7 +336,7 @@ class Facets {
         app.buildLayout();
     }
     callOnRetargeted() {
-        let title = this.root.title();
+        const title = this.root.title();
         traceThing('> Calling onRetargeted with active=' + title);
         this.onRetargeted(title);
     }
@@ -337,17 +344,17 @@ class Facets {
         this.root = tree;
     }
     newTextualTarget(title, coupler) {
-        let textual = new Textual$$1(title, coupler);
+        const textual = new Textual$$1(title, coupler);
         traceThing('> Created textual title=' + title);
         return textual;
     }
     newTogglingTarget(title, coupler) {
-        let toggling = new Toggling$$1(title, coupler);
+        const toggling = new Toggling$$1(title, coupler);
         traceThing('> Created toggling title=' + title);
         return toggling;
     }
     newTriggerTarget(title, coupler) {
-        let trigger = new TargetCore(title, coupler);
+        const trigger = new TargetCore(title, coupler);
         traceThing('> Created trigger title=' + title);
         return trigger;
     }
@@ -355,18 +362,18 @@ class Facets {
         return new TargetCore(title, members);
     }
     addTitleTargeters(t) {
-        let title = t.title();
-        const elements = t.elements();
+        const title = t.title();
+        const elements = t.titleElements();
         this.titleTargeters.set(title, t);
         traceThing('> Added targeter: title=' + title + ': elements=' + elements.length);
         elements.forEach((e) => this.addTitleTargeters(e));
     }
     attachFacet(title, updater) {
-        let t = this.titleTargeters.get(title);
+        const t = this.titleTargeters.get(title);
         if (!t)
-            throw new Error('Missing targeter for ' + title);
+            throw new Error('No targeter for ' + title);
         traceThing('> Attaching facet: title=' + title);
-        let facet = {
+        const facet = {
             retarget(ta) {
                 traceThing('> Facet retargeted title=' + ta.title() + ' state=' + ta.state());
                 updater(ta.state());
@@ -388,7 +395,7 @@ class Facets {
         this.titleTarget(title).setLive(live);
     }
     notifyTargetUpdated(title) {
-        let target = this.titleTarget(title);
+        const target = this.titleTarget(title);
         target.notifyParent();
     }
     titleTarget(title) {
@@ -398,12 +405,12 @@ class Facets {
         return got.target();
     }
     newIndexingTarget(title, coupler) {
-        let indexing = new Indexing$$1(title, coupler);
+        const indexing = new Indexing$$1(title, coupler);
         traceThing('> Created indexing title=' + title, { coupler: !coupler.targetStateUpdated });
         return indexing;
     }
     getIndexingState(title) {
-        let i = this.titleTarget(title);
+        const i = this.titleTarget(title);
         if (!i)
             throw new Error('No target for title=' + title);
         else
@@ -413,15 +420,23 @@ class Facets {
             };
     }
     newIndexingFrame(p) {
-        let frameTitle = p.frameTitle ? p.frameTitle
+        const frameTitle = p.frameTitle ? p.frameTitle
             : 'IndexingFrame' + this.indexingFrames++, indexingTitle = p.indexingTitle ? p.indexingTitle
             : frameTitle + '.Indexing';
-        let indexing = new Indexing$$1(indexingTitle, {
+        const indexing = new Indexing$$1(indexingTitle, {
             getIndexables: title => p.getIndexables(),
             newUiSelectable: i => p.newUiSelectable(i)
         });
-        let frame = new IndexingFrame$$1(frameTitle, indexing);
-        traceThing(' > Created indexing frame ', frame);
+        traceThing(' > Created indexing ' + indexingTitle);
+        const frame = new class extends IndexingFrame$$1 {
+            lazyElements() {
+                return p.newFrameTargets();
+            }
+            newIndexedTargets(indexed) {
+                return p.newIndexedTree(indexed, p.newIndexedTreeTitle(indexed));
+            }
+        }(frameTitle, indexing);
+        traceThing(' > Created indexing frame ' + frameTitle);
         return frame;
     }
 }
