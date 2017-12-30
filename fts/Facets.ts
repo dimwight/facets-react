@@ -149,8 +149,3 @@ export class Facets{
     return frame
   }
 }
-  class IndexingFrame extends TargetCore{
-    constructor(title, readonly indexing:Indexing){
-      super(title);
-    }
-  }

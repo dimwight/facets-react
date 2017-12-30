@@ -91,8 +91,6 @@ class TargeterCore {
 }
 //# sourceMappingURL=TargeterCore.js.map
 
-//# sourceMappingURL=_locals.js.map
-
 class TargetCore extends NotifyingCore {
     constructor(title_, extra) {
         super();
@@ -347,12 +345,7 @@ class Facets {
         return frame;
     }
 }
-class IndexingFrame extends TargetCore {
-    constructor(title, indexing) {
-        super(title);
-        this.indexing = indexing;
-    }
-}
+//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;
