@@ -110,7 +110,12 @@ class TargetCore extends NotifyingCore {
     }
     elements() {
         const extra = this.extra;
-        return extra && extra instanceof Array ? extra : [];
+        if (extra && extra instanceof Array) {
+            extra.forEach(e => e.setNotifiable(this));
+            return extra;
+        }
+        else
+            return [];
     }
     updateState(update) {
         this.state_ = update;
@@ -134,7 +139,6 @@ class TargetCore extends NotifyingCore {
     }
 }
 TargetCore.NoState = 'No state set';
-//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -306,13 +310,13 @@ class Facets {
     }
     notifyTargetUpdated(title) {
         let target = this.titleTarget(title);
-        if (!target)
-            throw new Error('No target for ' + title);
         target.notifyParent();
     }
     titleTarget(title) {
         const got = this.titleTargeters.get(title);
-        return !got ? null : got.target();
+        if (!got)
+            throw new Error('No targeter for ' + title);
+        return got.target();
     }
     newIndexingTarget(title, coupler) {
         let indexing = new Indexing$$1(title, coupler);
@@ -330,8 +334,8 @@ class Facets {
             };
     }
     newIndexingFrame(p) {
-        let frameTitle = p.frameTitle != null ? p.frameTitle
-            : 'IndexingFrame' + this.indexingFrames++, indexingTitle = p.indexingTitle != null ? p.indexingTitle
+        let frameTitle = p.frameTitle ? p.frameTitle
+            : 'IndexingFrame' + this.indexingFrames++, indexingTitle = p.indexingTitle ? p.indexingTitle
             : frameTitle + '.Indexing';
         let indexing = new Indexing$$1(indexingTitle, {
             getIndexables: title => p.getIndexables(),
@@ -348,6 +352,7 @@ class IndexingFrame extends TargetCore {
         this.indexing = indexing;
     }
 }
+//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;

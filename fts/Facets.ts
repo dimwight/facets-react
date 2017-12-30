@@ -114,12 +114,12 @@ export class Facets{
   }
   notifyTargetUpdated(title){
     let target=this.titleTarget(title);
-    if(!target)throw new Error('No target for '+title);
     target.notifyParent();
   }
   titleTarget(title):Targety{
     const got=this.titleTargeters.get(title);
-    return !got?null:got.target();
+    if(!got)throw new Error('No targeter for '+title);
+    return got.target();
   }
   newIndexingTarget(title,coupler:IndexingCoupler):Targety{
     let indexing=new Indexing(title,coupler);
@@ -136,9 +136,9 @@ export class Facets{
   }
   private indexingFrames;
   newIndexingFrame(p: IndexingFramePolicy): Targety{
-    let frameTitle = p.frameTitle != null?p.frameTitle
+    let frameTitle = p.frameTitle?p.frameTitle
       :'IndexingFrame' +this.indexingFrames++,
-    indexingTitle = p.indexingTitle != null?p.indexingTitle
+    indexingTitle = p.indexingTitle?p.indexingTitle
       :frameTitle + '.Indexing';
     let indexing = new Indexing(indexingTitle,{
       getIndexables:title=>p.getIndexables(),

@@ -27,7 +27,11 @@ export class TargetCore extends NotifyingCore implements Targety {
   }
   elements():Targety[]{
     const extra=this.extra;
-    return extra&&extra instanceof Array?extra:[];
+    if(extra&&extra instanceof Array){
+      extra.forEach(e=>e.setNotifiable(this));
+      return extra;
+    }
+    else return[];
   }
   updateState(update:SimpleState){
     this.state_=update;
