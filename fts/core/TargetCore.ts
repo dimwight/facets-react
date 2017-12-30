@@ -18,18 +18,26 @@ export class TargetCore extends NotifyingCore implements Targety {
     return this.state_;
   }
   constructor(protected readonly title_:string,
-              protected readonly extra:Targety[]|TargetCoupler){
+              protected readonly extra?:Targety[]|TargetCoupler){
     super();
   }
   notifiesTargeter():boolean{
-    return this.extra!==null;
-  }
-  newTargeter():Targeter{
-    return new TargeterCore();
+    const extra=this.extra;
+    return extra&&extra instanceof Array;
   }
   elements():Targety[]{
     const extra=this.extra;
-    return extra instanceof Array?extra:[];
+    return extra&&extra instanceof Array?extra:[];
+  }
+  updateState(update:SimpleState){
+    this.state_=update;
+    const extra=this.extra;
+    const updater=!extra||extra instanceof Array?null
+      :(extra as TargetCoupler).targetStateUpdated;
+    if(updater)updater(this.state(),this.title())
+  }
+  newTargeter():Targeter{
+    return new TargeterCore();
   }
   title(){
     return this.title_;
@@ -39,12 +47,5 @@ export class TargetCore extends NotifyingCore implements Targety {
   }
   setLive(live:boolean){
     this.live=live;
-  }
-  updateState(update:SimpleState){
-    this.state_=update;
-    const extra=this.extra;
-    const updater=extra instanceof Array?null
-      :(extra as TargetCoupler).targetStateUpdated;
-    if(updater)updater(this.state(),this.title())
   }
 }

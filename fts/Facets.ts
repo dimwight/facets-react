@@ -5,7 +5,7 @@ import {
   Notifiable,
   Indexing,
   Toggling,
-  Textual
+  Textual,
 } from './core/_globals';
 import {
   SimpleState,
@@ -17,6 +17,7 @@ import {
   IndexingState,
   TogglingCoupler,
   TargetCoupler,
+  IndexingFramePolicy,
 } from 'facets-js';
 import {traceThing} from './util/_globals';
 export function newInstance(trace:boolean):Facets{
@@ -24,7 +25,7 @@ export function newInstance(trace:boolean):Facets{
 }
 export class Facets{
   readonly times={
-    doTime:false
+    doTime:false,
   };
   private readonly notifiable:Notifiable={
     notify:notice=>{
@@ -32,7 +33,7 @@ export class Facets{
       this.rootTargeter.retarget(this.rootTargeter.target());
       this.callOnRetargeted();
       this.rootTargeter.retargetFacets();
-    }
+    },
   };
   private onRetargeted;
   titleTargeters=new Map<string,Targeter>();
@@ -55,7 +56,7 @@ export class Facets{
   }
   private callOnRetargeted(){
     let title=this.root.title();
-    traceThing("> Calling onRetargeted with active="+title);
+    traceThing('> Calling onRetargeted with active='+title);
     this.onRetargeted(title);
   }
   addContentTree(tree:Targety){
@@ -94,7 +95,7 @@ export class Facets{
       retarget(ta:Targety){
         traceThing('> Facet retargeted title='+ta.title()+' state='+ta.state());
         updater(ta.state());
-      }
+      },
     };
     t.attachFacet(facet);
   }
@@ -117,7 +118,8 @@ export class Facets{
     target.notifyParent();
   }
   titleTarget(title):Targety{
-    return this.titleTargeters.get(title).target();
+    const got=this.titleTargeters.get(title);
+    return !got?null:got.target();
   }
   newIndexingTarget(title,coupler:IndexingCoupler):Targety{
     let indexing=new Indexing(title,coupler);
@@ -132,4 +134,23 @@ export class Facets{
       indexed:i.indexed(),
     };
   }
+  private indexingFrames;
+  newIndexingFrame(p: IndexingFramePolicy): Targety{
+    let frameTitle = p.frameTitle != null?p.frameTitle
+      :'IndexingFrame' +this.indexingFrames++,
+    indexingTitle = p.indexingTitle != null?p.indexingTitle
+      :frameTitle + '.Indexing';
+    let indexing = new Indexing(indexingTitle,{
+      getIndexables:title=>p.getIndexables(),
+      newUiSelectable:i=>p.newUiSelectable(i)
+    });
+    let frame = new IndexingFrame(frameTitle, indexing);
+    traceThing(' > Created indexing frame ', frame);
+    return frame
+  }
 }
+  class IndexingFrame extends TargetCore{
+    constructor(title, readonly indexing:Indexing){
+      super(title);
+    }
+  }

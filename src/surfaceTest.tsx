@@ -483,6 +483,6 @@ function buildSelectingShowable(facets){
   );
 }
 export function doTest(){
-  if(true)new TestApp(SimpleTests.Indexing).buildSurface();
+  if(true)new TestApp(SimpleTests.SelectingTyped).buildSurface();
   else new ContentingTest().buildSurface();
 }

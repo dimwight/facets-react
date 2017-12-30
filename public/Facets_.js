@@ -105,14 +105,23 @@ class TargetCore extends NotifyingCore {
         return this.state_;
     }
     notifiesTargeter() {
-        return this.extra !== null;
-    }
-    newTargeter() {
-        return new TargeterCore();
+        const extra = this.extra;
+        return extra && extra instanceof Array;
     }
     elements() {
         const extra = this.extra;
-        return extra instanceof Array ? extra : [];
+        return extra && extra instanceof Array ? extra : [];
+    }
+    updateState(update) {
+        this.state_ = update;
+        const extra = this.extra;
+        const updater = !extra || extra instanceof Array ? null
+            : extra.targetStateUpdated;
+        if (updater)
+            updater(this.state(), this.title());
+    }
+    newTargeter() {
+        return new TargeterCore();
     }
     title() {
         return this.title_;
@@ -122,14 +131,6 @@ class TargetCore extends NotifyingCore {
     }
     setLive(live) {
         this.live = live;
-    }
-    updateState(update) {
-        this.state_ = update;
-        const extra = this.extra;
-        const updater = extra instanceof Array ? null
-            : extra.targetStateUpdated;
-        if (updater)
-            updater(this.state(), this.title());
     }
 }
 TargetCore.NoState = 'No state set';
@@ -183,6 +184,7 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
+//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -214,7 +216,7 @@ function newInstance(trace) {
 class Facets {
     constructor() {
         this.times = {
-            doTime: false
+            doTime: false,
         };
         this.notifiable = {
             notify: notice => {
@@ -222,7 +224,7 @@ class Facets {
                 this.rootTargeter.retarget(this.rootTargeter.target());
                 this.callOnRetargeted();
                 this.rootTargeter.retargetFacets();
-            }
+            },
         };
         this.titleTargeters = new Map();
     }
@@ -245,7 +247,7 @@ class Facets {
     }
     callOnRetargeted() {
         let title = this.root.title();
-        traceThing("> Calling onRetargeted with active=" + title);
+        traceThing('> Calling onRetargeted with active=' + title);
         this.onRetargeted(title);
     }
     addContentTree(tree) {
@@ -285,7 +287,7 @@ class Facets {
             retarget(ta) {
                 traceThing('> Facet retargeted title=' + ta.title() + ' state=' + ta.state());
                 updater(ta.state());
-            }
+            },
         };
         t.attachFacet(facet);
     }
@@ -309,7 +311,8 @@ class Facets {
         target.notifyParent();
     }
     titleTarget(title) {
-        return this.titleTargeters.get(title).target();
+        const got = this.titleTargeters.get(title);
+        return !got ? null : got.target();
     }
     newIndexingTarget(title, coupler) {
         let indexing = new Indexing$$1(title, coupler);
@@ -326,8 +329,25 @@ class Facets {
                 indexed: i.indexed(),
             };
     }
+    newIndexingFrame(p) {
+        let frameTitle = p.frameTitle != null ? p.frameTitle
+            : 'IndexingFrame' + this.indexingFrames++, indexingTitle = p.indexingTitle != null ? p.indexingTitle
+            : frameTitle + '.Indexing';
+        let indexing = new Indexing$$1(indexingTitle, {
+            getIndexables: title => p.getIndexables(),
+            newUiSelectable: i => p.newUiSelectable(i)
+        });
+        let frame = new IndexingFrame(frameTitle, indexing);
+        traceThing(' > Created indexing frame ', frame);
+        return frame;
+    }
 }
-//# sourceMappingURL=Facets.js.map
+class IndexingFrame extends TargetCore {
+    constructor(title, indexing) {
+        super(title);
+        this.indexing = indexing;
+    }
+}
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;
