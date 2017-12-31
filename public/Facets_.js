@@ -432,7 +432,10 @@ class Facets {
                 return p.newFrameTargets();
             }
             newIndexedTargets(indexed) {
-                return p.newIndexedTree(indexed, p.newIndexedTreeTitle(indexed));
+                const titler = p.newIndexedTreeTitle, title = titler ? titler(indexed) : this.title() + '|indexed';
+                const newTree = p.newIndexedTree;
+                return newTree ? newTree(indexed, title)
+                    : new TargetCore(title);
             }
         }(frameTitle, indexing);
         traceThing(' > Created indexing frame ' + frameTitle);

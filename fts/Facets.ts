@@ -153,7 +153,11 @@ export class Facets{
         return p.newFrameTargets()as Targety[]
       }
       protected newIndexedTargets(indexed:any):Targety {
-        return p.newIndexedTree(indexed,p.newIndexedTreeTitle(indexed))as Targety
+        const titler=p.newIndexedTreeTitle,
+          title=titler?titler(indexed):this.title()+'|indexed';
+        const newTree=p.newIndexedTree;
+        return newTree?newTree(indexed,title)as Targety
+          :new TargetCore(title)
       }
     }(frameTitle, indexing);
     traceThing(' > Created indexing frame '+ frameTitle);
