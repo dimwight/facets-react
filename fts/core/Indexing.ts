@@ -37,7 +37,10 @@ export class Indexing extends TargetCore {
     return this.extra as IndexingCoupler;
   }
   indexed(): any {
-    traceThing('indexed',this.indexables())
+    traceThing('indexed',{
+      'indexables':this.indexables().length,
+      'state':this.state_
+    });
     if (this.state_===TargetCore.NoState)
       throw new Error('No index in ' + this.title());
     else return this.indexables()[this.state_ as number];

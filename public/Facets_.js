@@ -213,6 +213,8 @@ function traceThing$1(top, thing) {
         }, 1));
 }
 
+//# sourceMappingURL=Bits.js.map
+
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
         super(title, coupler);
@@ -245,7 +247,10 @@ class Indexing$$1 extends TargetCore {
         return this.extra;
     }
     indexed() {
-        traceThing$1('indexed', this.indexables());
+        traceThing$1('indexed', {
+            'indexables': this.indexables().length,
+            'state': this.state_
+        });
         if (this.state_ === TargetCore.NoState)
             throw new Error('No index in ' + this.title());
         else
@@ -262,7 +267,6 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
-//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
