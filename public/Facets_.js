@@ -306,6 +306,7 @@ class Facets {
         this.times = {
             doTime: false,
         };
+        this.activeContentTitle = "[Active Content Tree]";
         this.notifiable = {
             notify: notice => {
                 traceThing('> Notified with ' + this.rootTargeter.title());
@@ -315,6 +316,24 @@ class Facets {
             },
         };
         this.titleTargeters = new Map();
+        this.titleTrees = new Map();
+        let activeTitle = this.activeContentTitle;
+        let indexedTargetTitle = () => this.root.indexedTarget().title();
+        this.root = new class extends IndexingFrame$$1 {
+            lazyElements() {
+                return [
+                    new Textual$$1(activeTitle, {
+                        getText: () => indexedTargetTitle()
+                    })
+                ];
+            }
+        }('RootFrame', new Indexing$$1('RootIndexing', {
+            getIndexables: title => {
+                const trees = [];
+                this.titleTrees.forEach(t => trees.push(t));
+                return trees;
+            }
+        }));
     }
     buildApp(app) {
         this.onRetargeted = title => {
@@ -340,7 +359,8 @@ class Facets {
         this.onRetargeted(title);
     }
     addContentTree(tree) {
-        this.root = tree;
+        this.titleTrees.set(tree.title(), tree);
+        this.root.indexing().setIndexed(tree);
     }
     newTextualTarget(title, coupler) {
         const textual = new Textual$$1(title, coupler);
