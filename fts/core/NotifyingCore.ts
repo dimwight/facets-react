@@ -2,7 +2,7 @@ import {Notifiable} from './_globals';
 import {Notifying} from './_locals';
 export abstract class NotifyingCore implements Notifying{
   private notifiable_: Notifiable;
-  constructor(protected readonly title_:string){}
+  constructor(public readonly type:string,protected readonly title_:string){}
   title(){
     return this.title_;
   }

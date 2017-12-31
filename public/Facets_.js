@@ -2,7 +2,8 @@
 'use strict';
 
 class NotifyingCore {
-    constructor(title_) {
+    constructor(type, title_) {
+        this.type = type;
         this.title_ = title_;
     }
     title() {
@@ -50,7 +51,7 @@ function traceThing(top, thing) {
 
 class TargeterCore$$1 extends NotifyingCore {
     constructor() {
-        super('Untargeted');
+        super(TargeterCore$$1.type, 'Untargeted');
         this.facets_ = [];
     }
     retarget(target) {
@@ -95,6 +96,7 @@ class TargeterCore$$1 extends NotifyingCore {
         this.facets_.forEach(f => f.retarget(this.target_));
     }
 }
+TargeterCore$$1.type = 'Targeter';
 //# sourceMappingURL=TargeterCore.js.map
 
 class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
@@ -152,7 +154,7 @@ class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
 
 class TargetCore extends NotifyingCore {
     constructor(title, extra) {
-        super(title);
+        super(TargetCore.type, title);
         this.extra = extra;
         this.live = true;
         this.state_ = TargetCore.NoState;
@@ -195,6 +197,7 @@ class TargetCore extends NotifyingCore {
         this.live = live;
     }
 }
+TargetCore.type = 'Targety';
 TargetCore.NoState = 'No state set';
 //# sourceMappingURL=TargetCore.js.map
 
@@ -301,7 +304,7 @@ class IndexingFrame$$1 extends TargetCore {
         let indexed = this.indexing_.indexed();
         const type = indexed.type;
         traceThing$1('indexedTarget', !indexed.type);
-        return type && type === 'Targety' ? indexed : this.newIndexedTargets(indexed);
+        return type && type === TargetCore.type ? indexed : this.newIndexedTargets(indexed);
     }
     newIndexedTargets(indexed) {
         throw new Error("Not implemented in " + this.title());
@@ -316,6 +319,7 @@ class IndexingFrame$$1 extends TargetCore {
         return true;
     }
 }
+//# sourceMappingURL=IndexingFrame.js.map
 
 //# sourceMappingURL=_globals.js.map
 
@@ -383,6 +387,9 @@ class Facets {
     addContentTree(tree) {
         this.titleTrees.set(tree.title(), tree);
         this.root.indexing().setIndexed(tree);
+    }
+    activateContentTree(title) {
+        throw new Error('Not implemented for ' + title);
     }
     newTextualTarget(title, coupler) {
         const textual = new Textual$$1(title, coupler);
@@ -484,7 +491,6 @@ class Facets {
         return frame;
     }
 }
-//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;

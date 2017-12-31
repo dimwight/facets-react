@@ -15,7 +15,7 @@ export class IndexingFrame extends TargetCore{
     let indexed =this.indexing_.indexed();
     const type=indexed.type;
     traceThing('indexedTarget',!indexed.type);
-    return type&&type==='Targety'?indexed as Targety:this.newIndexedTargets(indexed)
+    return type&&type===TargetCore.type?indexed as Targety:this.newIndexedTargets(indexed)
   }
   protected newIndexedTargets(indexed:any):Targety {
     throw new Error("Not implemented in " + this.title())

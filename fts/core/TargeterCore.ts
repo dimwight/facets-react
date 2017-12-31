@@ -7,10 +7,11 @@ import {
 import {NotifyingCore} from './_locals';
 import {traceThing} from '../util/_globals';
 export class TargeterCore extends NotifyingCore implements Targeter{
+  public static type='Targeter';
   private elements_: Targeter[];
   private target_:Targety;
   constructor(){
-    super('Untargeted')
+    super(TargeterCore.type,'Untargeted')
   }
   retarget(target:Targety){
     if(!target)throw new Error('Missing target');

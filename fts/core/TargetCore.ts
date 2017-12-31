@@ -11,6 +11,7 @@ import {
   TargetCoupler,
 } from 'facets-js';
 export class TargetCore extends NotifyingCore implements Targety {
+  public static type='Targety';
   private live=true;
   protected static NoState='No state set';
   protected state_:SimpleState=TargetCore.NoState;
@@ -18,7 +19,7 @@ export class TargetCore extends NotifyingCore implements Targety {
     return this.state_;
   }
   constructor(title:string,protected extra?:Targety[]|TargetCoupler){
-    super(title);
+    super(TargetCore.type,title);
   }
   notifiesTargeter():boolean{
     const extra=this.extra;

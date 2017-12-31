@@ -88,6 +88,9 @@ export class Facets{
     this.titleTrees.set(tree.title(),tree);
     this.root.indexing().setIndexed(tree)
   }
+  activateContentTree(title:string){
+    throw new Error('Not implemented for '+title);
+  }
   newTextualTarget(title,coupler:TextualCoupler):Target{
     const textual=new Textual(title,coupler);
     traceThing('> Created textual title='+title);
