@@ -89,7 +89,10 @@ export class Facets{
     this.root.indexing().setIndexed(tree)
   }
   activateContentTree(title:string){
-    throw new Error('Not implemented for '+title);
+    const tree=this.titleTrees.get(title);
+    if(!tree)throw new Error('No tree for '+title);
+    this.root.indexing().setIndexed(tree);
+    this.notifiable.notify(title);
   }
   newTextualTarget(title,coupler:TextualCoupler):Target{
     const textual=new Textual(title,coupler);
