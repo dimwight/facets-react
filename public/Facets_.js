@@ -198,6 +198,21 @@ class TargetCore extends NotifyingCore {
 TargetCore.NoState = 'No state set';
 //# sourceMappingURL=TargetCore.js.map
 
+function traceThing$1(top, thing) {
+    if (top.charAt(0) === '^')
+        return;
+    if (!thing)
+        console.log(top);
+    else
+        console.info(top, JSON.stringify(thing, (key, value) => {
+            'facets,__parent,notifiable_'.split(',').forEach(check => {
+                if (key === check)
+                    value = key;
+            });
+            return value;
+        }, 1));
+}
+
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
         super(title, coupler);
@@ -230,8 +245,9 @@ class Indexing$$1 extends TargetCore {
         return this.extra;
     }
     indexed() {
+        traceThing$1('indexed', this.indexables());
         if (this.state_ === TargetCore.NoState)
-            throw new Error(('No index in ' + this.title()));
+            throw new Error('No index in ' + this.title());
         else
             return this.indexables()[this.state_];
     }
@@ -344,7 +360,7 @@ class Facets {
             trees.forEach(t => this.addContentTree(t));
         else
             this.addContentTree(trees);
-        traceThing(' > Building targeter tree for root=' + this.root.title());
+        traceThing('> Building targeter tree for root=' + this.root.title());
         if (!this.rootTargeter)
             this.rootTargeter = this.root.newTargeter();
         this.rootTargeter.setNotifiable(this.notifiable);
@@ -446,7 +462,7 @@ class Facets {
             getIndexables: title => p.getIndexables(),
             newUiSelectable: i => p.newUiSelectable(i)
         });
-        traceThing(' > Created indexing ' + indexingTitle);
+        traceThing('> Created indexing ' + indexingTitle);
         const frame = new class extends IndexingFrame$$1 {
             lazyElements() {
                 return p.newFrameTargets();
@@ -458,10 +474,11 @@ class Facets {
                     : new TargetCore(title);
             }
         }(frameTitle, indexing);
-        traceThing(' > Created indexing frame ' + frameTitle);
+        traceThing('> Created indexing frame ' + frameTitle);
         return frame;
     }
 }
+//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;

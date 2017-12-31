@@ -4,7 +4,7 @@ export function traceThing(top,thing?){
   else console.info(top,
     JSON.stringify(thing, false ? null : (key, value) => {
       if(false)console.log(key)
-      'facets,__parent'.split(',').forEach(check=>{
+      'facets,__parent,notifiable_'.split(',').forEach(check=>{
         if(key===check)value=key;
       });
       return value

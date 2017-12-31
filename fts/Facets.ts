@@ -70,7 +70,7 @@ export class Facets{
     if(trees instanceof Array)
       (trees as Array<Targety>).forEach(t=>this.addContentTree(t));
     else this.addContentTree((trees as Targety));
-    traceThing(' > Building targeter tree for root='+this.root.title());
+    traceThing('> Building targeter tree for root='+this.root.title());
     if(!this.rootTargeter)this.rootTargeter=(this.root as TargetCore).newTargeter();
     this.rootTargeter.setNotifiable(this.notifiable);
     this.rootTargeter.retarget(this.root);
@@ -169,7 +169,7 @@ export class Facets{
       getIndexables:title=>p.getIndexables(),
       newUiSelectable:i=>p.newUiSelectable(i)
     });
-    traceThing(' > Created indexing '+ indexingTitle);
+    traceThing('> Created indexing '+ indexingTitle);
     const frame = new class extends IndexingFrame{
       lazyElements():Targety[]{
         return p.newFrameTargets()as Targety[]
@@ -182,7 +182,7 @@ export class Facets{
           :new TargetCore(title)
       }
     }(frameTitle, indexing);
-    traceThing(' > Created indexing frame '+ frameTitle);
+    traceThing('> Created indexing frame '+ frameTitle);
     return frame
   }
 }

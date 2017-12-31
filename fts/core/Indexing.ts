@@ -5,6 +5,7 @@ import {
   IndexingCoupler,
   SimpleState
 } from 'facets-js';
+import {traceThing} from '../../src/util/Bits';
 export class Indexing extends TargetCore {
   private indexings: any[];  
   constructor (title: string, coupler: IndexingCoupler){
@@ -36,8 +37,9 @@ export class Indexing extends TargetCore {
     return this.extra as IndexingCoupler;
   }
   indexed(): any {
+    traceThing('indexed',this.indexables())
     if (this.state_===TargetCore.NoState)
-      throw new Error(('No index in ' + this.title()));
+      throw new Error('No index in ' + this.title());
     else return this.indexables()[this.state_ as number];
   }
   setIndexed(indexable: any) {
