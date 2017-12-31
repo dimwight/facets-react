@@ -2,6 +2,12 @@
 'use strict';
 
 class NotifyingCore {
+    constructor(title_) {
+        this.title_ = title_;
+    }
+    title() {
+        return this.title_;
+    }
     setNotifiable(n) {
         this.notifiable_ = n;
     }
@@ -12,10 +18,10 @@ class NotifyingCore {
         this.notifiable_.notify(this);
     }
     notify(notice) {
-        throw new Error('Method not implemented.');
+        if (this.notifiable_)
+            this.notifiable_.notify(this.title());
     }
 }
-//# sourceMappingURL=NotifyingCore.js.map
 
 /**
  * Simplifies instrumenting code
@@ -35,22 +41,11 @@ function traceThing(top, thing) {
     // Issue complete message
     console.log(top, tail);
 }
-//# sourceMappingURL=Bits.js.map
 
-//# sourceMappingURL=SwapArrayElement.js.map
-
-//# sourceMappingURL=_globals.js.map
-
-class TargeterCore {
+class TargeterCore$$1 extends NotifyingCore {
     constructor() {
-        this.title_ = 'Untargeted';
+        super('Untargeted');
         this.facets_ = [];
-    }
-    notify(notice) {
-        this.notifiable.notify(notice);
-    }
-    setNotifiable(notifiable) {
-        this.notifiable = notifiable;
     }
     retarget(target) {
         if (!target)
@@ -94,9 +89,8 @@ class TargeterCore {
         this.facets_.forEach(f => f.retarget(this.target_));
     }
 }
-//# sourceMappingURL=TargeterCore.js.map
 
-class IndexingFrameTargeter$$1 extends TargeterCore {
+class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
     constructor() {
         super(...arguments);
         this.titleTargeters = new Map();
@@ -145,14 +139,10 @@ class IndexingFrameTargeter$$1 extends TargeterCore {
         this.indexedTitle = this.indexedTarget.title();
     }
 }
-//# sourceMappingURL=IndexingFrameTargeter.js.map
-
-//# sourceMappingURL=_locals.js.map
 
 class TargetCore extends NotifyingCore {
-    constructor(title_, extra) {
-        super();
-        this.title_ = title_;
+    constructor(title, extra) {
+        super(title);
         this.extra = extra;
         this.live = true;
         this.state_ = TargetCore.NoState;
@@ -186,10 +176,7 @@ class TargetCore extends NotifyingCore {
             updater(this.state(), this.title());
     }
     newTargeter() {
-        return new TargeterCore();
-    }
-    title() {
-        return this.title_;
+        return new TargeterCore$$1();
     }
     isLive() {
         return this.live;
@@ -248,7 +235,6 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
-//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -257,7 +243,6 @@ class Toggling$$1 extends TargetCore {
         this.state_ = coupler.passSet;
     }
 }
-//# sourceMappingURL=Toggling.js.map
 
 class Textual$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -270,7 +255,6 @@ class Textual$$1 extends TargetCore {
             : this.extra.getText(this.title());
     }
 }
-//# sourceMappingURL=Textual.js.map
 
 class IndexingFrame$$1 extends TargetCore {
     constructor(title, indexing_) {
@@ -296,9 +280,6 @@ class IndexingFrame$$1 extends TargetCore {
         return true;
     }
 }
-//# sourceMappingURL=IndexingFrame.js.map
-
-//# sourceMappingURL=_globals.js.map
 
 function newInstance(trace) {
     return new Facets();
@@ -440,7 +421,6 @@ class Facets {
         return frame;
     }
 }
-//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;

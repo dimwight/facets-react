@@ -1,15 +1,16 @@
-import {Targety,Targeter,TargetCore,Facet} from './_globals';
-import { traceThing } from '../util/_globals';
-export class TargeterCore implements Targeter{
-  private notifiable: any;
+import {
+  Facet,
+  TargetCore,
+  Targeter,
+  Targety,
+} from './_globals';
+import {NotifyingCore} from './_locals';
+import {traceThing} from '../util/_globals';
+export class TargeterCore extends NotifyingCore implements Targeter{
   private elements_: Targeter[];
-  private title_='Untargeted';
   private target_:Targety;
-  notify(notice){
-    this.notifiable.notify(notice);
-  }
-  setNotifiable(notifiable){
-    this.notifiable=notifiable;
+  constructor(){
+    super('Untargeted')
   }
   retarget(target:Targety){
     if(!target)throw new Error('Missing target');

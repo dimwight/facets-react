@@ -17,9 +17,8 @@ export class TargetCore extends NotifyingCore implements Targety {
   state(): SimpleState {
     return this.state_;
   }
-  constructor(protected readonly title_:string,
-              protected extra?:Targety[]|TargetCoupler){
-    super();
+  constructor(title:string,protected extra?:Targety[]|TargetCoupler){
+    super(title);
   }
   notifiesTargeter():boolean{
     const extra=this.extra;
@@ -45,9 +44,6 @@ export class TargetCore extends NotifyingCore implements Targety {
   }
   newTargeter():Targeter{
     return new TargeterCore();
-  }
-  title(){
-    return this.title_;
   }
   isLive(){
     return this.live;

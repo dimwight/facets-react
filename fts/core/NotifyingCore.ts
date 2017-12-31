@@ -2,6 +2,10 @@ import {Notifiable} from './_globals';
 import {Notifying} from './_locals';
 export abstract class NotifyingCore implements Notifying{
   private notifiable_: Notifiable;
+  constructor(protected readonly title_:string){}
+  title(){
+    return this.title_;
+  }
   setNotifiable(n: Notifiable) {
     this.notifiable_=n;
   }
@@ -12,7 +16,7 @@ export abstract class NotifyingCore implements Notifying{
     this.notifiable_.notify(this);
   }
   notify(notice: any) {
-    throw new Error('Method not implemented.');
+    if(this.notifiable_)this.notifiable_.notify(this.title())
   }
   abstract elements():Notifying[];
 }
