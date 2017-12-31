@@ -47,8 +47,9 @@ export class Facets{
     };
     const trees=app.getContentTrees();
     if(trees instanceof Array)
-      throw new Error('Not implemented for '+(trees as Array<Targety>).length);
+      (trees as Array<Targety>).forEach(t=>this.addContentTree(t));
     else this.addContentTree((trees as Targety));
+    traceThing(' > Building targeter tree for root='+this.root.title());
     if(!this.rootTargeter)this.rootTargeter=(this.root as TargetCore).newTargeter();
     this.rootTargeter.setNotifiable(this.notifiable);
     this.rootTargeter.retarget(this.root);

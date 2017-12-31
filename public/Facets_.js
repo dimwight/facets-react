@@ -22,6 +22,7 @@ class NotifyingCore {
             this.notifiable_.notify(this.title());
     }
 }
+//# sourceMappingURL=NotifyingCore.js.map
 
 /**
  * Simplifies instrumenting code
@@ -41,6 +42,11 @@ function traceThing(top, thing) {
     // Issue complete message
     console.log(top, tail);
 }
+//# sourceMappingURL=Bits.js.map
+
+//# sourceMappingURL=SwapArrayElement.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 class TargeterCore$$1 extends NotifyingCore {
     constructor() {
@@ -89,6 +95,7 @@ class TargeterCore$$1 extends NotifyingCore {
         this.facets_.forEach(f => f.retarget(this.target_));
     }
 }
+//# sourceMappingURL=TargeterCore.js.map
 
 class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
     constructor() {
@@ -139,6 +146,9 @@ class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
         this.indexedTitle = this.indexedTarget.title();
     }
 }
+//# sourceMappingURL=IndexingFrameTargeter.js.map
+
+//# sourceMappingURL=_locals.js.map
 
 class TargetCore extends NotifyingCore {
     constructor(title, extra) {
@@ -186,6 +196,7 @@ class TargetCore extends NotifyingCore {
     }
 }
 TargetCore.NoState = 'No state set';
+//# sourceMappingURL=TargetCore.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -235,6 +246,7 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
+//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -243,6 +255,7 @@ class Toggling$$1 extends TargetCore {
         this.state_ = coupler.passSet;
     }
 }
+//# sourceMappingURL=Toggling.js.map
 
 class Textual$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -255,6 +268,7 @@ class Textual$$1 extends TargetCore {
             : this.extra.getText(this.title());
     }
 }
+//# sourceMappingURL=Textual.js.map
 
 class IndexingFrame$$1 extends TargetCore {
     constructor(title, indexing_) {
@@ -280,6 +294,9 @@ class IndexingFrame$$1 extends TargetCore {
         return true;
     }
 }
+//# sourceMappingURL=IndexingFrame.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 function newInstance(trace) {
     return new Facets();
@@ -305,9 +322,10 @@ class Facets {
         };
         const trees = app.getContentTrees();
         if (trees instanceof Array)
-            throw new Error('Not implemented for ' + trees.length);
+            trees.forEach(t => this.addContentTree(t));
         else
             this.addContentTree(trees);
+        traceThing(' > Building targeter tree for root=' + this.root.title());
         if (!this.rootTargeter)
             this.rootTargeter = this.root.newTargeter();
         this.rootTargeter.setNotifiable(this.notifiable);
