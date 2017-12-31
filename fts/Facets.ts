@@ -46,6 +46,13 @@ export class Facets{
   constructor(){
     let activeTitle=this.activeContentTitle;
     let indexedTargetTitle=()=>this.root.indexedTarget().title();
+    const indexing=new Indexing('RootIndexing',{
+      getIndexables:()=>{
+        const trees=[];
+        this.titleTrees.forEach(t=>trees.push(t));
+        return trees
+      }
+    });
     this.root=new class extends IndexingFrame{
       lazyElements(){
         return [
@@ -54,13 +61,7 @@ export class Facets{
           })
         ]
       }
-    }('RootFrame',new Indexing('RootIndexing',{
-      getIndexables:title=>{
-        const trees=[];
-        this.titleTrees.forEach(t=>trees.push(t));
-        return trees
-      }
-    }));
+    }('RootFrame',indexing);
   }
   buildApp(app: FacetsApp){
     this.onRetargeted=title=>{

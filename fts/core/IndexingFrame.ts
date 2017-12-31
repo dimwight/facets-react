@@ -5,6 +5,7 @@ import {
   Targeter,
 } from './_globals';
 import {IndexingFrameTargeter} from './_locals';
+import {traceThing} from '../../src/util/Bits';
 export class IndexingFrame extends TargetCore{
   constructor(title, readonly indexing_:Indexing){
     super(title);
@@ -13,6 +14,7 @@ export class IndexingFrame extends TargetCore{
   indexedTarget():Targety {
     let indexed =this.indexing_.indexed();
     const type=indexed.type;
+    traceThing('indexedTarget',!indexed.type);
     return type&&type==='Targety'?indexed as Targety:this.newIndexedTargets(indexed)
   }
   protected newIndexedTargets(indexed:any):Targety {

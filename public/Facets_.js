@@ -247,9 +247,9 @@ class Indexing$$1 extends TargetCore {
         return this.extra;
     }
     indexed() {
-        traceThing$1('indexed', {
+        traceThing$1('^indexed', {
             'indexables': this.indexables().length,
-            'state': this.state_
+            'state_': this.state_
         });
         if (this.state_ === TargetCore.NoState)
             throw new Error('No index in ' + this.title());
@@ -259,7 +259,7 @@ class Indexing$$1 extends TargetCore {
     setIndexed(indexable) {
         for (const [at, i] of this.indexables().entries())
             if (i === indexable) {
-                this.setIndex(i);
+                this.setIndex(at);
                 break;
             }
     }
@@ -267,6 +267,7 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
+//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -299,6 +300,7 @@ class IndexingFrame$$1 extends TargetCore {
     indexedTarget() {
         let indexed = this.indexing_.indexed();
         const type = indexed.type;
+        traceThing$1('indexedTarget', !indexed.type);
         return type && type === 'Targety' ? indexed : this.newIndexedTargets(indexed);
     }
     newIndexedTargets(indexed) {
@@ -314,7 +316,6 @@ class IndexingFrame$$1 extends TargetCore {
         return true;
     }
 }
-//# sourceMappingURL=IndexingFrame.js.map
 
 //# sourceMappingURL=_globals.js.map
 
@@ -339,6 +340,13 @@ class Facets {
         this.titleTrees = new Map();
         let activeTitle = this.activeContentTitle;
         let indexedTargetTitle = () => this.root.indexedTarget().title();
+        const indexing = new Indexing$$1('RootIndexing', {
+            getIndexables: () => {
+                const trees = [];
+                this.titleTrees.forEach(t => trees.push(t));
+                return trees;
+            }
+        });
         this.root = new class extends IndexingFrame$$1 {
             lazyElements() {
                 return [
@@ -347,13 +355,7 @@ class Facets {
                     })
                 ];
             }
-        }('RootFrame', new Indexing$$1('RootIndexing', {
-            getIndexables: title => {
-                const trees = [];
-                this.titleTrees.forEach(t => trees.push(t));
-                return trees;
-            }
-        }));
+        }('RootFrame', indexing);
     }
     buildApp(app) {
         this.onRetargeted = title => {

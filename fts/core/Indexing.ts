@@ -37,9 +37,9 @@ export class Indexing extends TargetCore {
     return this.extra as IndexingCoupler;
   }
   indexed(): any {
-    traceThing('indexed',{
+    traceThing('^indexed',{
       'indexables':this.indexables().length,
-      'state':this.state_
+      'state_':this.state_
     });
     if (this.state_===TargetCore.NoState)
       throw new Error('No index in ' + this.title());
@@ -48,7 +48,7 @@ export class Indexing extends TargetCore {
   setIndexed(indexable: any) {
     for(const [at,i] of this.indexables().entries())
         if (i === indexable) {
-            this.setIndex(i as number);
+            this.setIndex(at as number);
             break;
         }          
   }
