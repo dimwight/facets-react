@@ -492,7 +492,7 @@ export function doTest(){
 }
 function buildAllSimplesForm(facets){
   const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
-  const fields=[
+  const specs:FieldSpec[]=[
     {type:FieldType.TextualField,title:textual1},
     {type:FieldType.TextualLabel,title:textual1},
     {type:FieldType.TextualField,title:textual2,cols:40},
@@ -504,10 +504,10 @@ function buildAllSimplesForm(facets){
     {type:FieldType.TextualLabel,title:SimpleTitles.Index},
     {type:FieldType.TriggerButton,title:SimpleTitles.Trigger},
     {type:FieldType.TextualLabel,title:SimpleTitles.Triggereds},
-  ].map((spec,at)=>newFormField(spec,facets,at));
+  ];
   ReactDOM.render(
-      <RowPanel title={SimpleTests.AllNonSelecting.name} withRubric={false}>
-        {fields}
+      <RowPanel title={SimpleTests.AllNonSelecting.name+'Form'} withRubric={false}>
+        {specs.map((spec,key)=>newFormField(spec,facets,key))}
       </RowPanel>,
     document.getElementById('root'),
   );

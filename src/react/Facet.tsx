@@ -1,6 +1,9 @@
 import React from 'react';
 import {traceThing} from '../util/_globals';
-import {Facets,SimpleState} from 'facets-js';
+import {
+  Facets,
+  SimpleState,
+} from 'facets-js';
 import {SmartTextField} from './_locals';
 import {IndexingDropdown} from './_globals';
 import './Facet.css';
@@ -29,8 +32,8 @@ export class Facet<I extends TargetValues,K extends TargetValues>
     let updateWithLive:{}=Object.assign({},
       this.readUpdate(update),{
         live:this.props.facets.isTargetLive(this.props.title),
-        showTitle:this.props.title.replace(/\|.*/,'')
-    });
+        showTitle:this.props.title.replace(/\|.*/,''),
+      });
     if(!this.canSetState)
       this.state=Object.assign({}as K,this.props,updateWithLive,);
     else this.setState(updateWithLive);
@@ -72,11 +75,11 @@ interface LabelValues{
   style?:any
   classes?:string
 }
-export function LabelText (props:LabelValues){
+export function LabelText(props:LabelValues){
   return (<span className={props.disabled?'textDisabled':''}>
     {props.text}&nbsp;</span>)
 }
-export function LabelRubric (props:LabelValues){
+export function LabelRubric(props:LabelValues){
   let htmlFor=props.target,text=props.text,
     className=(props.disabled?'rubricDisabled':'rubric');
   return htmlFor?<label htmlFor={htmlFor} className={className}>
@@ -95,16 +98,17 @@ export class TogglingCheckbox extends Facet<TogglingValues,TogglingValues>{
     let set=e.target.checked;
     this.stateChanged(set);
     this.setState({
-      set:set
+      set:set,
     })
   };
   render(){
     return (<span>
-      <LabelRubric text={this.state.showTitle} disabled={!this.state.live} target={this.state.showTitle}/>
+      <LabelRubric text={this.state.showTitle} disabled={!this.state.live}
+                   target={this.state.showTitle}/>
         <input
           id={this.props.title}
           type="checkbox"
-          style={{verticalAlign: 'middle'}}
+          style={{verticalAlign:'middle'}}
           onChange={this.onChange}
           checked={this.state.set}
           disabled={!this.state.live}
@@ -121,12 +125,12 @@ export class TextualField extends Facet<TextualValues,TextualValues>{
     return {text:String(update)}
   }
   onFieldEnter=(text)=>{
-     this.stateChanged(text);
+    this.stateChanged(text);
   };
   getStateText=()=>this.state.text;
   isDisabled=()=>!this.state.live;
   render(){
-    return (<div  className={'textualField'}>
+    return (<div className={'textualField'}>
         <LabelRubric text={this.state.showTitle} disabled={!this.state.live}/>
         <SmartTextField
           getStartText={this.getStateText}
@@ -165,7 +169,7 @@ export class ShowPanel extends Facet<TextualValues,TextualValues>{
     let all=this.props.children as any[],show;
     all.forEach((child,at)=>{
       traceThing('^ShowPanel_',child);
-      if(child.props.title===this.state.text)show=child;
+      if(child.props.title===this.state.text) show=child;
     });
     let children=React.Children.map(false?all:show,child=>{
       return <div className={'panelMount'}>{child}</div>
@@ -179,7 +183,7 @@ interface RowPanelProps{
   key?:string
   children
 }
-function PanelRubric (props:LabelValues){
+function PanelRubric(props:LabelValues){
   let text=props.text,
     className=props.classes+' '+(props.disabled?'rubricDisabled':'rubric');
   return <div className={className}>{text}&nbsp;</div>
@@ -201,7 +205,7 @@ export function PanelRow(props){
   });
   return <div className={'panelRow'}>{children}</div>
 }
-export enum FieldType{
+export enum FieldType {
   TextualField,
   TextualLabel,
   TogglingCheckbox,
@@ -216,15 +220,16 @@ export interface FieldSpec{
 export function newFormField(spec:FieldSpec,facets:Facets,key){
   switch(spec.type){
     case FieldType.TextualField:
-      return <TextualField key={key} title={spec.title} facets={facets} cols={spec.cols}/>;
+      return <TextualField key={key} title={spec.title} facets={facets}
+                           cols={spec.cols}/>;
     case FieldType.TextualLabel:
-      return  <TextualLabel key={key} title={spec.title} facets={facets}/>;
+      return <TextualLabel key={key} title={spec.title} facets={facets}/>;
     case FieldType.TogglingCheckbox:
-      return  <TogglingCheckbox key={key} title={spec.title} facets={facets}/>;
+      return <TogglingCheckbox key={key} title={spec.title} facets={facets}/>;
     case FieldType.IndexingDropdown:
-      return  <IndexingDropdown key={key} title={spec.title} facets={facets}/>;
+      return <IndexingDropdown key={key} title={spec.title} facets={facets}/>;
     case FieldType.TriggerButton:
-      return  <TriggerButton key={key} title={spec.title} facets={facets}/>
+      return <TriggerButton key={key} title={spec.title} facets={facets}/>
 
   }
 }
