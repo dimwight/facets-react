@@ -28,6 +28,7 @@ ShowableList,
 } from './facets/Selecting';
 import {traceThing}from './util/_globals';
 import {SurfaceApp} from './facets/Surface';
+import {FieldSpec} from './react/Facet';
 export namespace SimpleTitles{
   export const FirstTextual='First',SecondTextual='Second',
     Indexing='Choose Item',
@@ -491,12 +492,19 @@ export function doTest(){
 }
 function buildAllSimplesForm(facets){
   const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
+  const specs:FieldSpec[]=[
+    {type:FieldType.TextualField,title:textual1},
+    {type:FieldType.TextualLabel,title:textual1},
+    {type:FieldType.TextualField,title:textual2,cols:40},
+    {type:FieldType.TextualLabel,title:textual2},
+
+  ];
   ReactDOM.render(
       <RowPanel title={SimpleTests.AllNonSelecting.name} withRubric={false}>
-        {newFormField(FieldType.TextualField,textual1,facets)}
-        {newFormField(FieldType.TextualLabel,textual2,facets)}
-        <TextualField title={textual2} facets={facets} cols={40}/>
-        <TextualLabel title={textual2} facets={facets}/>
+        {newFormField(specs[0],facets)}
+        {newFormField(specs[1],facets)}
+        {newFormField(specs[2],facets)}
+        {newFormField(specs[3],facets)}
         <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
         <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
         <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>

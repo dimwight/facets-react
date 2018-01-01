@@ -204,12 +204,17 @@ export enum FieldType{
   TextualField,
   TextualLabel,
 }
-export function newFormField(type:FieldType,title:string,facets:Facets){
-  switch(type){
+export interface FieldSpec{
+  type:FieldType,
+  title:string
+  cols?:number
+}
+export function newFormField(spec:FieldSpec,facets:Facets){
+  switch(spec.type){
     case FieldType.TextualField:
-      return <TextualField title={title} facets={facets}/>
+      return <TextualField title={spec.title} facets={facets} cols={spec.cols}/>
     case FieldType.TextualLabel:
-      return  <TextualLabel title={title} facets={facets}/>
+      return  <TextualLabel title={spec.title} facets={facets}/>
 
   }
 }
