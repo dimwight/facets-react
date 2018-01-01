@@ -504,7 +504,7 @@ function buildAllSimplesForm(facets){
     {type:FieldType.TextualLabel,title:SimpleTitles.Index},
     {type:FieldType.TriggerButton,title:SimpleTitles.Trigger},
     {type:FieldType.TextualLabel,title:SimpleTitles.Triggereds},
-  ].map(spec=>newFormField(spec,facets));
+  ].map((spec,at)=>newFormField(spec,facets,at));
   ReactDOM.render(
       <RowPanel title={SimpleTests.AllNonSelecting.name} withRubric={false}>
         {fields}

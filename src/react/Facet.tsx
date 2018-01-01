@@ -209,22 +209,22 @@ export enum FieldType{
   TriggerButton,
 }
 export interface FieldSpec{
-  type:FieldType,
+  type:FieldType
   title:string
   cols?:number
 }
-export function newFormField(spec:FieldSpec,facets:Facets){
+export function newFormField(spec:FieldSpec,facets:Facets,key){
   switch(spec.type){
     case FieldType.TextualField:
-      return <TextualField title={spec.title} facets={facets} cols={spec.cols}/>;
+      return <TextualField key={key} title={spec.title} facets={facets} cols={spec.cols}/>;
     case FieldType.TextualLabel:
-      return  <TextualLabel title={spec.title} facets={facets}/>;
+      return  <TextualLabel key={key} title={spec.title} facets={facets}/>;
     case FieldType.TogglingCheckbox:
-      return  <TogglingCheckbox title={spec.title} facets={facets}/>;
+      return  <TogglingCheckbox key={key} title={spec.title} facets={facets}/>;
     case FieldType.IndexingDropdown:
-      return  <IndexingDropdown title={spec.title} facets={facets}/>;
+      return  <IndexingDropdown key={key} title={spec.title} facets={facets}/>;
     case FieldType.TriggerButton:
-      return  <TriggerButton title={spec.title} facets={facets}/>
+      return  <TriggerButton key={key} title={spec.title} facets={facets}/>
 
   }
 }
