@@ -17,6 +17,8 @@ import {
   IndexingDropdown,
   IndexingList,
   ShowPanel,
+  newFormField,
+  FieldType,
 } from './react/_globals';
 import {
 } from './facets/_globals';
@@ -53,7 +55,8 @@ const SimpleTests={
     }),
   Indexing:new SimpleTest('Indexing',newIndexingTree,buildIndexing),
   Trigger:new SimpleTest('Trigger',newTriggerTree,buildTrigger),
-  AllNonSelecting:new SimpleTest('AllNonSelecting',newAllSimplesTree,buildAllSimples),
+  AllNonSelecting:new SimpleTest('AllNonSelecting',newAllSimplesTree,
+    false?buildAllSimples:buildAllSimplesForm),
   SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
     (facets,activeTitle)=>{
       traceThing('^onRetargeted:no live',{activeTitle:activeTitle});
@@ -68,7 +71,7 @@ const SimpleTests={
 };
 class TestApp extends SurfaceApp{
   constructor(readonly test:SimpleTest){
-    super(newInstance(true));
+    super(newInstance(false));
   }
   getContentTrees():Target|Target[]{
     return this.test.newTrees(this.facets)
@@ -483,6 +486,25 @@ function buildSelectingShowable(facets){
   );
 }
 export function doTest(){
-  if(false)new TestApp(SimpleTests.SelectingShowable).buildSurface();
+  if(true)new TestApp(SimpleTests.AllNonSelecting).buildSurface();
   else new ContentingTest().buildSurface();
+}
+function buildAllSimplesForm(facets){
+  const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
+  ReactDOM.render(
+      <RowPanel title={SimpleTests.AllNonSelecting.name} withRubric={false}>
+        {newFormField(FieldType.TextualField,textual1,facets)}
+        <TextualLabel title={textual1} facets={facets}/>
+        <TextualField title={textual2} facets={facets} cols={40}/>
+        <TextualLabel title={textual2} facets={facets}/>
+        <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
+        <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Index} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
+        <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
+        <TextualLabel title={SimpleTitles.Triggereds} facets={facets}/>
+      </RowPanel>,
+    document.getElementById('root'),
+  );
 }

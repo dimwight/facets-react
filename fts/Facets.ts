@@ -20,7 +20,6 @@ import {
   TargetCoupler,
   IndexingFramePolicy,
 } from 'facets-js';
-import {traceThing} from './util/_globals';
 import {TargeterCore} from './core/TargeterCore';
 export function newInstance(trace:boolean):Facets{
   return new Facets(trace);

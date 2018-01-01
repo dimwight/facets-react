@@ -200,3 +200,9 @@ export function PanelRow(props){
   });
   return <div className={'panelRow'}>{children}</div>
 }
+export enum FieldType{
+  TextualField
+}
+export function newFormField(type:FieldType,title:string,facets:Facets){
+  return (<TextualField title={title} facets={facets}/>)
+}

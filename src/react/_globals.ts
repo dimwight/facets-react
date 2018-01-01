@@ -6,6 +6,8 @@ export {
   TogglingCheckbox,
   TriggerButton,
   ShowPanel,
+  newFormField,
+  FieldType,
 } from './Facet';
 export {
   IndexingDropdown,
