@@ -38,6 +38,6 @@ const fts = Object.assign({}, common, {
 });
 
 const bundle = false?fts:main;
-if(false)console.log('Bundling '+bundle.entry+' to '+bundle.dest+', format='+bundle.format);
+if(true)console.log('Bundling '+bundle.entry+' to '+bundle.dest+', format='+bundle.format);
 
-export default false?bundle:[fts,main];
+export default true?bundle:[fts,main];

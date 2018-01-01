@@ -2,6 +2,7 @@ import React from 'react';
 import {traceThing} from '../util/_globals';
 import {Facets,SimpleState} from 'facets-js';
 import {SmartTextField} from './_locals';
+import {IndexingDropdown} from './_globals';
 import './Facet.css';
 export type FnGetBoolean=()=>boolean
 export type FnPassString=(string)=>void
@@ -203,6 +204,9 @@ export function PanelRow(props){
 export enum FieldType{
   TextualField,
   TextualLabel,
+  TogglingCheckbox,
+  IndexingDropdown,
+  TriggerButton,
 }
 export interface FieldSpec{
   type:FieldType,
@@ -212,9 +216,15 @@ export interface FieldSpec{
 export function newFormField(spec:FieldSpec,facets:Facets){
   switch(spec.type){
     case FieldType.TextualField:
-      return <TextualField title={spec.title} facets={facets} cols={spec.cols}/>
+      return <TextualField title={spec.title} facets={facets} cols={spec.cols}/>;
     case FieldType.TextualLabel:
-      return  <TextualLabel title={spec.title} facets={facets}/>
+      return  <TextualLabel title={spec.title} facets={facets}/>;
+    case FieldType.TogglingCheckbox:
+      return  <TogglingCheckbox title={spec.title} facets={facets}/>;
+    case FieldType.IndexingDropdown:
+      return  <IndexingDropdown title={spec.title} facets={facets}/>;
+    case FieldType.TriggerButton:
+      return  <TriggerButton title={spec.title} facets={facets}/>
 
   }
 }

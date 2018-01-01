@@ -492,26 +492,22 @@ export function doTest(){
 }
 function buildAllSimplesForm(facets){
   const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
-  const specs:FieldSpec[]=[
+  const fields=[
     {type:FieldType.TextualField,title:textual1},
     {type:FieldType.TextualLabel,title:textual1},
     {type:FieldType.TextualField,title:textual2,cols:40},
     {type:FieldType.TextualLabel,title:textual2},
-
-  ];
+    {type:FieldType.TogglingCheckbox,title:SimpleTitles.Toggling},
+    {type:FieldType.TextualLabel,title:SimpleTitles.Toggled},
+    {type:FieldType.IndexingDropdown,title:SimpleTitles.Indexing},
+    {type:FieldType.TextualLabel,title:SimpleTitles.Indexed},
+    {type:FieldType.TextualLabel,title:SimpleTitles.Index},
+    {type:FieldType.TriggerButton,title:SimpleTitles.Trigger},
+    {type:FieldType.TextualLabel,title:SimpleTitles.Triggereds},
+  ].map(spec=>newFormField(spec,facets));
   ReactDOM.render(
       <RowPanel title={SimpleTests.AllNonSelecting.name} withRubric={false}>
-        {newFormField(specs[0],facets)}
-        {newFormField(specs[1],facets)}
-        {newFormField(specs[2],facets)}
-        {newFormField(specs[3],facets)}
-        <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
-        <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
-        <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
-        <TextualLabel title={SimpleTitles.Index} facets={facets}/>
-        <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
-        <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
-        <TextualLabel title={SimpleTitles.Triggereds} facets={facets}/>
+        {fields}
       </RowPanel>,
     document.getElementById('root'),
   );
