@@ -14,7 +14,7 @@ export class IndexingFrame extends TargetCore{
   indexedTarget():Targety {
     let indexed =this.indexing_.indexed();
     const type=indexed.type;
-    traceThing('indexedTarget',!indexed.type);
+    traceThing('^indexedTarget',!indexed.type);
     return type&&type===TargetCore.type?indexed as Targety:this.newIndexedTargets(indexed)
   }
   protected newIndexedTargets(indexed:any):Targety {
