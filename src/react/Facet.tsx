@@ -201,8 +201,15 @@ export function PanelRow(props){
   return <div className={'panelRow'}>{children}</div>
 }
 export enum FieldType{
-  TextualField
+  TextualField,
+  TextualLabel,
 }
 export function newFormField(type:FieldType,title:string,facets:Facets){
-  return (<TextualField title={title} facets={facets}/>)
+  switch(type){
+    case FieldType.TextualField:
+      return <TextualField title={title} facets={facets}/>
+    case FieldType.TextualLabel:
+      return  <TextualLabel title={title} facets={facets}/>
+
+  }
 }

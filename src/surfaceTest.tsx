@@ -494,7 +494,7 @@ function buildAllSimplesForm(facets){
   ReactDOM.render(
       <RowPanel title={SimpleTests.AllNonSelecting.name} withRubric={false}>
         {newFormField(FieldType.TextualField,textual1,facets)}
-        <TextualLabel title={textual1} facets={facets}/>
+        {newFormField(FieldType.TextualLabel,textual2,facets)}
         <TextualField title={textual2} facets={facets} cols={40}/>
         <TextualLabel title={textual2} facets={facets}/>
         <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
