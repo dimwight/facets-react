@@ -23,6 +23,7 @@ class NotifyingCore {
             this.notifiable_.notify(this.title());
     }
 }
+//# sourceMappingURL=NotifyingCore.js.map
 
 /**
  * Simplifies instrumenting code
@@ -42,6 +43,11 @@ function traceThing(top, thing) {
     // Issue complete message
     console.log(top, tail);
 }
+//# sourceMappingURL=Bits.js.map
+
+//# sourceMappingURL=SwapArrayElement.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 class TargeterCore$$1 extends NotifyingCore {
     constructor() {
@@ -91,6 +97,7 @@ class TargeterCore$$1 extends NotifyingCore {
     }
 }
 TargeterCore$$1.type = 'Targeter';
+//# sourceMappingURL=TargeterCore.js.map
 
 class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
     constructor() {
@@ -141,6 +148,9 @@ class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
         this.indexedTitle = this.indexedTarget.title();
     }
 }
+//# sourceMappingURL=IndexingFrameTargeter.js.map
+
+//# sourceMappingURL=_locals.js.map
 
 class TargetCore extends NotifyingCore {
     constructor(title, extra) {
@@ -189,6 +199,7 @@ class TargetCore extends NotifyingCore {
 }
 TargetCore.type = 'Targety';
 TargetCore.NoState = 'No state set';
+//# sourceMappingURL=TargetCore.js.map
 
 function traceThing$1(top, thing) {
     if (top.charAt(0) === '^')
@@ -204,6 +215,8 @@ function traceThing$1(top, thing) {
             return value;
         }, 1));
 }
+
+//# sourceMappingURL=Bits.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -257,6 +270,7 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
+//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -265,6 +279,7 @@ class Toggling$$1 extends TargetCore {
         this.state_ = coupler.passSet;
     }
 }
+//# sourceMappingURL=Toggling.js.map
 
 class Textual$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -277,6 +292,7 @@ class Textual$$1 extends TargetCore {
             : this.extra.getText(this.title());
     }
 }
+//# sourceMappingURL=Textual.js.map
 
 class IndexingFrame$$1 extends TargetCore {
     constructor(title, indexing_) {
@@ -303,19 +319,23 @@ class IndexingFrame$$1 extends TargetCore {
         return true;
     }
 }
+//# sourceMappingURL=IndexingFrame.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 function newInstance(trace) {
-    return new Facets();
+    return new Facets(trace);
 }
 class Facets {
-    constructor() {
+    constructor(doTrace) {
+        this.doTrace = doTrace;
         this.times = {
             doTime: false,
         };
         this.activeContentTitle = "[Active Content Tree]";
         this.notifiable = {
             notify: notice => {
-                traceThing('> Notified with ' + this.rootTargeter.title());
+                this.trace('Notified with ' + this.rootTargeter.title());
                 this.rootTargeter.retarget(this.rootTargeter.target());
                 this.callOnRetargeted();
                 this.rootTargeter.retargetFacets();
@@ -342,6 +362,10 @@ class Facets {
             }
         }('RootFrame', indexing);
     }
+    trace(msg) {
+        if (this.doTrace)
+            console.log('> ' + msg);
+    }
     buildApp(app) {
         this.onRetargeted = title => {
             app.onRetargeted(title);
@@ -351,7 +375,7 @@ class Facets {
             trees.forEach(t => this.addContentTree(t));
         else
             this.addContentTree(trees);
-        traceThing('> Building targeter tree for root=' + this.root.title());
+        this.trace('Building targeter tree for root=' + this.root.title());
         if (!this.rootTargeter)
             this.rootTargeter = this.root.newTargeter();
         this.rootTargeter.setNotifiable(this.notifiable);
@@ -362,7 +386,7 @@ class Facets {
     }
     callOnRetargeted() {
         const title = this.root.title();
-        traceThing('> Calling onRetargeted with active=' + title);
+        this.trace('Calling onRetargeted with active=' + title);
         this.onRetargeted(title);
     }
     addContentTree(tree) {
@@ -378,17 +402,17 @@ class Facets {
     }
     newTextualTarget(title, coupler) {
         const textual = new Textual$$1(title, coupler);
-        traceThing('> Created textual title=' + title);
+        this.trace('Created textual title=' + title);
         return textual;
     }
     newTogglingTarget(title, coupler) {
         const toggling = new Toggling$$1(title, coupler);
-        traceThing('> Created toggling title=' + title);
+        this.trace('Created toggling title=' + title);
         return toggling;
     }
     newTriggerTarget(title, coupler) {
         const trigger = new TargetCore(title, coupler);
-        traceThing('> Created trigger title=' + title);
+        this.trace('Created trigger title=' + title);
         return trigger;
     }
     newTargetGroup(title, members) {
@@ -398,17 +422,17 @@ class Facets {
         const title = t.title();
         const elements = t.titleElements();
         this.titleTargeters.set(title, t);
-        traceThing('> Added targeter: title=' + title + ': elements=' + elements.length);
+        this.trace('Added targeter: title=' + title + ': elements=' + elements.length);
         elements.forEach((e) => this.addTitleTargeters(e));
     }
     attachFacet(title, updater) {
         const t = this.titleTargeters.get(title);
         if (!t)
             throw new Error('No targeter for ' + title);
-        traceThing('> Attaching facet: title=' + title);
+        this.trace('Attaching facet: title=' + title);
         const facet = {
-            retarget(ta) {
-                traceThing('> Facet retargeted title=' + ta.title() + ' state=' + ta.state());
+            retarget: (ta) => {
+                this.trace('Facet retargeted title=' + ta.title() + ' state=' + ta.state());
                 updater(ta.state());
             },
         };
@@ -439,7 +463,7 @@ class Facets {
     }
     newIndexingTarget(title, coupler) {
         const indexing = new Indexing$$1(title, coupler);
-        traceThing('> Created indexing title=' + title, { coupler: !coupler.targetStateUpdated });
+        this.trace('Created indexing title=' + title);
         return indexing;
     }
     getIndexingState(title) {
@@ -460,7 +484,7 @@ class Facets {
             getIndexables: title => p.getIndexables(),
             newUiSelectable: i => p.newUiSelectable(i)
         });
-        traceThing('> Created indexing ' + indexingTitle);
+        this.trace('Created indexing ' + indexingTitle);
         const frame = new class extends IndexingFrame$$1 {
             lazyElements() {
                 return p.newFrameTargets();
@@ -472,7 +496,7 @@ class Facets {
                     : new TargetCore(title);
             }
         }(frameTitle, indexing);
-        traceThing('> Created indexing frame ' + frameTitle);
+        this.trace('Created indexing frame ' + frameTitle);
         return frame;
     }
 }

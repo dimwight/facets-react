@@ -113,7 +113,7 @@ class ContentingTest extends SurfaceApp{
   readonly indexingTitle=SimpleTitles.Indexing;
   readonly list;
   constructor(){
-    super(newInstance(false));
+    super(newInstance(true));
     this.list=new ShowableList<TextContent>(selectables,3,this.facets,this.indexingTitle);
   }
   getContentTrees():Target|Target[]{
