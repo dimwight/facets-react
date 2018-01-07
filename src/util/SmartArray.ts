@@ -57,7 +57,7 @@ export class SmartArray<T>{
   addItem(at:number,createNew:(from)=>T){
     let list=this.items;
     let length=list.length,atEnd=at===length-1;
-    let top=list.slice(0,at),tail=atEnd?[]:list.slice(at),
+    let top=list.slice(0,at+1),tail=atEnd?[]:list.slice(at+1),
       add=createNew(list[at]);
     if(!atEnd)
       list.splice(0,length,...top,add,...tail);

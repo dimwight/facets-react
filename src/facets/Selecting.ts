@@ -60,7 +60,7 @@ export class SelectingContent<T> extends SmartArray<T>{
   addItem(){
     let showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
     if(!this.createNew)throw new Error('Cannot create new');
-    super.addItem(itemAt+1,this.createNew);
+    super.addItem(itemAt,this.createNew);
     if(++showThen<this.showLength)this.setShowAt(showThen);
     else this.onOvershoot(false);
   }

@@ -401,8 +401,7 @@ function newSelectingShowableTree(facets){
       ])
     },
   };
-  let contentIds=0;
-  let createNew=(selected)=>({text:'NewContent'+contentIds++}as TextContent);
+  let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
   const list=new SelectingContent<TextContent>(textContents,3,facets,
     frame.indexingTitle,createNew);
   return facets.newIndexingFrame(frame);
