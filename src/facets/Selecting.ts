@@ -26,7 +26,7 @@ export class SelectingContent<T> extends SmartArray<T>{
     private readonly showLength,
     private readonly facets:Facets,
     private readonly indexingTitle,
-    private readonly createNew?:(selected)=>T,
+    private readonly createNew?:(from)=>T,
   ){
     super(content);
     facets.supplement={
@@ -59,6 +59,7 @@ export class SelectingContent<T> extends SmartArray<T>{
   };
   addItem(){
     let showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
+    if(!this.createNew)throw new Error('Cannot create new');
     super.addItem(itemAt+1,this.createNew);
     if(++showThen<this.showLength)this.setShowAt(showThen);
     else this.onOvershoot(false);

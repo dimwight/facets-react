@@ -54,7 +54,7 @@ export class SmartArray<T>{
     });
     return atEnd;
   }
-  addItem(at:number,createNew:(selected)=>T){
+  addItem(at:number,createNew:(from)=>T){
     let list=this.items;
     let length=list.length,atEnd=at===length-1;
     let top=list.slice(0,at),tail=atEnd?[]:list.slice(at),
