@@ -24,9 +24,9 @@ import {
 } from './facets/_globals';
 import {
 SelectingTitles,
-ShowableList,
+SelectingContent,
 } from './facets/Selecting';
-import {traceThing}from './util/_globals';
+import {traceThing,SmartArray}from './util/_globals';
 import {SurfaceApp} from './facets/Surface';
 import {FieldSpec} from './react/Facet';
 namespace SimpleTitles{
@@ -96,7 +96,8 @@ function newDateSelectingTree(facets){
       ])
     },
   };
-  const list=new ShowableList<TextContent>(textContents,3,facets,frame.indexingTitle);
+  const list=new SelectingContent<TextContent>(textContents,
+    3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildDateSelecting(facets){
@@ -109,8 +110,11 @@ function buildDateSelecting(facets){
     document.getElementById('root'),
   );
 }
+class DateContent{
+  constructor(public readonly date : Date){}
+}
 export function doTest(){
-  if(true)new TestApp(SimpleApps.DateSelecting).buildSurface();
+  if(true)new TestApp(SimpleApps.SelectingShowable).buildSurface();
   else new ContentingTest().buildSurface();
 }
 class TestApp extends SurfaceApp{
@@ -161,7 +165,7 @@ class ContentingTest extends SurfaceApp{
   readonly list;
   constructor(){
     super(newInstance(true));
-    this.list=new ShowableList<TextContent>(textContents,3,this.facets,this.indexingTitle);
+    this.list=new SelectingContent<TextContent>(textContents,3,this.facets,this.indexingTitle);
   }
   getContentTrees():Target|Target[]{
     function activateChooser(){
@@ -397,7 +401,7 @@ function newSelectingShowableTree(facets){
       ])
     },
   };
-  const list=new ShowableList<TextContent>(textContents,3,facets,frame.indexingTitle);
+  const list=new SelectingContent<TextContent>(textContents,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildTextual(facets){
