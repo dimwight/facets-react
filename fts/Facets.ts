@@ -176,7 +176,7 @@ export class Facets{
       :frameTitle + '.Indexing';
     const indexing = new Indexing(indexingTitle,{
       getIndexables:title=>p.getIndexables(),
-      newUiSelectable:i=>p.newUiSelectable(i)
+      newUiSelectable:!p.newUiSelectable?null:i=>p.newUiSelectable(i)
     });
     this.trace('Created indexing '+ indexingTitle);
     const frame = new class extends IndexingFrame{

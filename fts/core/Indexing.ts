@@ -30,7 +30,10 @@ export class Indexing extends TargetCore {
     else return indexables;
   }
   uiSelectables(): string[] {
-    const getSelectable=this.coupler().newUiSelectable||((i)=>(i as string));
+    let selectables=0;
+    const coupler=this.coupler();
+    const getSelectable=coupler.newUiSelectable
+      ||((i)=>this.title()+selectables++);
     return this.indexables().map(i=>getSelectable(i));      
   }
   private coupler(){

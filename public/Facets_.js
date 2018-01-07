@@ -230,7 +230,10 @@ class Indexing$$1 extends TargetCore {
             return indexables;
     }
     uiSelectables() {
-        const getSelectable = this.coupler().newUiSelectable || ((i) => i);
+        let selectables = 0;
+        const coupler = this.coupler();
+        const getSelectable = coupler.newUiSelectable
+            || ((i) => this.title() + selectables++);
         return this.indexables().map(i => getSelectable(i));
     }
     coupler() {
@@ -463,7 +466,7 @@ class Facets {
             : frameTitle + '.Indexing';
         const indexing = new Indexing$$1(indexingTitle, {
             getIndexables: title => p.getIndexables(),
-            newUiSelectable: i => p.newUiSelectable(i)
+            newUiSelectable: !p.newUiSelectable ? null : i => p.newUiSelectable(i)
         });
         this.trace('Created indexing ' + indexingTitle);
         const frame = new class extends IndexingFrame$$1 {

@@ -230,38 +230,6 @@ class ContentingTest extends SurfaceApp{
     );
   }
 }
-function buildSelectingTyped(facets){
-  function newEditField(tail){
-    return false?null:<PanelRow>
-      <TextualField title={SelectingTitles.OpenEditButton+tail} facets={facets} cols={30}/>
-    </PanelRow>;
-  }
-  let tail=TextContentType.ShowChars.titleTail;
-  let liveCheckbox=true?null:<PanelRow>
-    <TogglingCheckbox title={SelectingTitles.Live} facets={facets}/>
-  </PanelRow>;
-  ReactDOM.render(<RowPanel title={SimpleTests.SelectingTyped.name} withRubric={true}>
-      {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>
-        :<IndexingList title={SelectingTitles.Chooser} facets={facets}/>}
-      {true?null:<PanelRow>
-        <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
-      </PanelRow>}
-      <ShowPanel title={SimpleTitles.Indexed} facets={facets}>
-        <RowPanel title={TextContentType.Standard.name}>
-          {newEditField('')}
-        </RowPanel>
-        <RowPanel title={TextContentType.ShowChars.name}>
-          {newEditField(tail)}
-          <PanelRow>
-            <TextualLabel title={SelectingTitles.CharsCount+tail} facets={facets}/>
-          </PanelRow>
-        </RowPanel>
-      </ShowPanel>
-
-    </RowPanel>,
-    document.getElementById('root'),
-  );
-}
 function newTextualTree(facets){
   const first=facets.newTextualTarget(SimpleTitles.FirstTextual,{
       passText:'Some text for '+SimpleTitles.FirstTextual,
@@ -274,14 +242,6 @@ function newTextualTree(facets){
       passText:'Some text for '+SimpleTitles.SecondTextual,
     });
   return facets.newTargetGroup('TextualTest',[first,second]);
-}
-function setSimplesLive(facets,state){
-  [SimpleTitles.FirstTextual,SimpleTitles.SecondTextual,
-    SimpleTitles.Indexed,SimpleTitles.Indexing,SimpleTitles.Index,
-    SimpleTitles.Trigger,SimpleTitles.Triggereds,
-  ].forEach(title=>{
-    facets.setTargetLive(title,state);
-  })
 }
 function newTogglingTree(facets,setLive){
   const toggling=facets.newTogglingTarget(SimpleTitles.Toggling,{
@@ -378,7 +338,7 @@ function newSelectingShowableTree(facets){
     indexingTitle: SelectingTitles.Chooser,
     newFrameTargets:()=>list.newActionTargets(),
     getIndexables:()=>list.getShowables(),
-    newUiSelectable: (item:TextContent)=>item.text,
+    newUiSelectable:false?null: (item:TextContent)=>item.text,
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
     newIndexedTree: (indexed:TextContent,title:string) => {
       traceThing('^newIndexedTargets',{indexed:indexed});
@@ -464,6 +424,68 @@ function buildAllSimples(facets){
     document.getElementById('root'),
   );
 }
+function buildAllSimplesForm(facets){
+  const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
+  const specs:FieldSpec[]=[
+    {type:FieldType.TextualField,title:textual1},
+    {type:FieldType.TextualLabel,title:textual1},
+    {type:FieldType.TextualField,title:textual2,cols:40},
+    {type:FieldType.TextualLabel,title:textual2},
+    {type:FieldType.TogglingCheckbox,title:SimpleTitles.Toggling},
+    {type:FieldType.TextualLabel,title:SimpleTitles.Toggled},
+    {type:FieldType.IndexingDropdown,title:SimpleTitles.Indexing},
+    {type:FieldType.TextualLabel,title:SimpleTitles.Indexed},
+    {type:FieldType.TextualLabel,title:SimpleTitles.Index},
+    {type:FieldType.TriggerButton,title:SimpleTitles.Trigger},
+    {type:FieldType.TextualLabel,title:SimpleTitles.Triggereds},
+  ];
+  ReactDOM.render(
+    <RowPanel title={SimpleTests.AllNonSelecting.name+'Form'} withRubric={false}>
+      {specs.map((spec,key)=>newFormField(spec,facets,key))}
+    </RowPanel>,
+    document.getElementById('root'),
+  );
+}
+function setSimplesLive(facets,state){
+  [SimpleTitles.FirstTextual,SimpleTitles.SecondTextual,
+    SimpleTitles.Indexed,SimpleTitles.Indexing,SimpleTitles.Index,
+    SimpleTitles.Trigger,SimpleTitles.Triggereds,
+  ].forEach(title=>{
+    facets.setTargetLive(title,state);
+  })
+}
+function buildSelectingTyped(facets){
+  function newEditField(tail){
+    return false?null:<PanelRow>
+      <TextualField title={SelectingTitles.OpenEditButton+tail} facets={facets} cols={30}/>
+    </PanelRow>;
+  }
+  let tail=TextContentType.ShowChars.titleTail;
+  let liveCheckbox=true?null:<PanelRow>
+    <TogglingCheckbox title={SelectingTitles.Live} facets={facets}/>
+  </PanelRow>;
+  ReactDOM.render(<RowPanel title={SimpleTests.SelectingTyped.name} withRubric={true}>
+      {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>
+        :<IndexingList title={SelectingTitles.Chooser} facets={facets}/>}
+      {true?null:<PanelRow>
+        <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
+      </PanelRow>}
+      <ShowPanel title={SimpleTitles.Indexed} facets={facets}>
+        <RowPanel title={TextContentType.Standard.name}>
+          {newEditField('')}
+        </RowPanel>
+        <RowPanel title={TextContentType.ShowChars.name}>
+          {newEditField(tail)}
+          <PanelRow>
+            <TextualLabel title={SelectingTitles.CharsCount+tail} facets={facets}/>
+          </PanelRow>
+        </RowPanel>
+      </ShowPanel>
+
+    </RowPanel>,
+    document.getElementById('root'),
+  );
+}
 function buildSelectingShowable(facets){
   ReactDOM.render(<RowPanel title={SimpleTests.SelectingShowable.name} withRubric={true}>
     <RowPanel title={SelectingTitles.Frame}>
@@ -487,28 +509,6 @@ function buildSelectingShowable(facets){
   );
 }
 export function doTest(){
-  if(true)new TestApp(SimpleTests.AllNonSelecting).buildSurface();
+  if(true)new TestApp(SimpleTests.SelectingShowable).buildSurface();
   else new ContentingTest().buildSurface();
-}
-function buildAllSimplesForm(facets){
-  const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
-  const specs:FieldSpec[]=[
-    {type:FieldType.TextualField,title:textual1},
-    {type:FieldType.TextualLabel,title:textual1},
-    {type:FieldType.TextualField,title:textual2,cols:40},
-    {type:FieldType.TextualLabel,title:textual2},
-    {type:FieldType.TogglingCheckbox,title:SimpleTitles.Toggling},
-    {type:FieldType.TextualLabel,title:SimpleTitles.Toggled},
-    {type:FieldType.IndexingDropdown,title:SimpleTitles.Indexing},
-    {type:FieldType.TextualLabel,title:SimpleTitles.Indexed},
-    {type:FieldType.TextualLabel,title:SimpleTitles.Index},
-    {type:FieldType.TriggerButton,title:SimpleTitles.Trigger},
-    {type:FieldType.TextualLabel,title:SimpleTitles.Triggereds},
-  ];
-  ReactDOM.render(
-      <RowPanel title={SimpleTests.AllNonSelecting.name+'Form'} withRubric={false}>
-        {specs.map((spec,key)=>newFormField(spec,facets,key))}
-      </RowPanel>,
-    document.getElementById('root'),
-  );
 }
