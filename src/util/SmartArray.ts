@@ -1,25 +1,13 @@
-import {traceThing} from './Bits';
+import {traceThing} from './_globals';
 export class SmartArray<T>{
-  constructor(protected readonly content:T[]){}
-  /** Swaps an array element with one of its neighbours.
-   * @param src the array
-   * @param index of the element to be swapped
-   * @param down the direction of the swap
-   */
-  swapElement(index,down) {
-    let src=this.content;
-    /*
-       1. Define source indices of elements to be swapped.
-       2. Define output indices to swap them to.
-       3. Split the source array around the swap indices.
-       4. Reassemble with the swapped elements.
-       */
-
+  constructor(protected readonly items:T[]){}
+  swapItem(at,down) {
+    let src=this.items;
     //  Debug?
-    traceThing('^swapElement', { index: index, down: down,src:src });
+    traceThing('^swapItem', { index: at, down: down,src:src });
 
     //  Guard against string!
-    const indexNum=Number(index);
+    const indexNum=Number(at);
 
     // Define source and output indices
     const lowerSrc = down?indexNum:indexNum+1,
@@ -36,7 +24,7 @@ export class SmartArray<T>{
     });
 
     //  Debug?
-    traceThing('^swapElement', { lowerSrc: lowerSrc, upperSrc: upperSrc,
+    traceThing('^swapItem', { lowerSrc: lowerSrc, upperSrc: upperSrc,
       lowerDest: lowerDest, upperDest:upperDest });
 
     //  Define unaffected regions
@@ -46,28 +34,28 @@ export class SmartArray<T>{
     const dest = top.concat(src[lowerSrc],src[upperSrc],tail);
 
     //  Debug?
-    traceThing('^swapElement~', false?{top:top,tail:tail}:{dest:dest});
+    traceThing('^swapItem~', false?{top:top,tail:tail}:{dest:dest});
 
     // Rebuild source
     src.splice(0,src.length,...dest);
 
     // Final check?
-    traceThing('^swapElement~~', {src:src});
+    traceThing('^swapItem~~', {src:src});
   }
-  removeElement(at:number){
-    let src=this.content;
+  removeItem(at:number){
+    let src=this.items;
     let length=src.length,atEnd=at===length-1;
     let top=src.slice(0,at),tail=atEnd?[]:src.slice(at+1);
     src.splice(0,length,...top,...tail);
-    traceThing('^removeElement',{
+    traceThing('^removeItem',{
       at:at,
       atEnd:atEnd,
       list:src
     });
     return atEnd;
   }
-  addElement(at:number,createNew:(selected)=>any){
-    let list=this.content;
+  addItem(at:number,createNew:(selected)=>T){
+    let list=this.items;
     let length=list.length,atEnd=at===length-1;
     let top=list.slice(0,at),tail=atEnd?[]:list.slice(at),
       add=createNew(list[at]);

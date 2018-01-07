@@ -766,7 +766,7 @@ IndexingFrameTargeter["__interfaces"] = ["fjs.util.Identified", "fjs.core.Notify
 /**
  * Unique constructor.
  * @param {string} title passed to superclass
- * @param {SIndexing} indexing supplies content for {{@link #newIndexedTargets(Object)}
+ * @param {SIndexing} indexing supplies items for {{@link #newIndexedTargets(Object)}
  * @class
  * @extends TargetCore
  */
@@ -1755,7 +1755,7 @@ class Facets extends Tracer {
         this.trace$java_lang_String("Surface built.");
     }
     activateContentTree(title) {
-        this.trace$java_lang_String(" > Activating content title=" + title);
+        this.trace$java_lang_String(" > Activating items title=" + title);
         let tree = ((m, k) => m[k] ? m[k] : null)(this.titleTrees, title);
         if (tree == null)
             throw Object.defineProperty(new Error("Null tree in " + this), '__classes', { configurable: true, value: ['java.lang.Throwable', 'java.lang.IllegalStateException', 'java.lang.Object', 'java.lang.RuntimeException', 'java.lang.Exception'] });
@@ -1764,7 +1764,7 @@ class Facets extends Tracer {
     }
     addContentTree(add) {
         let title = add.title();
-        this.trace$java_lang_String(" > Adding content title=" + title);
+        this.trace$java_lang_String(" > Adding items title=" + title);
         /* put */ (this.titleTrees[title] = add);
         this.root.indexing().setIndexed(add);
     }

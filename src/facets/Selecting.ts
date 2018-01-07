@@ -22,11 +22,11 @@ export interface ShowAtOvershoot{
 }
 export class SelectingContent<T> extends SmartArray<T>{
   private showFrom=0;
-  private contentIds=0;
   constructor(content:T[],
     private readonly showLength,
     private readonly facets:Facets,
     private readonly indexingTitle,
+    private readonly createNew?:(selected)=>T,
   ){
     super(content);
     facets.supplement={
@@ -34,14 +34,14 @@ export class SelectingContent<T> extends SmartArray<T>{
     }as ShowAtOvershoot;
   }
   getShowables():T[]{
-    const showables=this.content.slice(this.showFrom, this.showFrom+this.showLength);
+    const showables=this.items.slice(this.showFrom, this.showFrom+this.showLength);
     traceThing('^showables:',showables);
     return showables;
   }
   onOvershoot(belowShowZero){
     const thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
     if(belowShowZero&&thenFrom>0)this.showFrom--;
-    else if(!belowShowZero&&thenStop<this.content.length)
+    else if(!belowShowZero&&thenStop<this.items.length)
       this.showFrom++;
     traceThing('^onOvershoot',{
       belowShowZero:belowShowZero,
@@ -51,36 +51,35 @@ export class SelectingContent<T> extends SmartArray<T>{
     });
     this.facets.notifyTargetUpdated(SelectingTitles.Chooser)
   }
-  deleteElement(){
-    const showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
-    const atEnd=super.removeElement(contentAt);
+  deleteItem(){
+    const showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
+    const atEnd=super.removeItem(itemAt);
     if(atEnd)
       this.facets.updateTargetState(this.indexingTitle,showThen-1)
   };
-  addElement(){
-    let showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
-    super.addElement(contentAt+1,
-      selected=>({text:'NewContent'+this.contentIds++}));
+  addItem(){
+    let showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
+    super.addItem(itemAt+1,this.createNew);
     if(++showThen<this.showLength)this.setShowAt(showThen);
     else this.onOvershoot(false);
   }
-  swapElementDown(){
-    const showThen=this.getShowAt(),contentAt=this.contentAt(showThen);
-    super.swapElement(contentAt,true);
+  swapItemDown(){
+    const showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
+    super.swapItem(itemAt,true);
     if(showThen>0)this.setShowAt(showThen-1);
     else this.onOvershoot(true)
   }
-  swapElementUp(){
-    let showThen=this.getShowAt(),contentAt=this.contentAt(showThen),
+  swapItemUp(){
+    let showThen=this.getShowAt(),itemAt=this.itemAt(showThen),
       showNow=showThen+1;
-    super.swapElement(contentAt,false);
+    super.swapItem(itemAt,false);
     if(showNow>=this.showLength){
       this.onOvershoot(false);
       showNow--;
     }
     this.setShowAt(showNow)
   }
-  contentAt(showAt):number{
+  itemAt(showAt):number{
     return showAt+this.showFrom;
   }
   getShowAt():number{
@@ -92,27 +91,27 @@ export class SelectingContent<T> extends SmartArray<T>{
   newActionTargets(){
     const f=this.facets;
     return[f.newTriggerTarget(SelectingTitles.UpButton,{
-          targetStateUpdated:()=>this.swapElementDown(),
+          targetStateUpdated:()=>this.swapItemDown(),
         }),
         f.newTriggerTarget(SelectingTitles.DownButton,{
-          targetStateUpdated:()=>this.swapElementUp(),
+          targetStateUpdated:()=>this.swapItemUp(),
         }),
         f.newTriggerTarget(SelectingTitles.DeleteButton,{
-          targetStateUpdated:()=>this.deleteElement(),
+          targetStateUpdated:()=>this.deleteItem(),
         }),
         f.newTriggerTarget(SelectingTitles.NewButton,{
-          targetStateUpdated:()=>this.addElement(),
+          targetStateUpdated:()=>this.addItem(),
         }),
         ]
   }
   onFacetsRetargeted=()=>{
-    const contentAt=this.contentAt(this.getShowAt());
+    const itemAt=this.itemAt(this.getShowAt());
     const f=this.facets;
-    f.setTargetLive(SelectingTitles.DeleteButton,this.content.length>1);
-    f.setTargetLive(SelectingTitles.UpButton,contentAt>0);
+    f.setTargetLive(SelectingTitles.DeleteButton,this.items.length>1);
+    f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
     f.setTargetLive(SelectingTitles.DownButton,
-      contentAt<this.content.length-1);
-    traceThing('^onRetargeted',this.content);
+      itemAt<this.items.length-1);
+    traceThing('^onRetargeted',this.items);
   };
 }
 
