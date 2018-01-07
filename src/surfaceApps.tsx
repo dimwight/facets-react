@@ -29,7 +29,7 @@ ShowableList,
 import {traceThing}from './util/_globals';
 import {SurfaceApp} from './facets/Surface';
 import {FieldSpec} from './react/Facet';
-export namespace SimpleTitles{
+namespace SimpleTitles{
   export const FirstTextual='First',SecondTextual='Second',
     Indexing='Choose Item',
     Index='Index',Indexed='Indexed',IndexStart=0,
@@ -39,7 +39,10 @@ export namespace SimpleTitles{
     ToggleStart=false,
     NumericField='Number',NumericLabel='Value',NumericStart=123;
 }
-class SimpleTest{
+namespace DateTitles{
+  export const App='DateSelecting',Chooser='Select Date';
+}
+class SimpleApp{
   constructor(
     readonly name,
     readonly newTrees,
@@ -47,18 +50,18 @@ class SimpleTest{
     readonly onRetargeted?,
   ){}
 }
-const SimpleTests={
-  Textual:new SimpleTest('Textual',newTextualTree,buildTextual),
-  TogglingLive:new SimpleTest('TogglingLive',newTogglingTree,buildToggling,
+const SimpleApps={
+  Textual:new SimpleApp('Textual',newTextualTree,buildTextual),
+  TogglingLive:new SimpleApp('TogglingLive',newTogglingTree,buildToggling,
     (facets:Facets)=>{
       facets.setTargetLive(SimpleTitles.Toggled,
         facets.getTargetState(SimpleTitles.Toggling)as boolean);
     }),
-  Indexing:new SimpleTest('Indexing',newIndexingTree,buildIndexing),
-  Trigger:new SimpleTest('Trigger',newTriggerTree,buildTrigger),
-  AllNonSelecting:new SimpleTest('AllNonSelecting',newAllSimplesTree,
+  Indexing:new SimpleApp('Indexing',newIndexingTree,buildIndexing),
+  Trigger:new SimpleApp('Trigger',newTriggerTree,buildTrigger),
+  AllNonSelecting:new SimpleApp('AllNonSelecting',newAllSimplesTree,
     false?buildAllSimples:buildAllSimplesForm),
-  SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
+  SelectingTyped:new SimpleApp('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
     (facets,activeTitle)=>{
       traceThing('^onRetargeted:no live',{activeTitle:activeTitle});
       const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
@@ -68,10 +71,50 @@ const SimpleTests={
         ),
       );
     }),
-  SelectingShowable:new SimpleTest('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
+  SelectingShowable:new SimpleApp('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
+  DateSelecting:new SimpleApp(DateTitles.App,newDateSelectingTree,buildDateSelecting),
 };
+function newDateSelectingTree(facets){
+  const frame:IndexingFramePolicy={
+    frameTitle: DateTitles.App,
+    indexingTitle: DateTitles.Chooser,
+    newFrameTargets:()=>list.newActionTargets(),
+    getIndexables:()=>list.getShowables(),
+    newUiSelectable:false?null: (item:TextContent)=>item.text,
+    newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
+    newIndexedTree: (indexed:TextContent,title:string) => {
+      traceThing('^newIndexedTargets',{indexed:indexed});
+      return facets.newTargetGroup(title,[
+        facets.newTextualTarget(SelectingTitles.OpenEditButton, {
+          passText: indexed.text,
+          targetStateUpdated: state => indexed.text = state as string,
+        }),
+        facets.newTextualTarget(SelectingTitles.CharsCount, {
+          getText: () => ''+(facets.getTargetState(SelectingTitles.OpenEditButton)as string
+          ).length,
+        }),
+      ])
+    },
+  };
+  const list=new ShowableList<TextContent>(textContents,3,facets,frame.indexingTitle);
+  return facets.newIndexingFrame(frame);
+}
+function buildDateSelecting(facets){
+  ReactDOM.render(<RowPanel title={SimpleApps.DateSelecting.name} withRubric={true}>
+         <IndexingList
+            title={DateTitles.Chooser}
+            facets={facets}
+            listWidth={false?null:200}/>
+    </RowPanel>,
+    document.getElementById('root'),
+  );
+}
+export function doTest(){
+  if(true)new TestApp(SimpleApps.DateSelecting).buildSurface();
+  else new ContentingTest().buildSurface();
+}
 class TestApp extends SurfaceApp{
-  constructor(readonly test:SimpleTest){
+  constructor(readonly test:SimpleApp){
     super(newInstance(false));
   }
   getContentTrees():Target|Target[]{
@@ -94,7 +137,7 @@ class TextContent {
     this.text=clone.text
   }
 }
-const selectables=[
+const textContents=[
   new TextContent('Hello world!'),
   new TextContent('Hello, good evening and welcome!'),
   new TextContent('Hello Dolly!'),
@@ -118,7 +161,7 @@ class ContentingTest extends SurfaceApp{
   readonly list;
   constructor(){
     super(newInstance(true));
-    this.list=new ShowableList<TextContent>(selectables,3,this.facets,this.indexingTitle);
+    this.list=new ShowableList<TextContent>(textContents,3,this.facets,this.indexingTitle);
   }
   getContentTrees():Target|Target[]{
     function activateChooser(){
@@ -167,8 +210,8 @@ class ContentingTest extends SurfaceApp{
       }));
     let trees=[];
     trees.push(
-      newContentTree(selectables[0]),
-      newContentTree(selectables[1]),
+      newContentTree(textContents[0]),
+      newContentTree(textContents[1]),
       f.newIndexingFrame({
       frameTitle: this.chooserTitle,
       indexingTitle: this.indexingTitle,
@@ -302,7 +345,7 @@ function newSelectingTypedTree(facets:Facets){
   const frame:IndexingFramePolicy={
     frameTitle: SelectingTitles.Frame,
     indexingTitle: SelectingTitles.Chooser,
-    getIndexables:()=>selectables,
+    getIndexables:()=>textContents,
     newUiSelectable:(item:TextContent)=>item.text,
     newFrameTargets:()=>[
       facets.newTextualTarget(SimpleTitles.Indexed,{
@@ -354,13 +397,13 @@ function newSelectingShowableTree(facets){
       ])
     },
   };
-  const list=new ShowableList<TextContent>(selectables,3,facets,frame.indexingTitle);
+  const list=new ShowableList<TextContent>(textContents,3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildTextual(facets){
   const first=SimpleTitles.FirstTextual,second=SimpleTitles.SecondTextual;
   ReactDOM.render(
-    <RowPanel title={SimpleTests.Textual.name} withRubric={true}>
+    <RowPanel title={SimpleApps.Textual.name} withRubric={true}>
       <TextualField title={first} facets={facets}/>
       <TextualLabel title={first} facets={facets}/>
       <TextualField title={second} facets={facets} cols={40}/>
@@ -371,7 +414,7 @@ function buildTextual(facets){
 }
 function buildToggling(facets){
   ReactDOM.render(
-    <RowPanel title={SimpleTests.TogglingLive.name} withRubric={true}>
+    <RowPanel title={SimpleApps.TogglingLive.name} withRubric={true}>
       <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
       <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
     </RowPanel>,
@@ -381,7 +424,7 @@ function buildToggling(facets){
 }
 function buildTrigger(facets){
   ReactDOM.render(
-    <RowPanel title={SimpleTests.Trigger.name} withRubric={true}>
+    <RowPanel title={SimpleApps.Trigger.name} withRubric={true}>
       <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
       <TextualLabel title={SimpleTitles.Triggereds} facets={facets}/>
     </RowPanel>,
@@ -390,7 +433,7 @@ function buildTrigger(facets){
 }
 function buildIndexing(facets){
   ReactDOM.render(
-    <RowPanel title={SimpleTests.Indexing.name} withRubric={true}>
+    <RowPanel title={SimpleApps.Indexing.name} withRubric={true}>
       <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
       <TextualLabel title={SimpleTitles.Index} facets={facets}/>
       <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
@@ -401,22 +444,22 @@ function buildIndexing(facets){
 function buildAllSimples(facets){
   const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
   ReactDOM.render(<div>
-      <RowPanel title={SimpleTests.Textual.name} withRubric={true}>
+      <RowPanel title={SimpleApps.Textual.name} withRubric={true}>
         <TextualField title={textual1} facets={facets}/>
         <TextualLabel title={textual1} facets={facets}/>
         <TextualField title={textual2} facets={facets} cols={40}/>
         <TextualLabel title={textual2} facets={facets}/>
       </RowPanel>
-      <RowPanel title={SimpleTests.TogglingLive.name} withRubric={true}>
+      <RowPanel title={SimpleApps.TogglingLive.name} withRubric={true}>
         <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
         <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
       </RowPanel>
-      <RowPanel title={SimpleTests.Indexing.name} withRubric={true}>
+      <RowPanel title={SimpleApps.Indexing.name} withRubric={true}>
         <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
         <TextualLabel title={SimpleTitles.Index} facets={facets}/>
         <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
       </RowPanel>
-      <RowPanel title={SimpleTests.Trigger.name} withRubric={true}>
+      <RowPanel title={SimpleApps.Trigger.name} withRubric={true}>
         <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
         <TextualLabel title={SimpleTitles.Triggereds} facets={facets}/>
       </RowPanel>
@@ -440,7 +483,7 @@ function buildAllSimplesForm(facets){
     {type:FieldType.TextualLabel,title:SimpleTitles.Triggereds},
   ];
   ReactDOM.render(
-    <RowPanel title={SimpleTests.AllNonSelecting.name+'Form'} withRubric={false}>
+    <RowPanel title={SimpleApps.AllNonSelecting.name+'Form'} withRubric={false}>
       {specs.map((spec,key)=>newFormField(spec,facets,key))}
     </RowPanel>,
     document.getElementById('root'),
@@ -464,7 +507,7 @@ function buildSelectingTyped(facets){
   let liveCheckbox=true?null:<PanelRow>
     <TogglingCheckbox title={SelectingTitles.Live} facets={facets}/>
   </PanelRow>;
-  ReactDOM.render(<RowPanel title={SimpleTests.SelectingTyped.name} withRubric={true}>
+  ReactDOM.render(<RowPanel title={SimpleApps.SelectingTyped.name} withRubric={true}>
       {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>
         :<IndexingList title={SelectingTitles.Chooser} facets={facets}/>}
       {true?null:<PanelRow>
@@ -487,7 +530,7 @@ function buildSelectingTyped(facets){
   );
 }
 function buildSelectingShowable(facets){
-  ReactDOM.render(<RowPanel title={SimpleTests.SelectingShowable.name} withRubric={true}>
+  ReactDOM.render(<RowPanel title={SimpleApps.SelectingShowable.name} withRubric={true}>
     <RowPanel title={SelectingTitles.Frame}>
       {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>:
         <IndexingList
@@ -507,8 +550,4 @@ function buildSelectingShowable(facets){
     </RowPanel>,
     document.getElementById('root'),
   );
-}
-export function doTest(){
-  if(true)new TestApp(SimpleTests.SelectingShowable).buildSurface();
-  else new ContentingTest().buildSurface();
 }

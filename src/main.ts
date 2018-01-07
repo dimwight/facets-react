@@ -1,3 +1,3 @@
-import {doTest} from './surfaceTest';
+import {doTest} from './surfaceApps';
 doTest();
 
