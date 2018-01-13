@@ -20,18 +20,20 @@ export namespace SelectingTitles {
 export interface ShowAtOvershoot{
   overshot(belowShowZero:boolean)
 }
-export class SelectingContent<T> extends SmartArray<T>{
+export class SelectingContent<T>{
+  private readonly smarts:SmartArray<T>;
   private showFrom=0;
-  constructor(content:T[],
-    private readonly showLength,
+  constructor(
+    private readonly items:T[],
     private readonly facets:Facets,
+    private readonly showLength,
     private readonly indexingTitle,
     private readonly createNew?:(from)=>T,
   ){
-    super(content);
     facets.supplement={
       overshot:belowShowZero=>this.onOvershoot(belowShowZero),
     }as ShowAtOvershoot;
+    this.smarts=new SmartArray<T>(items);
   }
   getShowables():T[]{
     const showables=this.items.slice(this.showFrom, this.showFrom+this.showLength);
@@ -53,27 +55,27 @@ export class SelectingContent<T> extends SmartArray<T>{
   }
   deleteItem(){
     const showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
-    const atEnd=super.removeItem(itemAt);
+    const atEnd=this.smarts.removeItem(itemAt);
     if(atEnd)
       this.facets.updateTargetState(this.indexingTitle,showThen-1)
   };
   addItem(){
     let showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
     if(!this.createNew)throw new Error('Cannot create new');
-    super.addItem(itemAt,this.createNew);
+    this.smarts.addItem(itemAt,this.createNew);
     if(++showThen<this.showLength)this.setShowAt(showThen);
     else this.onOvershoot(false);
   }
   swapItemDown(){
     const showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
-    super.swapItem(itemAt,true);
+    this.smarts.swapItem(itemAt,true);
     if(showThen>0)this.setShowAt(showThen-1);
     else this.onOvershoot(true)
   }
   swapItemUp(){
     let showThen=this.getShowAt(),itemAt=this.itemAt(showThen),
       showNow=showThen+1;
-    super.swapItem(itemAt,false);
+    this.smarts.swapItem(itemAt,false);
     if(showNow>=this.showLength){
       this.onOvershoot(false);
       showNow--;
