@@ -1,6 +1,6 @@
 import {traceThing} from './_globals';
-export class SmartArray<T>{
-  constructor(protected readonly items:T[]){}
+export class SmartItems<T>{
+  constructor(private readonly items:T[]){}
   swapItem(at,down) {
     let src=this.items;
     //  Debug?
@@ -67,4 +67,12 @@ export class SmartArray<T>{
       list:list
     });
   }
+}
+export interface ExtensibleItem<T>{
+  newBefore():T
+  newAfter():T
+}
+export class ExtensibleItems<T>{
+  constructor(private readonly items:T[]){}
+
 }

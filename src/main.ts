@@ -1,3 +1,3 @@
-import {doTest} from './surfaceApps';
-doTest();
+import {launchApp} from './surfaceApps';
+launchApp();
 

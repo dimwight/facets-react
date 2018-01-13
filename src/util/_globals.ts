@@ -1,3 +1,3 @@
 export * from './Bits';
-export * from './SmartArray';
+export * from './ArraySmarts';
 
