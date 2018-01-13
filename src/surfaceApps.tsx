@@ -76,7 +76,7 @@ const SimpleApps={
 class DateContent implements ExtensibleItem<Date>{
   constructor(public readonly date:Date){}
   newBefore(){
-    return new DateContent(new Date())
+    return new DateContent(new Date(this.date.valueOf()-1))
   }
   newAfter(){
     return new DateContent(new Date(this.date.valueOf()+1))

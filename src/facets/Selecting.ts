@@ -41,7 +41,7 @@ export class SelectingContent{
               private readonly indexingTitle,
               private readonly createNew?:(from)=>any,){
     facets.supplement={
-      overshot:belowShowZero=>this.onOvershoot_(belowShowZero),
+      overshot:belowShowZero=>this.onOvershoot(belowShowZero),
     }as ShowAtOvershoot;
     this.smarts=new SmartItems(items);
     const length=items.length;
@@ -77,13 +77,10 @@ export class SelectingContent{
     const thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
     if(belowShowZero){
       if(thenFrom>0) this.showFrom--;
-      else{
-        if(this.extender){
-          const prepend=this.showLength;
-          this.extender.prepend(prepend);
-          this.showFrom+=prepend-1
-        }
-        if(thenStop<this.items.length)this.showFrom++;
+      else if(this.extender){
+        const prepend=this.showLength;
+        this.extender.prepend(prepend);
+        this.showFrom+=prepend-1
       }
     }
     else if(!belowShowZero){

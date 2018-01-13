@@ -75,15 +75,19 @@ export interface ExtensibleItem<T>{
   newAfter():ExtensibleItem<T>
 }
 export class ExtensibleItems{
-  constructor(private readonly items:any[]){}
+  private readonly items:ExtensibleItem<any>[];
+  constructor(items:any[]){
+    this.items=items;
+  }
   prepend(count:number){
-
+    const items=this.items;
+    while(count-->0)items.unshift(items[0].newBefore());
+    traceThing('^prepend',items)
   }
   append(count:number){
-    const start=this.items.length-1;
-    for(let at=start; at<start+count; at++)
-      this.items.push(this.items[at].newAfter());
-    traceThing('^append',this.items.length)
+    const items=this.items;
+    while(count-->0)items.push(items[items.length-1].newAfter());
+    traceThing('^append',items)
   }
 
 }
