@@ -73,6 +73,15 @@ const SimpleApps={
   SelectingShowable:new SimpleApp('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
   DateSelecting:new SimpleApp(DateTitles.App,newDateSelectingTree,buildDateSelecting),
 };
+class DateContent implements ExtensibleItem<Date>{
+  constructor(public readonly date:Date){}
+  newBefore(){
+    return new Date
+  }
+  newAfter(){
+    return new Date
+  }
+}
 function newDateSelectingTree(facets){
   const frame:IndexingFramePolicy={
     frameTitle:DateTitles.App,
@@ -95,7 +104,7 @@ function newDateSelectingTree(facets){
       ])
     },
   };
-  const list=new SelectingContent<TextContent>(textContents,3,facets,frame.indexingTitle);
+  const list=new SelectingContent<DateContent>([new Date()],3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildDateSelecting(facets){
@@ -125,15 +134,6 @@ class TestApp extends SurfaceApp{
   }
   buildLayout():void{
     this.test.buildLayout(this.facets)
-  }
-}
-class DateContent implements ExtensibleItem<Date>{
-  constructor(public readonly date:Date){}
-  newBefore(){
-    return new Date
-  }
-  newAfter(){
-    return new Date
   }
 }
 class TextContent{

@@ -23,7 +23,7 @@ export namespace SelectingTitles{
 export interface ShowAtOvershoot{
   overshot(belowShowZero:boolean)
 }
-export class SelectingContent<T extends ExtensibleItem<T>>{
+export class SelectingContent{
   onFacetsRetargeted=()=>{
     const itemAt=this.itemAt(this.getShowAt());
     const f=this.facets;
@@ -33,7 +33,7 @@ export class SelectingContent<T extends ExtensibleItem<T>>{
       itemAt<this.items.length-1);
     traceThing('^onRetargeted',this.items);
   };
-  private readonly smarts:SmartItems<T>;
+  private readonly smarts:SmartItems;
   private readonly extender:ExtensibleItems<T>;
   private showFrom=0;
   constructor(private readonly items:T[],
@@ -45,7 +45,11 @@ export class SelectingContent<T extends ExtensibleItem<T>>{
       overshot:belowShowZero=>this.onOvershoot(belowShowZero),
     }as ShowAtOvershoot;
     this.smarts=new SmartItems<T>(items);
-    this.extender=new ExtensibleItems<T>(items);
+    this.extender=items[0].newBefore?
+      new ExtensibleItems<T>(items);
+    if(items.length<1)throw new Error ('Empty items');
+    else for(let length=0;length<showLength;length++)
+      items.push(items[length].newAfter());
   }
   getShowables():T[]{
     const showables=this.items.slice(this.showFrom,this.showFrom+this.showLength);

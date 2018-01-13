@@ -1,6 +1,6 @@
 import {traceThing} from './_globals';
-export class SmartItems<T>{
-  constructor(private readonly items:T[]){}
+export class SmartItems{
+  constructor(private readonly items:any[]){}
   swapItem(at,down) {
     let src=this.items;
     //  Debug?
@@ -54,7 +54,7 @@ export class SmartItems<T>{
     });
     return atEnd;
   }
-  addItem(at:number,createNew:(from)=>T){
+  addItem(at:number,createNew:(from)=>any){
     let list=this.items;
     let length=list.length,atEnd=at===length-1;
     let top=list.slice(0,at+1),tail=atEnd?[]:list.slice(at+1),
@@ -74,5 +74,11 @@ export interface ExtensibleItem<T>{
 }
 export class ExtensibleItems<T>{
   constructor(private readonly items:T[]){}
+  prepend(){
+
+  }
+  append(){
+
+  }
 
 }
