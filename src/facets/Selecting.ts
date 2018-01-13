@@ -59,9 +59,12 @@ export class SelectingContent{
   }
   onOvershoot_(belowShowZero){
     const thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
-    if(belowShowZero&&thenFrom>0) this.showFrom--;
-    else if(!belowShowZero&&thenStop<this.items.length)
-      this.showFrom++;
+    if(belowShowZero){
+      if(thenFrom>0) this.showFrom--;
+    }
+    else {
+      if(thenStop<this.items.length)this.showFrom++;
+    }
     traceThing('^onOvershoot',{
       belowShowZero:belowShowZero,
       thenFrom:thenFrom,
