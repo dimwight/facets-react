@@ -145,7 +145,8 @@ class TextContent{
     this.text=clone.text
   }
 }
-const textContents=[
+const textContents=true?[new TextContent('Hello world!')]
+  :[
   new TextContent('Hello world!'),
   new TextContent('Hello, good evening and welcome!'),
   new TextContent('Hello Dolly!'),

@@ -46,7 +46,7 @@ export class SelectingContent{
     }as ShowAtOvershoot;
     this.smarts=new SmartItems(items);
     const length=items.length;
-    if(length<1)throw new Error ('At least one item!');
+    if(!length)throw new Error ('At least one item!');
     else this.extender=items[0].newAfter?new ExtensibleItems(items):null;
     if(length<showLength){
       if(!this.extender) throw new Error('Items not extensible!');
