@@ -50,7 +50,7 @@ export class SmartItems{
     traceThing('^removeItem',{
       at:at,
       atEnd:atEnd,
-      list:src
+      list:src,
     });
     return atEnd;
   }
@@ -64,7 +64,7 @@ export class SmartItems{
     else list.push(add);
     traceThing('^targetStateUpdated',{
       at:at,
-      list:list
+      list:list,
     });
   }
 }
@@ -72,13 +72,15 @@ export interface ExtensibleItem<T>{
   newBefore():T
   newAfter():T
 }
-export class ExtensibleItems<T>{
-  constructor(private readonly items:T[]){}
-  prepend(){
+export class ExtensibleItems{
+  constructor(private readonly items:any[]){}
+  prepend(count:number){
 
   }
-  append(){
-
+  append(count:number){
+    const target=this.items.length+count;
+    for(let at=0; at<target; at++)
+      this.items.push(this.items[at].newAfter());
   }
 
 }

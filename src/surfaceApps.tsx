@@ -104,7 +104,7 @@ function newDateSelectingTree(facets){
       ])
     },
   };
-  const list=new SelectingContent<DateContent>([new Date()],3,facets,frame.indexingTitle);
+  const list=new SelectingContent([new Date()],3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildDateSelecting(facets){
@@ -118,7 +118,7 @@ function buildDateSelecting(facets){
   );
 }
 export function launchApp(){
-  if(true) new TestApp(SimpleApps.DateSelecting).buildSurface();
+  if(true) new TestApp(SimpleApps.SelectingShowable).buildSurface();
   else new ContentingTest().buildSurface();
 }
 class TestApp extends SurfaceApp{
@@ -167,7 +167,7 @@ class ContentingTest extends SurfaceApp{
   readonly list;
   constructor(){
     super(newInstance(true));
-    this.list=new SelectingContent<TextContent>(textContents,3,this.facets,
+    this.list=new SelectingContent(textContents,3,this.facets,
       this.indexingTitle);
   }
   getContentTrees():Target|Target[]{
@@ -405,7 +405,7 @@ function newSelectingShowableTree(facets){
     },
   };
   let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
-  const list=new SelectingContent<TextContent>(textContents,3,facets,
+  const list=new SelectingContent(textContents,3,facets,
     frame.indexingTitle,createNew);
   return facets.newIndexingFrame(frame);
 }

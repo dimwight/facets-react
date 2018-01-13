@@ -34,24 +34,26 @@ export class SelectingContent{
     traceThing('^onRetargeted',this.items);
   };
   private readonly smarts:SmartItems;
-  private readonly extender:ExtensibleItems<T>;
+  private readonly extender:ExtensibleItems;
   private showFrom=0;
-  constructor(private readonly items:T[],
+  constructor(private readonly items,
               private readonly showLength,
               private readonly facets:Facets,
               private readonly indexingTitle,
-              private readonly createNew?:(from)=>T,){
+              private readonly createNew?:(from)=>any,){
     facets.supplement={
       overshot:belowShowZero=>this.onOvershoot(belowShowZero),
     }as ShowAtOvershoot;
-    this.smarts=new SmartItems<T>(items);
-    this.extender=items[0].newBefore?
-      new ExtensibleItems<T>(items);
-    if(items.length<1)throw new Error ('Empty items');
-    else for(let length=0;length<showLength;length++)
-      items.push(items[length].newAfter());
+    this.smarts=new SmartItems(items);
+    const length=items.length;
+    if(length<1)throw new Error ('At least one item!');
+    else this.extender=items[0].newAfter?new ExtensibleItems(items):null;
+    if(length<showLength){
+      if(!this.extender) throw new Error('Items not extensible!');
+      else this.extender.append(showLength-length);
+    }
   }
-  getShowables():T[]{
+  getShowables():any[]{
     const showables=this.items.slice(this.showFrom,this.showFrom+this.showLength);
     traceThing('^showables:',showables);
     return showables;
