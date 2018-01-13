@@ -34,64 +34,52 @@ export class SelectingContent{
   };
   private readonly smarts:SmartItems;
   private readonly extender:ExtensibleItems;
+  private readonly maxLength;
   private showFrom=0;
   constructor(private readonly items,
               private readonly showLength,
               private readonly facets:Facets,
               private readonly indexingTitle,
               private readonly createNew?:(from)=>any,){
-    facets.supplement={
-      overshot:belowShowZero=>this.onOvershoot(belowShowZero),
-    }as ShowAtOvershoot;
+    this.maxLength=showLength*3;
     this.smarts=new SmartItems(items);
     const length=items.length;
     if(!length) throw new Error('At least one item!');
     else this.extender=items[0].newAfter?new ExtensibleItems(items):null;
     if(length<showLength){
       if(!this.extender) throw new Error('Items not extensible!');
-      else this.extender.append(showLength-length+2);
+      else this.extender.append(showLength-length);
     }
+    facets.supplement={
+      overshot:belowShowZero=>this.onOvershoot(belowShowZero),
+    }as ShowAtOvershoot;
   }
   getShowables():any[]{
+    traceThing('^getShowables:',this.showFrom);
     const showables=this.items.slice(this.showFrom,this.showFrom+this.showLength);
-    traceThing('^showables:',showables);
     return showables;
   }
-  onOvershoot_(belowShowZero){
-    const thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
-    if(belowShowZero){
-      if(thenFrom>0) this.showFrom--;
-    }
-    else {
-      if(thenStop<this.items.length)this.showFrom++;
-    }
-    traceThing('^onOvershoot',{
-      belowShowZero:belowShowZero,
-      thenFrom:thenFrom,
-      thenStop:thenStop,
-      offset:this.showFrom-thenFrom,
-    });
-    this.facets.notifyTargetUpdated(this.indexingTitle)
-  }
   onOvershoot(belowShowZero){
-    const thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
+    const showLength=this.showLength,maxLength=this.maxLength,
+      thenFrom=this.showFrom,thenStop=thenFrom+showLength;
+    const extender=this.extender;
     if(belowShowZero){
       if(thenFrom>0) this.showFrom--;
-      else if(this.extender){
-        const prepend=this.showLength;
-        this.extender.prepend(prepend);
-        this.showFrom+=prepend-1
+      else if(extender){
+        extender.prepend(showLength);
+        this.showFrom+=showLength-1;
+        extender.trimCount(maxLength,false);
       }
     }
-    else if(!belowShowZero){
+    else {
       if(thenStop<this.items.length) this.showFrom++;
+      else if(extender){
+        extender.append(showLength);
+        this.showFrom++;
+        const count=extender.trimCount(maxLength,true);
+        if(count)this.showFrom-=showLength+count;
+      }
     }
-    traceThing('onOvershoot',{
-      belowShowZero:belowShowZero,
-      thenFrom:thenFrom,
-      thenStop:thenStop,
-      offset:this.showFrom-thenFrom,
-    });
     this.facets.notifyTargetUpdated(this.indexingTitle)
   }
   deleteItem(){

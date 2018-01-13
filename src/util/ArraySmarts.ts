@@ -2,7 +2,7 @@ import {traceThing} from './_globals';
 export class SmartItems{
   constructor(private readonly items:any[]){}
   swapItem(at,down){
-    let src=this.items;
+    const src=this.items;
     //  Debug?
     traceThing('^swapItem',{index:at,down:down,src:src});
 
@@ -45,9 +45,9 @@ export class SmartItems{
     traceThing('^swapItem~~',{src:src});
   }
   removeItem(at:number){
-    let src=this.items;
-    let length=src.length,atEnd=at===length-1;
-    let top=src.slice(0,at),tail=atEnd?[]:src.slice(at+1);
+    const src=this.items;
+    const length=src.length,atEnd=at===length-1;
+    const top=src.slice(0,at),tail=atEnd?[]:src.slice(at+1);
     src.splice(0,length,...top,...tail);
     traceThing('^removeItem',{
       at:at,
@@ -57,9 +57,9 @@ export class SmartItems{
     return atEnd;
   }
   addItem(at:number,createNew:(from)=>any){
-    let list=this.items;
-    let length=list.length,atEnd=at===length-1;
-    let top=list.slice(0,at+1),tail=atEnd?[]:list.slice(at+1),
+    const list=this.items;
+    const length=list.length,atEnd=at===length-1;
+    const top=list.slice(0,at+1),tail=atEnd?[]:list.slice(at+1),
       add=createNew(list[at]);
     if(!atEnd)
       list.splice(0,length,...top,add,...tail);
@@ -81,13 +81,21 @@ export class ExtensibleItems{
   }
   prepend(count:number){
     const items=this.items;
-    while(count-->0)items.unshift(items[0].newBefore());
-    traceThing('^prepend',items)
+    while(count-->0) items.unshift(items[0].newBefore());
+    traceThing('^prepend',items.length)
   }
   append(count:number){
     const items=this.items;
-    while(count-->0)items.push(items[items.length-1].newAfter());
-    traceThing('^append',items)
+    while(count-->0) items.push(items[items.length-1].newAfter());
+    traceThing('^append',items.length)
   }
-
+  trimCount(max:number,before:boolean):number{
+    const items=this.items;
+    let count=items.length-max;
+    if(count<1)return 0;
+    if(before)while(count-->0)items.shift();
+    else while(count-->0)items.pop();
+    traceThing('^trimCount',items.length);
+    return count
+  }
 }
