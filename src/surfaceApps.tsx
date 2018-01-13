@@ -79,7 +79,7 @@ class DateContent implements ExtensibleItem<Date>{
     return new DateContent(new Date())
   }
   newAfter(){
-    return new DateContent(new Date())
+    return new DateContent(new Date(this.date.valueOf()+1))
   }
 }
 function newDateSelectingTree(facets){
@@ -88,7 +88,7 @@ function newDateSelectingTree(facets){
     indexingTitle:DateTitles.Chooser,
     newFrameTargets:()=>list.newActionTargets(),
     getIndexables:()=>list.getShowables(),
-    newUiSelectable:(item:DateContent)=>item.date.getMilliseconds(),
+    newUiSelectable:(item:DateContent)=>item.date.valueOf(),
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
   };
   const list=new SelectingContent([new DateContent(new Date())],3,facets,frame.indexingTitle);

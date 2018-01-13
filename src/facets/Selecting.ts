@@ -41,7 +41,7 @@ export class SelectingContent{
               private readonly indexingTitle,
               private readonly createNew?:(from)=>any,){
     facets.supplement={
-      overshot:belowShowZero=>this.onOvershoot(belowShowZero),
+      overshot:belowShowZero=>this.onOvershoot_(belowShowZero),
     }as ShowAtOvershoot;
     this.smarts=new SmartItems(items);
     const length=items.length;
@@ -49,7 +49,7 @@ export class SelectingContent{
     else this.extender=items[0].newAfter?new ExtensibleItems(items):null;
     if(length<showLength){
       if(!this.extender) throw new Error('Items not extensible!');
-      else this.extender.append(showLength-length);
+      else this.extender.append(showLength-length+2);
     }
   }
   getShowables():any[]{
@@ -57,12 +57,36 @@ export class SelectingContent{
     traceThing('^showables:',showables);
     return showables;
   }
-  onOvershoot(belowShowZero){
+  onOvershoot_(belowShowZero){
     const thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
     if(belowShowZero&&thenFrom>0) this.showFrom--;
     else if(!belowShowZero&&thenStop<this.items.length)
       this.showFrom++;
     traceThing('^onOvershoot',{
+      belowShowZero:belowShowZero,
+      thenFrom:thenFrom,
+      thenStop:thenStop,
+      offset:this.showFrom-thenFrom,
+    });
+    this.facets.notifyTargetUpdated(this.indexingTitle)
+  }
+  onOvershoot(belowShowZero){
+    const thenFrom=this.showFrom,thenStop=thenFrom+this.showLength;
+    if(belowShowZero){
+      if(thenFrom>0) this.showFrom--;
+      else{
+        if(this.extender){
+          const prepend=this.showLength;
+          this.extender.prepend(prepend);
+          this.showFrom+=prepend-1
+        }
+        if(thenStop<this.items.length)this.showFrom++;
+      }
+    }
+    else if(!belowShowZero){
+      if(thenStop<this.items.length) this.showFrom++;
+    }
+    traceThing('onOvershoot',{
       belowShowZero:belowShowZero,
       thenFrom:thenFrom,
       thenStop:thenStop,
