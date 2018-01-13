@@ -1,46 +1,48 @@
 import {traceThing} from './_globals';
 export class SmartItems{
   constructor(private readonly items:any[]){}
-  swapItem(at,down) {
+  swapItem(at,down){
     let src=this.items;
     //  Debug?
-    traceThing('^swapItem', { index: at, down: down,src:src });
+    traceThing('^swapItem',{index:at,down:down,src:src});
 
     //  Guard against string!
     const indexNum=Number(at);
 
     // Define source and output indices
-    const lowerSrc = down?indexNum:indexNum+1,
-      upperSrc = down?indexNum-1:indexNum;
-    const lowerDest = down ? indexNum-1 : indexNum,
-      upperDest = down ? indexNum : indexNum+1;
+    const lowerSrc=down?indexNum:indexNum+1,
+      upperSrc=down?indexNum-1:indexNum;
+    const lowerDest=down?indexNum-1:indexNum,
+      upperDest=down?indexNum:indexNum+1;
 
     //  Check for out of bounds
     const names=['index','lowerSrc','upperSrc','lowerDest','upperDest'];
     [indexNum,lowerSrc,upperSrc,lowerDest,upperDest].forEach((n,at)=>{
 
       // Index out of bounds?
-      if(n<0||n>=src.length)throw new Error(`Index out of range: ${names[at]}=${n}`);
+      if(n<0||n>=src.length) throw new Error(`Index out of range: ${names[at]}=${n}`);
     });
 
     //  Debug?
-    traceThing('^swapItem', { lowerSrc: lowerSrc, upperSrc: upperSrc,
-      lowerDest: lowerDest, upperDest:upperDest });
+    traceThing('^swapItem',{
+      lowerSrc:lowerSrc,upperSrc:upperSrc,
+      lowerDest:lowerDest,upperDest:upperDest,
+    });
 
     //  Define unaffected regions
-    const top = src.slice(0, lowerDest), tail = src.slice(upperDest+1);
+    const top=src.slice(0,lowerDest),tail=src.slice(upperDest+1);
 
     // Assemble output
-    const dest = top.concat(src[lowerSrc],src[upperSrc],tail);
+    const dest=top.concat(src[lowerSrc],src[upperSrc],tail);
 
     //  Debug?
-    traceThing('^swapItem~', false?{top:top,tail:tail}:{dest:dest});
+    traceThing('^swapItem~',false?{top:top,tail:tail}:{dest:dest});
 
     // Rebuild source
     src.splice(0,src.length,...dest);
 
     // Final check?
-    traceThing('^swapItem~~', {src:src});
+    traceThing('^swapItem~~',{src:src});
   }
   removeItem(at:number){
     let src=this.items;
@@ -78,9 +80,10 @@ export class ExtensibleItems{
 
   }
   append(count:number){
-    const target=this.items.length+count;
-    for(let at=0; at<target; at++)
+    const start=this.items.length-1;
+    for(let at=start; at<start+count; at++)
       this.items.push(this.items[at].newAfter());
+    traceThing('^append',this.items.length)
   }
 
 }

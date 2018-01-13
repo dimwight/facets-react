@@ -1,8 +1,7 @@
 import {Facets,} from 'facets-js';
 import {
-  SmartItems,
-  ExtensibleItem,
   ExtensibleItems,
+  SmartItems,
   traceThing,
 } from '../util/_globals';
 export namespace SelectingTitles{
@@ -46,7 +45,7 @@ export class SelectingContent{
     }as ShowAtOvershoot;
     this.smarts=new SmartItems(items);
     const length=items.length;
-    if(!length)throw new Error ('At least one item!');
+    if(!length) throw new Error('At least one item!');
     else this.extender=items[0].newAfter?new ExtensibleItems(items):null;
     if(length<showLength){
       if(!this.extender) throw new Error('Items not extensible!');
@@ -69,7 +68,7 @@ export class SelectingContent{
       thenStop:thenStop,
       offset:this.showFrom-thenFrom,
     });
-    this.facets.notifyTargetUpdated(SelectingTitles.Chooser)
+    this.facets.notifyTargetUpdated(this.indexingTitle)
   }
   deleteItem(){
     const showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
