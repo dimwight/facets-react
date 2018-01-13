@@ -76,10 +76,10 @@ const SimpleApps={
 class DateContent implements ExtensibleItem<Date>{
   constructor(public readonly date:Date){}
   newBefore(){
-    return new Date
+    return new DateContent(new Date())
   }
   newAfter(){
-    return new Date
+    return new DateContent(new Date())
   }
 }
 function newDateSelectingTree(facets){
@@ -88,23 +88,10 @@ function newDateSelectingTree(facets){
     indexingTitle:DateTitles.Chooser,
     newFrameTargets:()=>list.newActionTargets(),
     getIndexables:()=>list.getShowables(),
-    newUiSelectable:false?null:(item:TextContent)=>item.text,
+    newUiSelectable:(item:DateContent)=>item.date.getMilliseconds(),
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
-    newIndexedTree:(indexed:TextContent,title:string)=>{
-      traceThing('^newIndexedTargets',{indexed:indexed});
-      return facets.newTargetGroup(title,[
-        facets.newTextualTarget(SelectingTitles.OpenEditButton,{
-          passText:indexed.text,
-          targetStateUpdated:state=>indexed.text=state as string,
-        }),
-        facets.newTextualTarget(SelectingTitles.CharsCount,{
-          getText:()=>''+(facets.getTargetState(SelectingTitles.OpenEditButton)as string
-          ).length,
-        }),
-      ])
-    },
   };
-  const list=new SelectingContent([new Date()],3,facets,frame.indexingTitle);
+  const list=new SelectingContent([new DateContent(new Date())],3,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildDateSelecting(facets){
@@ -118,7 +105,7 @@ function buildDateSelecting(facets){
   );
 }
 export function launchApp(){
-  if(true) new TestApp(SimpleApps.SelectingShowable).buildSurface();
+  if(true) new TestApp(SimpleApps.DateSelecting).buildSurface();
   else new ContentingTest().buildSurface();
 }
 class TestApp extends SurfaceApp{
@@ -145,8 +132,7 @@ class TextContent{
     this.text=clone.text
   }
 }
-const textContents=true?[new TextContent('Hello world!')]
-  :[
+const textContents=[
   new TextContent('Hello world!'),
   new TextContent('Hello, good evening and welcome!'),
   new TextContent('Hello Dolly!'),

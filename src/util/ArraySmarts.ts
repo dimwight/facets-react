@@ -69,8 +69,8 @@ export class SmartItems{
   }
 }
 export interface ExtensibleItem<T>{
-  newBefore():T
-  newAfter():T
+  newBefore():ExtensibleItem<T>
+  newAfter():ExtensibleItem<T>
 }
 export class ExtensibleItems{
   constructor(private readonly items:any[]){}
