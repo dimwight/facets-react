@@ -34,7 +34,7 @@ export class ScrollableItems implements ItemScroller{
     traceThing('^onRetargeted',this.items);
   };
   private readonly smarts:SmartItems;
-  private readonly extender:SkippableItems;
+  private readonly skipper:SkippableItems;
   private readonly maxLength;
   private showFrom=0;
   constructor(private readonly items,
@@ -42,15 +42,14 @@ export class ScrollableItems implements ItemScroller{
               private readonly facets:Facets,
               private readonly indexingTitle,
               private readonly createNew?:(from)=>any,){
-    this.maxLength=showLength*3;
     this.smarts=new SmartItems(items);
     const length=items.length;
     if(!length) throw new Error('At least one item!');
-    else this.extender=(items[0] as SkippableItem<any>).newSkipped
-      ?new SkippableItems(items):null;
+    else this.skipper=(items[0] as SkippableItem<any>).newSkipped?
+      new SkippableItems(showLength*3,items):null;
     if(length<showLength){
-      if(!this.extender) throw new Error('Items not extensible!');
-      else this.extender.skipForward(showLength-length);
+      if(!this.skipper) throw new Error('Items not extensible!');
+      else this.skipper.skipForward(showLength-length);
     }
     facets.supplement=this
   }
@@ -60,25 +59,23 @@ export class ScrollableItems implements ItemScroller{
     return scrolleds;
   }
   scrollItems(skip:number){
-    const showLength=this.showLength,maxLength=this.maxLength,
+    const showLength=this.showLength,
       thenFrom=this.showFrom,thenStop=thenFrom+showLength;
-    const extender=this.extender;
+    const extender=this.skipper;
     if(!skip)return;
     else if(skip<1){
       if(thenFrom>0) this.showFrom--;
       else if(extender){
         extender.skipBack(showLength);
         this.showFrom+=showLength-1;
-        extender.trimItems(maxLength,false);
       }
     }
     else {
       if(thenStop<this.items.length) this.showFrom++;
       else if(extender){
-        extender.skipForward(showLength);
-        this.showFrom++;
-        const count=extender.trimItems(maxLength,true);
-        if(count)this.showFrom-=showLength+count;
+        const trim=extender.skipForward(showLength);
+        if(trim)this.showFrom-=showLength+trim;
+        else this.showFrom++;
       }
     }
     this.facets.notifyTargetUpdated(this.indexingTitle)

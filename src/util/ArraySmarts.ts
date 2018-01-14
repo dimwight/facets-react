@@ -75,26 +75,31 @@ export interface SkippableItem<T>{
 }
 export class SkippableItems{
   private readonly items:SkippableItem<any>[];
-  constructor(items:any[]){
+  constructor(private readonly max:number,items:any[]){
     this.items=items;
   }
   skipBack(count:number){
     const items=this.items;
     while(count-->0) items.unshift(items[0].newSkipped(-1));
-    traceThing('skipBack',items.length)
+    traceThing('skipBack',this.traceValue(items));
+    return this.trimItems(false)
   }
   skipForward(count:number){
     const items=this.items;
     while(count-->0) items.push(items[items.length-1].newSkipped(1));
-    traceThing('skipForward',items.length)
+    traceThing('skipForward',this.traceValue(items));
+    return this.trimItems(true)
   }
-  trimItems(max:number,before:boolean):number{
+  private trimItems(before:boolean):number{
     const items=this.items;
-    let trim=items.length-max;
+    let trim=items.length-this.max;
     if(trim<1)return 0;
     if(before)while(trim-->0)items.shift();
     else while(trim-->0)items.pop();
-    traceThing('trimItems',items.length);
+    traceThing('trimItems',this.traceValue(items));
     return trim
+  }
+  private traceValue(items:SkippableItem<any>[]){
+    return false?items.length:items[0];
   }
 }
