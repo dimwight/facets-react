@@ -37,7 +37,7 @@ export class ScrollableItems implements ItemScroller{
   private readonly skipper:SkippableItems;
   private readonly maxLength;
   private showFrom=0;
-  constructor(private readonly items,
+  constructor(private readonly items:any[],
               private readonly showLength,
               private readonly facets:Facets,
               private readonly indexingTitle,
@@ -59,22 +59,22 @@ export class ScrollableItems implements ItemScroller{
     return scrolleds;
   }
   scrollItems(skip:number){
-    const showLength=this.showLength,
-      thenFrom=this.showFrom,thenStop=thenFrom+showLength;
-    const extender=this.skipper;
-    if(!skip)return;
-    else if(skip<1){
+    const showLength=this.showLength,thenFrom=this.showFrom,
+      thenStop=thenFrom+showLength;
+    const skipper=this.skipper;
+    if(!skip) return;
+    else if(skip<0){
       if(thenFrom>0) this.showFrom--;
-      else if(extender){
-        extender.skipBack(showLength);
+      else if(skipper){
+        skipper.skipBack(showLength+skip);
         this.showFrom+=showLength-1;
       }
     }
-    else {
+    else{
       if(thenStop<this.items.length) this.showFrom++;
-      else if(extender){
-        const trim=extender.skipForward(showLength);
-        if(trim)this.showFrom-=showLength+trim;
+      else if(skipper){
+        const trim=skipper.skipForward(showLength+skip);
+        if(trim) this.showFrom-=showLength+trim;
         else this.showFrom++;
       }
     }
