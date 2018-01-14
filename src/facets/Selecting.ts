@@ -66,18 +66,20 @@ export class ScrollableItems implements ItemScroller{
     const skipper=this.skipper;
     if(!skip) return;
     else if(skip<0){
-      if(thenFrom>0) this.showFrom--;
+      if(thenFrom+skip>0) this.showFrom+=skip;
       else if(skipper){
-        skipper.skipBack(showLength);
-        this.showFrom+=showLength-1;
+        let back=skip*-1;
+        skipper.skipBack(back);
+        this.showFrom+=back-1;
       }
     }
     else{
-      if(thenStop<this.items.length) this.showFrom++;
+      if(thenStop+skip<this.items.length) this.showFrom+=skip;
       else if(skipper){
-        const trim=skipper.skipForward(showLength);
-        if(trim) this.showFrom-=showLength+trim;
-        else this.showFrom++;
+        let forward=skip;
+        const trim=skipper.skipForward(forward);
+        if(trim) this.showFrom-=skip+trim;
+        else this.showFrom+=skip;
       }
     }
     this.facets.notifyTargetUpdated(this.indexingTitle)
@@ -122,7 +124,7 @@ export class ScrollableItems implements ItemScroller{
   }
   newActionTargets(){
     const f=this.facets;
-    const skip=1;
+    const skip=2;
     return true?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
         targetStateUpdated:()=>this.scrollItems(-skip),
       }),

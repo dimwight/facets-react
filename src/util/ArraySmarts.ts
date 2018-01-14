@@ -78,15 +78,15 @@ export class SkippableItems{
     private readonly max:number,
     private readonly items:SkippableItem<any>[])
   {}
-  skipBack(count:number){
+  skipBack(skip:number){
     const items=this.items;
-    while(count-->0) items.unshift(items[0].newSkipped(-1));
+    while(skip-->0) items.unshift(items[0].newSkipped(-1));
     traceThing('skipBack',this.traceValue(items));
     return this.trimItems(false)
   }
-  skipForward(count:number){
+  skipForward(skip:number){
     const items=this.items;
-    while(count-->0) items.push(items[items.length-1].newSkipped(1));
+    while(skip-->0) items.push(items[items.length-1].newSkipped(1));
     traceThing('skipForward',this.traceValue(items));
     return this.trimItems(true)
   }
