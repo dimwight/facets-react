@@ -71,8 +71,7 @@ export class SmartItems{
   }
 }
 export interface ExtensibleItem<T>{
-  newBefore(skip:number):ExtensibleItem<T>
-  newAfter(skip:number):ExtensibleItem<T>
+  newExtended(skip:number):ExtensibleItem<T>
 }
 export class ExtensibleItems{
   private readonly items:ExtensibleItem<any>[];
@@ -81,12 +80,12 @@ export class ExtensibleItems{
   }
   prepend(count:number){
     const items=this.items;
-    while(count-->0) items.unshift(items[0].newBefore(1));
+    while(count-->0) items.unshift(items[0].newExtended(-1));
     traceThing('prepend',items.length)
   }
   append(count:number){
     const items=this.items;
-    while(count-->0) items.push(items[items.length-1].newAfter(1));
+    while(count-->0) items.push(items[items.length-1].newExtended(1));
     traceThing('append',items.length)
   }
   trimCount(max:number,before:boolean):number{

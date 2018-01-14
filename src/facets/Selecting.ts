@@ -19,10 +19,10 @@ export namespace SelectingTitles{
     CancelEditButton='Cancel',
     CharsCount='Characters';
 }
-export interface ShowAtOvershoot{
-  overshot(belowShowZero:boolean)
+export interface ItemScroller{
+  scrollItems(skip:number)
 }
-export class SelectingContent{
+export class ScrollableItems{
   onFacetsRetargeted=()=>{
     const itemAt=this.itemAt(this.getShowAt());
     const f=this.facets;
@@ -51,19 +51,20 @@ export class SelectingContent{
       else this.extender.append(showLength-length);
     }
     facets.supplement={
-      overshot:belowShowZero=>this.onOvershoot(belowShowZero),
-    }as ShowAtOvershoot;
+      scrollItems:skip=>this.scrollItems(skip),
+    }as ItemScroller;
   }
-  getShowables():any[]{
-    traceThing('^getShowables:',this.showFrom);
-    const showables=this.items.slice(this.showFrom,this.showFrom+this.showLength);
-    return showables;
+  getScrolledItems():any[]{
+    traceThing('^getScrolledItems:',this.showFrom);
+    const scrolleds=this.items.slice(this.showFrom,this.showFrom+this.showLength);
+    return scrolleds;
   }
-  onOvershoot(belowShowZero){
+  scrollItems(skip:number){
     const showLength=this.showLength,maxLength=this.maxLength,
       thenFrom=this.showFrom,thenStop=thenFrom+showLength;
     const extender=this.extender;
-    if(belowShowZero){
+    if(!skip)return;
+    else if(skip<1){
       if(thenFrom>0) this.showFrom--;
       else if(extender){
         extender.prepend(showLength);
@@ -93,20 +94,20 @@ export class SelectingContent{
     if(!this.createNew) throw new Error('Cannot create new');
     this.smarts.addItem(itemAt,this.createNew);
     if(++showThen<this.showLength) this.setShowAt(showThen);
-    else this.onOvershoot(false);
+    else this.scrollItems(1);
   }
   swapItemDown(){
     const showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
     this.smarts.swapItem(itemAt,true);
     if(showThen>0) this.setShowAt(showThen-1);
-    else this.onOvershoot(true)
+    else this.scrollItems(-1)
   }
   swapItemUp(){
     let showThen=this.getShowAt(),itemAt=this.itemAt(showThen),
       showNow=showThen+1;
     this.smarts.swapItem(itemAt,false);
     if(showNow>=this.showLength){
-      this.onOvershoot(false);
+      this.scrollItems(1);
       showNow--;
     }
     this.setShowAt(showNow)

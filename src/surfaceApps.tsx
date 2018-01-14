@@ -21,7 +21,7 @@ import {
   TriggerButton,
 } from './react/_globals';
 import {
-  SelectingContent,
+  ScrollableItems,
   SelectingTitles,
 } from './facets/Selecting';
 import {
@@ -39,74 +39,6 @@ namespace SimpleTitles{
     Trigger='Click Me!',Triggereds='Button presses',
     ToggleStart=false,
     NumericField='Number',NumericLabel='Value',NumericStart=123;
-}
-namespace DateTitles{
-  export const App='DateSelecting',Chooser='Select Date';
-}
-class SimpleApp{
-  constructor(readonly name,
-              readonly newTrees,
-              readonly buildLayout,
-              readonly onRetargeted?,){}
-}
-const SimpleApps={
-  Textual:new SimpleApp('Textual',newTextualTree,buildTextual),
-  TogglingLive:new SimpleApp('TogglingLive',newTogglingTree,buildToggling,
-    (facets:Facets)=>{
-      facets.setTargetLive(SimpleTitles.Toggled,
-        facets.getTargetState(SimpleTitles.Toggling)as boolean);
-    }),
-  Indexing:new SimpleApp('Indexing',newIndexingTree,buildIndexing),
-  Trigger:new SimpleApp('Trigger',newTriggerTree,buildTrigger),
-  AllNonSelecting:new SimpleApp('AllNonSelecting',newAllSimplesTree,
-    false?buildAllSimples:buildAllSimplesForm),
-  SelectingTyped:new SimpleApp('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
-    (facets,activeTitle)=>{
-      traceThing('^onRetargeted:no live',{activeTitle:activeTitle});
-      const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
-      if(live!==null) [SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
-        ['',TextContentType.ShowChars.titleTail].forEach(tail=>
-          facets.setTargetLive(title+tail,live),
-        ),
-      );
-    }),
-  SelectingShowable:new SimpleApp('SelectingShowable',newSelectingShowableTree,buildSelectingShowable),
-  DateSelecting:new SimpleApp(DateTitles.App,newDateSelectingTree,buildDateSelecting),
-};
-class DateContent implements ExtensibleItem<Date>{
-  constructor(public readonly date:Date){}
-  newBefore(skip:number):ExtensibleItem<T>{
-    return new DateContent(new Date(this.date.valueOf()-1))
-  }
-  newAfter(skip:number):ExtensibleItem<T>{
-    return new DateContent(new Date(this.date.valueOf()+1))
-  }
-}
-function newDateSelectingTree(facets){
-  const frame:IndexingFramePolicy={
-    frameTitle:DateTitles.App,
-    indexingTitle:DateTitles.Chooser,
-    newFrameTargets:()=>list.newActionTargets(),
-    getIndexables:()=>list.getShowables(),
-    newUiSelectable:(item:DateContent)=>item.date.valueOf(),
-    newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
-  };
-  const list=new SelectingContent([new DateContent(new Date())],3,facets,frame.indexingTitle);
-  return facets.newIndexingFrame(frame);
-}
-function buildDateSelecting(facets){
-  ReactDOM.render(<RowPanel title={SimpleApps.DateSelecting.name} withRubric={true}>
-      <IndexingList
-        title={DateTitles.Chooser}
-        facets={facets}
-        listWidth={false?null:200}/>
-    </RowPanel>,
-    document.getElementById('root'),
-  );
-}
-export function launchApp(){
-  if(true) new TestApp(SimpleApps.DateSelecting).buildSurface();
-  else new ContentingTest().buildSurface();
 }
 class TestApp extends SurfaceApp{
   constructor(readonly test:SimpleApp){
@@ -145,126 +77,6 @@ class TextContentType{
   static ShowChars=new TextContentType('ShowChars','|ShowChars');
   static getContentType(content:TextContent){
     return content.text.length>20?TextContentType.ShowChars:TextContentType.Standard;
-  }
-}
-class ContentingTest extends SurfaceApp{
-  readonly fullChooserTargets=false;
-  readonly chooserTitle=SelectingTitles.Chooser;
-  readonly indexingTitle=SimpleTitles.Indexing;
-  readonly list;
-  constructor(){
-    super(newInstance(true));
-    this.list=new SelectingContent(textContents,3,this.facets,
-      this.indexingTitle);
-  }
-  getContentTrees():Target|Target[]{
-    function activateChooser(){
-      f.activateContentTree(SelectingTitles.Chooser);
-    }
-    function newContentTree(content:TextContent):Target{
-      function newEditTarget(indexed:TextContent,tail){
-        return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
-          passText:indexed.text,
-          targetStateUpdated:(state,title)=>indexed.text=state as string,
-        })
-      }
-      function newCharsTarget(tail){
-        return f.newTextualTarget(SelectingTitles.CharsCount+tail,{
-          getText:(title)=>''+(f.getTargetState(
-            SelectingTitles.TextEditField+TextContentType.ShowChars.titleTail)as string).length,
-        })
-      }
-      let type=TextContentType.getContentType(content);
-      let tail=type.titleTail;
-      let members=[];
-      members.push(newEditTarget(content,tail));
-      if(type==TextContentType.ShowChars) members.push(newCharsTarget(tail));
-      members.push(f.newTriggerTarget(SelectingTitles.SaveEditButton+tail,{
-        targetStateUpdated:(state,title)=>{
-          active.copyClone(edit);
-          activateChooser();
-        },
-      }));
-      members.push(f.newTriggerTarget(SelectingTitles.CancelEditButton+tail,{
-        targetStateUpdated:(state,title)=>activateChooser(),
-      }));
-      return f.newTargetGroup(type.name,members);
-    }
-    let f=this.facets;
-    let active:TextContent,edit:TextContent;
-    let chooserTargets=this.fullChooserTargets?this.list.newActionTargets():[];
-    chooserTargets.push(
-      f.newTriggerTarget(SelectingTitles.OpenEditButton,{
-        targetStateUpdated:()=>{
-          active=this.facets.getIndexingState(this.indexingTitle)
-            .indexed;
-          this.facets.addContentTree(newContentTree(
-            edit=active.clone()));
-        },
-      }));
-    let trees=[];
-    trees.push(
-      newContentTree(textContents[0]),
-      newContentTree(textContents[1]),
-      f.newIndexingFrame({
-        frameTitle:this.chooserTitle,
-        indexingTitle:this.indexingTitle,
-        getIndexables:()=>this.list.getShowables(),
-        newFrameTargets:()=>chooserTargets,
-        newUiSelectable:(item:TextContent)=>item.text,
-      }));
-    return trees;
-  }
-  onRetargeted(activeTitle:string){
-    if(this.fullChooserTargets) this.list.onFacetsRetargeted();
-    traceThing('^onRetargeted',activeTitle);
-  }
-  buildLayout(){
-    function newEditField(tail){
-      return (<PanelRow>
-        <TextualField title={SelectingTitles.TextEditField+tail} facets={f} cols={30}/>
-      </PanelRow>)
-    }
-    function newSaveCancelRow(){
-      return (<PanelRow>
-        <TriggerButton title={SelectingTitles.SaveEditButton} facets={f}/>
-        <TriggerButton title={SelectingTitles.CancelEditButton} facets={f}/>
-      </PanelRow>)
-    }
-    let tail=TextContentType.ShowChars.titleTail;
-    let f=this.facets;
-    ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
-        <RowPanel title={SelectingTitles.Chooser}>
-          <IndexingList
-            title={SimpleTitles.Indexing}
-            facets={f}
-            listWidth={200}/>
-          {this.fullChooserTargets?<PanelRow>
-              <TriggerButton title={SelectingTitles.UpButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.DownButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.DeleteButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.NewButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
-            </PanelRow>
-            :<PanelRow>
-              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
-            </PanelRow>
-          }
-        </RowPanel>
-        <RowPanel title={TextContentType.Standard.name}>
-          {newEditField('')}
-          {newSaveCancelRow()}
-        </RowPanel>
-        <RowPanel title={TextContentType.ShowChars.name}>
-          {newEditField(tail)}
-          <PanelRow>
-            <TextualLabel title={SelectingTitles.CharsCount+tail} facets={f}/>
-          </PanelRow>
-          {newSaveCancelRow()}
-        </RowPanel>
-      </ShowPanel>,
-      document.getElementById('root'),
-    );
   }
 }
 function newTextualTree(facets){
@@ -369,12 +181,12 @@ function newSelectingTypedTree(facets:Facets){
   };
   return facets.newIndexingFrame(frame);
 }
-function newSelectingShowableTree(facets){
+function newSelectingScrollingTree(facets){
   const frame:IndexingFramePolicy={
     frameTitle:SelectingTitles.Frame,
     indexingTitle:SelectingTitles.Chooser,
     newFrameTargets:()=>list.newActionTargets(),
-    getIndexables:()=>list.getShowables(),
+    getIndexables:()=>list.getScrolledItems(),
     newUiSelectable:false?null:(item:TextContent)=>item.text,
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
     newIndexedTree:(indexed:TextContent,title:string)=>{
@@ -392,7 +204,7 @@ function newSelectingShowableTree(facets){
     },
   };
   let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
-  const list=new SelectingContent(textContents,3,facets,
+  const list=new ScrollableItems(textContents,3,facets,
     frame.indexingTitle,createNew);
   return facets.newIndexingFrame(frame);
 }
@@ -526,8 +338,8 @@ function buildSelectingTyped(facets){
     document.getElementById('root'),
   );
 }
-function buildSelectingShowable(facets){
-  ReactDOM.render(<RowPanel title={SimpleApps.SelectingShowable.name} withRubric={true}>
+function buildSelectingScrolling(facets){
+  ReactDOM.render(<RowPanel title={SimpleApps.SelectingScrolling.name} withRubric={true}>
       <RowPanel title={SelectingTitles.Frame}>
         {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>:
           <IndexingList
@@ -547,4 +359,189 @@ function buildSelectingShowable(facets){
     </RowPanel>,
     document.getElementById('root'),
   );
+}
+class DateContent implements ExtensibleItem<Date>{
+  constructor(public readonly date:Date){}
+  newExtended(skip:number):ExtensibleItem<any>{
+    return new DateContent(new Date(this.date.valueOf()+skip))
+  }
+}
+namespace DateTitles{
+  export const App='DateSelecting',Chooser='Select Date';
+}
+function newDateSelectingTree(facets){
+  const frame:IndexingFramePolicy={
+    frameTitle:DateTitles.App,
+    indexingTitle:DateTitles.Chooser,
+    newFrameTargets:()=>list.newActionTargets(),
+    getIndexables:()=>list.getScrolledItems(),
+    newUiSelectable:(item:DateContent)=>item.date.valueOf(),
+    newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
+  };
+  const list=new ScrollableItems([new DateContent(new Date())],3,facets,frame.indexingTitle);
+  return facets.newIndexingFrame(frame);
+}
+function buildDateSelecting(facets){
+  ReactDOM.render(<RowPanel title={SimpleApps.DateSelecting.name} withRubric={true}>
+      <IndexingList
+        title={DateTitles.Chooser}
+        facets={facets}
+        listWidth={false?null:200}/>
+    </RowPanel>,
+    document.getElementById('root'),
+  );
+}
+class SimpleApp{
+  constructor(readonly name,
+              readonly newTrees,
+              readonly buildLayout,
+              readonly onRetargeted?,){}
+}
+const SimpleApps={
+  Textual:new SimpleApp('Textual',newTextualTree,buildTextual),
+  TogglingLive:new SimpleApp('TogglingLive',newTogglingTree,buildToggling,
+    (facets:Facets)=>{
+      facets.setTargetLive(SimpleTitles.Toggled,
+        facets.getTargetState(SimpleTitles.Toggling)as boolean);
+    }),
+  Indexing:new SimpleApp('Indexing',newIndexingTree,buildIndexing),
+  Trigger:new SimpleApp('Trigger',newTriggerTree,buildTrigger),
+  AllNonSelecting:new SimpleApp('AllNonSelecting',newAllSimplesTree,
+    false?buildAllSimples:buildAllSimplesForm),
+  SelectingTyped:new SimpleApp('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
+    (facets,activeTitle)=>{
+      traceThing('^onRetargeted:no live',{activeTitle:activeTitle});
+      const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
+      if(live!==null) [SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
+        ['',TextContentType.ShowChars.titleTail].forEach(tail=>
+          facets.setTargetLive(title+tail,live),
+        ),
+      );
+    }),
+  SelectingScrolling:new SimpleApp('SelectingScrolling',newSelectingScrollingTree,buildSelectingScrolling),
+  DateSelecting:new SimpleApp(DateTitles.App,newDateSelectingTree,buildDateSelecting),
+};
+class ContentingTest extends SurfaceApp{
+  readonly fullChooserTargets=false;
+  readonly chooserTitle=SelectingTitles.Chooser;
+  readonly indexingTitle=SimpleTitles.Indexing;
+  readonly list;
+  constructor(){
+    super(newInstance(true));
+    this.list=new ScrollableItems(textContents,3,this.facets,
+      this.indexingTitle);
+  }
+  getContentTrees():Target|Target[]{
+    function activateChooser(){
+      f.activateContentTree(SelectingTitles.Chooser);
+    }
+    function newContentTree(content:TextContent):Target{
+      function newEditTarget(indexed:TextContent,tail){
+        return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
+          passText:indexed.text,
+          targetStateUpdated:(state,title)=>indexed.text=state as string,
+        })
+      }
+      function newCharsTarget(tail){
+        return f.newTextualTarget(SelectingTitles.CharsCount+tail,{
+          getText:(title)=>''+(f.getTargetState(
+            SelectingTitles.TextEditField+TextContentType.ShowChars.titleTail)as string).length,
+        })
+      }
+      let type=TextContentType.getContentType(content);
+      let tail=type.titleTail;
+      let members=[];
+      members.push(newEditTarget(content,tail));
+      if(type==TextContentType.ShowChars) members.push(newCharsTarget(tail));
+      members.push(f.newTriggerTarget(SelectingTitles.SaveEditButton+tail,{
+        targetStateUpdated:(state,title)=>{
+          active.copyClone(edit);
+          activateChooser();
+        },
+      }));
+      members.push(f.newTriggerTarget(SelectingTitles.CancelEditButton+tail,{
+        targetStateUpdated:(state,title)=>activateChooser(),
+      }));
+      return f.newTargetGroup(type.name,members);
+    }
+    let f=this.facets;
+    let active:TextContent,edit:TextContent;
+    let chooserTargets=this.fullChooserTargets?this.list.newActionTargets():[];
+    chooserTargets.push(
+      f.newTriggerTarget(SelectingTitles.OpenEditButton,{
+        targetStateUpdated:()=>{
+          active=this.facets.getIndexingState(this.indexingTitle)
+            .indexed;
+          this.facets.addContentTree(newContentTree(
+            edit=active.clone()));
+        },
+      }));
+    let trees=[];
+    trees.push(
+      newContentTree(textContents[0]),
+      newContentTree(textContents[1]),
+      f.newIndexingFrame({
+        frameTitle:this.chooserTitle,
+        indexingTitle:this.indexingTitle,
+        getIndexables:()=>this.list.getScrollings(),
+        newFrameTargets:()=>chooserTargets,
+        newUiSelectable:(item:TextContent)=>item.text,
+      }));
+    return trees;
+  }
+  onRetargeted(activeTitle:string){
+    if(this.fullChooserTargets) this.list.onFacetsRetargeted();
+    traceThing('^onRetargeted',activeTitle);
+  }
+  buildLayout(){
+    function newEditField(tail){
+      return (<PanelRow>
+        <TextualField title={SelectingTitles.TextEditField+tail} facets={f} cols={30}/>
+      </PanelRow>)
+    }
+    function newSaveCancelRow(){
+      return (<PanelRow>
+        <TriggerButton title={SelectingTitles.SaveEditButton} facets={f}/>
+        <TriggerButton title={SelectingTitles.CancelEditButton} facets={f}/>
+      </PanelRow>)
+    }
+    let tail=TextContentType.ShowChars.titleTail;
+    let f=this.facets;
+    ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
+        <RowPanel title={SelectingTitles.Chooser}>
+          <IndexingList
+            title={SimpleTitles.Indexing}
+            facets={f}
+            listWidth={200}/>
+          {this.fullChooserTargets?<PanelRow>
+              <TriggerButton title={SelectingTitles.UpButton} facets={f}/>
+              <TriggerButton title={SelectingTitles.DownButton} facets={f}/>
+              <TriggerButton title={SelectingTitles.DeleteButton} facets={f}/>
+              <TriggerButton title={SelectingTitles.NewButton} facets={f}/>
+              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
+            </PanelRow>
+            :<PanelRow>
+              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
+            </PanelRow>
+          }
+        </RowPanel>
+        <RowPanel title={TextContentType.Standard.name}>
+          {newEditField('')}
+          {newSaveCancelRow()}
+        </RowPanel>
+        <RowPanel title={TextContentType.ShowChars.name}>
+          {newEditField(tail)}
+          <PanelRow>
+            <TextualLabel title={SelectingTitles.CharsCount+tail} facets={f}/>
+          </PanelRow>
+          {newSaveCancelRow()}
+        </RowPanel>
+      </ShowPanel>,
+      document.getElementById('root'),
+    );
+  }
+}
+export function launchApp(){
+  if(true) new TestApp(SimpleApps.DateSelecting).buildSurface();
+  else new ContentingTest().buildSurface();
 }

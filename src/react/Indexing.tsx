@@ -5,7 +5,7 @@ import {
   Facet,
   LabelRubric,
 } from './_locals';
-import {ShowAtOvershoot} from "../facets/_globals";
+import {ItemScroller} from "../facets/_globals";
 interface IndexingValues extends TargetValues{
   selectables?:string[]
   index?:number
@@ -111,8 +111,8 @@ export class IndexingList extends IndexingFacet{
       if(indexNow>=0&&indexNow<this.state.selectables.length)
         this.indexChanged(indexNow);
       else if(this.props.facets.supplement)
-        (this.props.facets.supplement as ShowAtOvershoot
-        ).overshot(indexNow<0)
+        (this.props.facets.supplement as ItemScroller
+        ).scrollItems(indexNow<0?-1:1)
     }
   };
   protected renderUi(props:IndexingUiProps){
