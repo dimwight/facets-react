@@ -26,7 +26,7 @@ import {
 } from './facets/Selecting';
 import {
   traceThing,
-  ExtensibleItem,
+  SkippableItem,
 } from './util/_globals';
 import {SurfaceApp} from './facets/Surface';
 import {FieldSpec} from './react/Facet';
@@ -360,9 +360,9 @@ function buildSelectingScrolling(facets){
     document.getElementById('root'),
   );
 }
-class DateContent implements ExtensibleItem<Date>{
+class DateContent implements SkippableItem<Date>{
   constructor(public readonly date:Date){}
-  newExtended(skip:number):ExtensibleItem<any>{
+  newSkipped(skip:number):SkippableItem<any>{
     return new DateContent(new Date(this.date.valueOf()+skip))
   }
 }

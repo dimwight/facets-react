@@ -1,9 +1,10 @@
 import {Facets,} from 'facets-js';
 import {
-  ExtensibleItems,
+  SkippableItems,
   SmartItems,
   traceThing,
 } from '../util/_globals';
+import {SkippableItem} from '../util/ArraySmarts';
 export namespace SelectingTitles{
   export const Frame='Selecting',
     Chooser='Select Content',
@@ -22,7 +23,7 @@ export namespace SelectingTitles{
 export interface ItemScroller{
   scrollItems(skip:number)
 }
-export class ScrollableItems{
+export class ScrollableItems implements ItemScroller{
   onFacetsRetargeted=()=>{
     const itemAt=this.itemAt(this.getShowAt());
     const f=this.facets;
@@ -33,7 +34,7 @@ export class ScrollableItems{
     traceThing('^onRetargeted',this.items);
   };
   private readonly smarts:SmartItems;
-  private readonly extender:ExtensibleItems;
+  private readonly extender:SkippableItems;
   private readonly maxLength;
   private showFrom=0;
   constructor(private readonly items,
@@ -45,14 +46,13 @@ export class ScrollableItems{
     this.smarts=new SmartItems(items);
     const length=items.length;
     if(!length) throw new Error('At least one item!');
-    else this.extender=items[0].newAfter?new ExtensibleItems(items):null;
+    else this.extender=(items[0] as SkippableItem<any>).newSkipped
+      ?new SkippableItems(items):null;
     if(length<showLength){
       if(!this.extender) throw new Error('Items not extensible!');
-      else this.extender.append(showLength-length);
+      else this.extender.skipForward(showLength-length);
     }
-    facets.supplement={
-      scrollItems:skip=>this.scrollItems(skip),
-    }as ItemScroller;
+    facets.supplement=this
   }
   getScrolledItems():any[]{
     traceThing('^getScrolledItems:',this.showFrom);
@@ -67,17 +67,17 @@ export class ScrollableItems{
     else if(skip<1){
       if(thenFrom>0) this.showFrom--;
       else if(extender){
-        extender.prepend(showLength);
+        extender.skipBack(showLength);
         this.showFrom+=showLength-1;
-        extender.trimCount(maxLength,false);
+        extender.trimItems(maxLength,false);
       }
     }
     else {
       if(thenStop<this.items.length) this.showFrom++;
       else if(extender){
-        extender.append(showLength);
+        extender.skipForward(showLength);
         this.showFrom++;
-        const count=extender.trimCount(maxLength,true);
+        const count=extender.trimItems(maxLength,true);
         if(count)this.showFrom-=showLength+count;
       }
     }

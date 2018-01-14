@@ -70,31 +70,31 @@ export class SmartItems{
     });
   }
 }
-export interface ExtensibleItem<T>{
-  newExtended(skip:number):ExtensibleItem<T>
+export interface SkippableItem<T>{
+  newSkipped(skip:number):SkippableItem<T>
 }
-export class ExtensibleItems{
-  private readonly items:ExtensibleItem<any>[];
+export class SkippableItems{
+  private readonly items:SkippableItem<any>[];
   constructor(items:any[]){
     this.items=items;
   }
-  prepend(count:number){
+  skipBack(count:number){
     const items=this.items;
-    while(count-->0) items.unshift(items[0].newExtended(-1));
-    traceThing('prepend',items.length)
+    while(count-->0) items.unshift(items[0].newSkipped(-1));
+    traceThing('skipBack',items.length)
   }
-  append(count:number){
+  skipForward(count:number){
     const items=this.items;
-    while(count-->0) items.push(items[items.length-1].newExtended(1));
-    traceThing('append',items.length)
+    while(count-->0) items.push(items[items.length-1].newSkipped(1));
+    traceThing('skipForward',items.length)
   }
-  trimCount(max:number,before:boolean):number{
+  trimItems(max:number,before:boolean):number{
     const items=this.items;
-    let count=items.length-max;
-    if(count<1)return 0;
-    if(before)while(count-->0)items.shift();
-    else while(count-->0)items.pop();
-    traceThing('trimCount',items.length);
-    return count
+    let trim=items.length-max;
+    if(trim<1)return 0;
+    if(before)while(trim-->0)items.shift();
+    else while(trim-->0)items.pop();
+    traceThing('trimItems',items.length);
+    return trim
   }
 }

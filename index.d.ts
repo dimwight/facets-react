@@ -165,7 +165,7 @@ export interface Times {
   elapsed(): number;
   /**
    * Print {@link elapsed()} followed by the message.
-   * @param {string} msg to append to time
+   * @param {string} msg to skipForward to time
    */
   traceElapsed(msg: string): void;
 }
