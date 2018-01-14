@@ -219,6 +219,8 @@ function traceThing$1(top, thing) {
         }, 1));
 }
 
+//# sourceMappingURL=Bits.js.map
+
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
         super(title, coupler);
