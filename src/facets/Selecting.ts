@@ -11,6 +11,8 @@ export namespace SelectingTitles{
     Actions='Actions',
     Live='Live',
     NewButton='New',
+    ScrollUp='Scroll Up',
+    ScrollDown='Scroll Down',
     UpButton='Move Up',
     DownButton='Move Down',
     DeleteButton='Delete',
@@ -66,14 +68,14 @@ export class ScrollableItems implements ItemScroller{
     else if(skip<0){
       if(thenFrom>0) this.showFrom--;
       else if(skipper){
-        skipper.skipBack(showLength+skip);
+        skipper.skipBack(showLength);
         this.showFrom+=showLength-1;
       }
     }
     else{
       if(thenStop<this.items.length) this.showFrom++;
       else if(skipper){
-        const trim=skipper.skipForward(showLength+skip);
+        const trim=skipper.skipForward(showLength);
         if(trim) this.showFrom-=showLength+trim;
         else this.showFrom++;
       }
@@ -120,7 +122,14 @@ export class ScrollableItems implements ItemScroller{
   }
   newActionTargets(){
     const f=this.facets;
-    return [f.newTriggerTarget(SelectingTitles.UpButton,{
+    const skip=1;
+    return true?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
+        targetStateUpdated:()=>this.scrollItems(-skip),
+      }),
+      f.newTriggerTarget(SelectingTitles.ScrollDown,{
+        targetStateUpdated:()=>this.scrollItems(skip),
+      })]
+      :[f.newTriggerTarget(SelectingTitles.UpButton,{
       targetStateUpdated:()=>this.swapItemDown(),
     }),
       f.newTriggerTarget(SelectingTitles.DownButton,{

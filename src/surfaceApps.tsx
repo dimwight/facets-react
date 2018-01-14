@@ -387,6 +387,10 @@ function buildDateSelecting(facets){
         title={DateTitles.Chooser}
         facets={facets}
         listWidth={false?null:200}/>
+      <PanelRow>
+        <TriggerButton title={SelectingTitles.ScrollUp} facets={facets}/>
+        <TriggerButton title={SelectingTitles.ScrollDown} facets={facets}/>
+      </PanelRow>
     </RowPanel>,
     document.getElementById('root'),
   );
