@@ -81,13 +81,14 @@ export class SkippableItems{
   skipBack(by:number,thenFrom:number){
     const items=this.items;
     const maxLength=this.maxLength, skip=Math.max(maxLength/3,by);
-    if(false&&skip>maxLength){
+    if(skip>maxLength){
       console.log('skipBack',{'skip':skip});
+      const first=items[thenFrom];
       items.splice(0);
-      items.push(items[thenFrom].newSkipped(skip));
+      items.push(first.newSkipped(-skip));
       for (let add=maxLength;add>0;add--)
         items.push(items[items.length-1].newSkipped(1));
-      return -thenFrom;
+      return 0;
     }
     else for (let add=skip;add>0;add--)
       items.unshift(items[0].newSkipped(-1));
