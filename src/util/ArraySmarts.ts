@@ -101,7 +101,7 @@ export class SkippableItems{
   private trimShift(before:boolean):number{
     const items=this.items;
     let trim=items.length-this.maxLength,count=trim;
-    if(true||count<1) return 0;
+    if(count<1) return 0;
     if(before) while(count-->0) items.shift();
     else while(count-->0) items.pop();
     const shift=before?-trim:0;
