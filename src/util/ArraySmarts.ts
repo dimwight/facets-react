@@ -80,13 +80,15 @@ export class SkippableItems{
   {}
   skipBack(skip:number,showFrom:number){
     const items=this.items;
-    let add=skip;
     if(false){
 
     }
-    else while(add-->0) items.unshift(items[0].newSkipped(-1));
-    traceThing('skipBack',this.traceValue(items));
-    return -1+skip+this.trimShift(false)
+    else for (let add=skip;add>0;add--)
+      items.unshift(items[0].newSkipped(-1));
+    const jump=skip+this.trimShift(false);
+    traceThing('skipBack',false?this.traceValue(items)
+      :{'skip':skip,'jump':jump});
+    return jump
   }
   skipForward(skip:number,showFrom:number){
     const items=this.items;
@@ -96,12 +98,12 @@ export class SkippableItems{
     }
     else while(add-->0) items.push(items[items.length-1].newSkipped(1));
     traceThing('skipForward',this.traceValue(items));
-    return 1+this.trimShift(true)
+    return skip+this.trimShift(true)
   }
   private trimShift(before:boolean):number{
     const items=this.items;
     let trim=items.length-this.maxLength,count=trim;
-    if(count<1) return 0;
+    if(true||count<1) return 0;
     if(before) while(count-->0) items.shift();
     else while(count-->0) items.pop();
     const shift=before?-trim:0;

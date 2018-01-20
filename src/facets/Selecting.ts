@@ -68,12 +68,12 @@ export class ScrollableItems implements ItemScroller{
     else if(skip<0){
       if(showFrom+skip>0) this.showFrom+=skip;
       else if(skipper)
-        this.showFrom+=skipper.skipBack(Math.min(-showLength,skip)* -1,showFrom);
+        this.showFrom+=skip+skipper.skipBack(Math.min(-showLength,skip)* -1,showFrom);
     }
     else{
       if(thenStop+skip<this.items.length) this.showFrom+=skip;
       else if(skipper)
-        this.showFrom+=skipper.skipForward(Math.max(showLength,skip),showFrom);
+        this.showFrom+=skip+skipper.skipForward(Math.max(showLength,skip),showFrom);
     }
     this.facets.notifyTargetUpdated(this.indexingTitle)
   }
