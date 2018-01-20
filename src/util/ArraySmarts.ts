@@ -80,25 +80,27 @@ export class SkippableItems{
   {}
   skipBack(skip:number,showFrom:number){
     const items=this.items;
-    if(false){
-
+    if(skip>this.maxLength){
+      console.log('skipBack',{'skip':skip})
     }
-    else for (let add=skip;add>0;add--)
+    // else
+      for (let add=skip;add>0;add--)
       items.unshift(items[0].newSkipped(-1));
     const jump=skip+this.trimShift(false);
-    traceThing('skipBack',true?this.traceValue(items)
+    traceThing('skipBack',false?this.traceValue(items)
       :{'skip':skip,'jump':jump});
     return jump
   }
   skipForward(skip:number,showFrom:number){
     const items=this.items;
     if(false){
-
+      console.log('skipForward',{'skip':skip})
     }
-    else for (let add=skip;add>0;add--)
+    // else
+      for (let add=skip;add>0;add--)
       items.push(items[items.length-1].newSkipped(1));
     const jump=this.trimShift(true);
-    traceThing('skipForward',true?this.traceValue(items)
+    traceThing('skipForward',false?this.traceValue(items)
       :{'skip':skip,'jump':jump});
     return jump;
   }
