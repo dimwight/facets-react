@@ -75,29 +75,39 @@ export interface SkippableItem<T>{
 }
 export class SkippableItems{
   constructor(
-    private readonly max:number,
+    private readonly maxLength:number,
     private readonly items:SkippableItem<any>[])
   {}
-  skipBack(skip:number){
+  skipBack(skip:number,showFrom:number){
     const items=this.items;
-    while(skip-->0) items.unshift(items[0].newSkipped(-1));
+    let add=skip;
+    if(false){
+
+    }
+    else while(add-->0) items.unshift(items[0].newSkipped(-1));
     traceThing('skipBack',this.traceValue(items));
-    return this.trimItems(false)
+    return -1+skip+this.trimShift(true)
   }
-  skipForward(skip:number){
+  skipForward(skip:number,showFrom:number){
     const items=this.items;
-    while(skip-->0) items.push(items[items.length-1].newSkipped(1));
+    let add=skip;
+    if(false){
+
+    }
+    else while(add-->0) items.push(items[items.length-1].newSkipped(1));
     traceThing('skipForward',this.traceValue(items));
-    return this.trimItems(true)
+    return 1+this.trimShift(true)
   }
-  private trimItems(before:boolean):number{
+  private trimShift(before:boolean):number{
     const items=this.items;
-    let trim=items.length-this.max;
-    if(trim<1) return 0;
-    if(before) while(trim-->0) items.shift();
-    else while(trim-->0) items.pop();
-    traceThing('trimItems',this.traceValue(items));
-    return trim
+    let trim=items.length-this.maxLength,count=trim;
+    if(true||count<1) return 0;
+    if(before) while(count-->0) items.shift();
+    else while(count-->0) items.pop();
+    const shift=before?-trim:0;
+    console.log('trimShift',false?this.traceValue(items)
+      :{'before':before,'trim':trim,'shift':shift});
+    return shift;
   }
   private traceValue(items:SkippableItem<any>[]){
     return true?items.length:items[0];

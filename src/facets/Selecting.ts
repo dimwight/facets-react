@@ -51,7 +51,7 @@ export class ScrollableItems implements ItemScroller{
       new SkippableItems(showLength*3,items):null;
     if(length<showLength){
       if(!this.skipper) throw new Error('Items not extensible!');
-      else this.skipper.skipForward(showLength-length);
+      else this.skipper.skipForward(showLength-length,this.showFrom);
     }
     facets.supplement=this
   }
@@ -61,26 +61,19 @@ export class ScrollableItems implements ItemScroller{
     return scrolleds;
   }
   scrollItems(skip:number){
-    const showLength=this.showLength,thenFrom=this.showFrom,
-      thenStop=thenFrom+showLength;
+    const showLength=this.showLength,showFrom=this.showFrom,
+      thenStop=showFrom+showLength;
     const skipper=this.skipper;
     if(!skip) return;
     else if(skip<0){
-      if(thenFrom+skip>0) this.showFrom+=skip;
-      else if(skipper){
-        let back=skip*-1;
-        skipper.skipBack(back);
-        this.showFrom+=back-1;
-      }
+      if(showFrom+skip>0) this.showFrom+=skip;
+      else if(skipper)
+        this.showFrom+=skipper.skipBack(Math.min(-showLength,skip)* -1,showFrom);
     }
     else{
       if(thenStop+skip<this.items.length) this.showFrom+=skip;
-      else if(skipper){
-        let forward=skip;
-        const trim=skipper.skipForward(forward);
-        if(trim) this.showFrom-=skip+trim;
-        else this.showFrom+=skip;
-      }
+      else if(skipper)
+        this.showFrom+=skipper.skipForward(Math.max(showLength,skip),showFrom);
     }
     this.facets.notifyTargetUpdated(this.indexingTitle)
   }
