@@ -81,15 +81,7 @@ export class SkippableItems{
   skipBack(by:number,thenFrom:number){
     const items=this.items;
     const maxLength=this.maxLength, skip=Math.max(maxLength/3,by);
-    if(skip>maxLength){
-      console.log('skipBack',{'skip':skip});
-      const first=items[thenFrom];
-      items.splice(0);
-      items.push(first.newSkipped(-skip));
-      for (let add=maxLength;add>0;add--)
-        items.push(items[items.length-1].newSkipped(1));
-      return 0;
-    }
+    if(skip>maxLength) return this.bigSkip(-skip,thenFrom);
     else for (let add=skip;add>0;add--)
       items.unshift(items[0].newSkipped(-1));
     const jump=skip+this.trimShift(false);
@@ -97,12 +89,21 @@ export class SkippableItems{
       :{'skip':skip,'jump':jump});
     return thenFrom-by+jump
   }
+  private bigSkip(skip:number,thenFrom:number){
+    const items=this.items;
+    const first=items[thenFrom];
+    const length=this.maxLength;
+    console.log('bigSkip',{'skip':skip});
+    items.splice(0);
+    items.push(first.newSkipped(skip));
+    for(let add=length; add>0; add--)
+      items.push(items[items.length-1].newSkipped(1));
+    return 0;
+  }
   skipForward(by:number,thenFrom:number){
     const items=this.items;
     const maxLength=this.maxLength,skip=Math.max(maxLength/3,by);
-    if(false){
-      console.log('skipForward',{'skip':skip})
-    }
+    if(skip>maxLength) return this.bigSkip(skip,thenFrom);
     else for (let add=skip;add>0;add--)
       items.push(items[items.length-1].newSkipped(1));
     const jump=this.trimShift(true);
