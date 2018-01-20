@@ -13,6 +13,7 @@ export namespace SelectingTitles{
     NewButton='New',
     ScrollUp='Scroll Up',
     ScrollDown='Scroll Down',
+    ScrollBy='Scroll By',
     UpButton='Move Up',
     DownButton='Move Down',
     DeleteButton='Delete',
@@ -117,12 +118,16 @@ export class ScrollableItems implements ItemScroller{
   }
   newActionTargets(){
     const f=this.facets;
-    const scrollBy=3;
+    let scrollBy=30;
     return true?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
         targetStateUpdated:()=>this.scrollItems(-scrollBy),
       }),
       f.newTriggerTarget(SelectingTitles.ScrollDown,{
         targetStateUpdated:()=>this.scrollItems(scrollBy),
+      }),
+      f.newTextualTarget(SelectingTitles.ScrollBy,{
+        passText:String(scrollBy),
+        targetStateUpdated:state=>scrollBy=Number(state),
       })]
       :[f.newTriggerTarget(SelectingTitles.UpButton,{
       targetStateUpdated:()=>this.swapItemDown(),

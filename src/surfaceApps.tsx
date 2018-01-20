@@ -391,6 +391,7 @@ function buildDateSelecting(facets){
         <TriggerButton title={SelectingTitles.ScrollUp} facets={facets}/>
         <TriggerButton title={SelectingTitles.ScrollDown} facets={facets}/>
       </PanelRow>
+      <TextualField title={SelectingTitles.ScrollBy} facets={facets} cols={1}/>
     </RowPanel>,
     document.getElementById('root'),
   );
