@@ -117,7 +117,7 @@ export class ScrollableItems implements ItemScroller{
   }
   newActionTargets(){
     const f=this.facets;
-    const scrollBy=1;
+    const scrollBy=3;
     return true?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
         targetStateUpdated:()=>this.scrollItems(-scrollBy),
       }),
