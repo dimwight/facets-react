@@ -117,12 +117,12 @@ export class ScrollableItems implements ItemScroller{
   }
   newActionTargets(){
     const f=this.facets;
-    const skip=2;
+    const scrollBy=1;
     return true?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
-        targetStateUpdated:()=>this.scrollItems(-skip),
+        targetStateUpdated:()=>this.scrollItems(-scrollBy),
       }),
       f.newTriggerTarget(SelectingTitles.ScrollDown,{
-        targetStateUpdated:()=>this.scrollItems(skip),
+        targetStateUpdated:()=>this.scrollItems(scrollBy),
       })]
       :[f.newTriggerTarget(SelectingTitles.UpButton,{
       targetStateUpdated:()=>this.swapItemDown(),

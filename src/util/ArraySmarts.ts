@@ -86,7 +86,7 @@ export class SkippableItems{
     }
     else while(add-->0) items.unshift(items[0].newSkipped(-1));
     traceThing('skipBack',this.traceValue(items));
-    return -1+skip+this.trimShift(true)
+    return -1+skip+this.trimShift(false)
   }
   skipForward(skip:number,showFrom:number){
     const items=this.items;
@@ -105,7 +105,7 @@ export class SkippableItems{
     if(before) while(count-->0) items.shift();
     else while(count-->0) items.pop();
     const shift=before?-trim:0;
-    console.log('trimShift',false?this.traceValue(items)
+    console.log('trimShift',true?this.traceValue(items)
       :{'before':before,'trim':trim,'shift':shift});
     return shift;
   }
