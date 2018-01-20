@@ -61,20 +61,20 @@ export class ScrollableItems implements ItemScroller{
     const scrolleds=this.items.slice(this.showFrom,this.showFrom+this.showLength);
     return scrolleds;
   }
-  scrollItems(skip:number){
+  scrollItems(by:number){
     const showLength=this.showLength,showFrom=this.showFrom,
       thenStop=showFrom+showLength;
     const skipper=this.skipper;
-    if(!skip) return;
-    else if(skip<0){
-      if(showFrom+skip>0) this.showFrom+=skip;
+    if(!by) return;
+    else if(by<0){
+      if(showFrom+by>0) this.showFrom+=by;
       else if(skipper)
-        this.showFrom+=skip+skipper.skipBack(Math.min(-showLength,skip)* -1,showFrom);
+        this.showFrom+=by+skipper.skipBack(Math.min(-showLength,by)* -1,showFrom);
     }
     else{
-      if(thenStop+skip<this.items.length) this.showFrom+=skip;
+      if(thenStop+by<this.items.length) this.showFrom+=by;
       else if(skipper)
-        this.showFrom+=skip+skipper.skipForward(Math.max(showLength,skip),showFrom);
+        this.showFrom+=by+skipper.skipForward(Math.max(showLength,by),showFrom);
     }
     this.facets.notifyTargetUpdated(this.indexingTitle)
   }

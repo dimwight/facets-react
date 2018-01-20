@@ -80,11 +80,16 @@ export class SkippableItems{
   {}
   skipBack(skip:number,showFrom:number){
     const items=this.items;
-    if(skip>this.maxLength){
-      console.log('skipBack',{'skip':skip})
+    const maxLength=this.maxLength;
+    if(false&&skip>maxLength){
+      console.log('skipBack',{'skip':skip});
+      items.splice(0);
+      items.push(items[showFrom].newSkipped(skip));
+      for (let add=maxLength;add>0;add--)
+        items.push(items[items.length-1].newSkipped(1));
+      return -showFrom;
     }
-    // else
-      for (let add=skip;add>0;add--)
+    else for (let add=skip;add>0;add--)
       items.unshift(items[0].newSkipped(-1));
     const jump=skip+this.trimShift(false);
     traceThing('skipBack',false?this.traceValue(items)
@@ -96,8 +101,7 @@ export class SkippableItems{
     if(false){
       console.log('skipForward',{'skip':skip})
     }
-    // else
-      for (let add=skip;add>0;add--)
+    else for (let add=skip;add>0;add--)
       items.push(items[items.length-1].newSkipped(1));
     const jump=this.trimShift(true);
     traceThing('skipForward',false?this.traceValue(items)
