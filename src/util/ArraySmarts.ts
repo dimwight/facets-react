@@ -75,45 +75,45 @@ export interface SkippableItem<T>{
 }
 export class SkippableItems{
   constructor(
-    private readonly maxLength:number,
+    private readonly baseLength:number,
     private readonly items:SkippableItem<any>[])
   {}
   skipBack(by:number,thenFrom:number){
     const items=this.items;
-    const maxLength=this.maxLength, skip=Math.max(maxLength/3,by);
+    const maxLength=this.baseLength*3, skip=Math.max(this.baseLength,by);
     if(skip>maxLength) return this.bigSkip(-skip,thenFrom);
     else for (let add=skip;add>0;add--)
       items.unshift(items[0].newSkipped(-1));
-    const jump=skip+this.trimShift(false);
-    traceThing('skipBack',false?this.traceValue(items)
-      :{'skip':skip,'jump':jump});
-    return thenFrom-by+jump
+    const adjust=skip+this.trimShift(false,maxLength);
+    traceThing('skipBack',true?this.traceValue(items)
+      :{'skip':skip,'adjust':adjust});
+    return thenFrom-by+adjust
+  }
+  skipForward(by:number,thenFrom:number){
+    const items=this.items;
+    const maxLength=this.baseLength*3,skip=Math.max(this.baseLength,by);
+    if(skip>maxLength) return this.bigSkip(skip,thenFrom);
+    else for (let add=skip;add>0;add--)
+      items.push(items[items.length-1].newSkipped(1));
+    const adjust=this.trimShift(true,maxLength);
+    traceThing('skipForward',true?this.traceValue(items)
+      :{'skip':skip,'adjust':adjust});
+    return thenFrom+by+adjust
   }
   private bigSkip(skip:number,thenFrom:number){
     const items=this.items;
     const first=items[thenFrom];
-    const length=this.maxLength;
-    console.log('bigSkip',{'skip':skip});
     items.splice(0);
     items.push(first.newSkipped(skip));
-    for(let add=length; add>0; add--)
+    for(let add=this.baseLength; add>0; add--)
       items.push(items[items.length-1].newSkipped(1));
+    traceThing('bigSkip',true?this.traceValue(items)
+      :{'skip':skip});
     return 0;
   }
-  skipForward(by:number,thenFrom:number){
+  private trimShift(before:boolean,maxLength:number):number{
     const items=this.items;
-    const maxLength=this.maxLength,skip=Math.max(maxLength/3,by);
-    if(skip>maxLength) return this.bigSkip(skip,thenFrom);
-    else for (let add=skip;add>0;add--)
-      items.push(items[items.length-1].newSkipped(1));
-    const jump=this.trimShift(true);
-    traceThing('skipForward',false?this.traceValue(items)
-      :{'skip':skip,'jump':jump});
-    return thenFrom+by+jump
-  }
-  private trimShift(before:boolean):number{
-    const items=this.items;
-    let trim=items.length-this.maxLength,count=trim;
+    let trim=items.length-maxLength,count=trim;
     if(false||count<1) return 0;
     if(before) while(count-->0) items.shift();
     else while(count-->0) items.pop();
@@ -123,6 +123,6 @@ export class SkippableItems{
     return shift;
   }
   private traceValue(items:SkippableItem<any>[]){
-    return true?items.length:items[0];
+    return false?items.length:(items[0]as any).date.valueOf();
   }
 }

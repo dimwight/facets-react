@@ -49,17 +49,16 @@ export class ScrollableItems implements ItemScroller{
     const length=items.length;
     if(!length) throw new Error('At least one item!');
     else this.skipper=(items[0] as SkippableItem<any>).newSkipped?
-      new SkippableItems(showLength*3,items):null;
+      new SkippableItems(showLength,items):null;
     if(length<showLength){
       if(!this.skipper) throw new Error('Items not extensible!');
-      else this.skipper.skipForward(showLength-length,this.showFrom);
+      else this.skipper.skipForward(showLength-length,0);
     }
     facets.supplement=this
   }
   getScrolledItems():any[]{
     traceThing('^getScrolledItems:',this.showFrom);
-    const scrolleds=this.items.slice(this.showFrom,this.showFrom+this.showLength);
-    return scrolleds;
+    return this.items.slice(this.showFrom,this.showFrom+this.showLength);
   }
   scrollItems(by:number){
     const showLength=this.showLength,showFrom=this.showFrom,
