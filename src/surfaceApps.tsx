@@ -378,7 +378,7 @@ function newDateSelectingTree(facets){
     newUiSelectable:(item:DateContent)=>item.date.valueOf(),
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
   };
-  const list=new ScrollableItems([new DateContent(new Date())],4,facets,frame.indexingTitle);
+  const list=new ScrollableItems([new DateContent(new Date())],7,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
 function buildDateSelecting(facets){

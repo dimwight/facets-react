@@ -118,11 +118,11 @@ export class SkippableItems{
     if(before) while(count-->0) items.shift();
     else while(count-->0) items.pop();
     const shift=before?-trim:0;
-    console.log('trimShift',true?this.traceValue(items)
+    traceThing('trimShift',true?this.traceValue(items)
       :{'before':before,'trim':trim,'shift':shift});
     return shift;
   }
   private traceValue(items:SkippableItem<any>[]){
-    return false?items.length:(items[0]as any).date.valueOf();
+    return [items.length,(items[0]as any).date.valueOf()];
   }
 }
