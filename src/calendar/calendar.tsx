@@ -69,10 +69,10 @@ export function buildDateSelecting(facets){
 export function launchApp(){
   new class extends SurfaceApp{
     getContentTrees():Target|Target[]{
-      throw new Error("Method not implemented.");
+      return newDateSelectingTree(this.facets)
     }
     buildLayout():void{
-      throw new Error("Method not implemented.");
+      buildDateSelecting(this.facets)
     }
   }(newInstance(false)).buildSurface();
 }
