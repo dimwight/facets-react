@@ -1,4 +1,4 @@
-import {launchApp as surfaceApps} from './simpleApps';
+import {launchApp as testApps} from './testApps';
 import {launchApp as calendar} from './calendar/_globals';
-if(true)surfaceApps();
+if(true)testApps();
 else calendar();

@@ -41,7 +41,7 @@ export namespace DateTitles{
 }
 function newListActionTargets(f:Facets,list:ScrollableItems){
   let scrollBy=30;
-  return false?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
+  return [f.newTriggerTarget(SelectingTitles.ScrollUp,{
       targetStateUpdated:()=>list.scrollItems(-scrollBy),
     }),
       f.newTriggerTarget(SelectingTitles.ScrollDown,{
@@ -51,19 +51,6 @@ function newListActionTargets(f:Facets,list:ScrollableItems){
         passText:String(scrollBy),
         targetStateUpdated:state=>scrollBy=Number(state),
       })]
-    :[f.newTriggerTarget(SelectingTitles.UpButton,{
-      targetStateUpdated:()=>list.swapItemDown(),
-    }),
-      f.newTriggerTarget(SelectingTitles.DownButton,{
-        targetStateUpdated:()=>list.swapItemUp(),
-      }),
-      f.newTriggerTarget(SelectingTitles.DeleteButton,{
-        targetStateUpdated:()=>list.deleteItem(),
-      }),
-      f.newTriggerTarget(SelectingTitles.NewButton,{
-        targetStateUpdated:()=>list.addItem(),
-      }),
-    ]
 }
 export function newDateSelectingTree(facets:Facets){
   const list=new ScrollableItems([new DateContent(new Date())],7,facets,

@@ -393,18 +393,7 @@ const SimpleApps={
   SelectingScrolling:new SimpleApp('SelectingScrolling',newSelectingScrollingTree,buildSelectingScrolling),
 };
 function newListActionTargets(f:Facets,list:ScrollableItems){
-  let scrollBy=30;
-  return false?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
-      targetStateUpdated:()=>list.scrollItems(-scrollBy),
-    }),
-      f.newTriggerTarget(SelectingTitles.ScrollDown,{
-        targetStateUpdated:()=>list.scrollItems(scrollBy),
-      }),
-      f.newTextualTarget(SelectingTitles.ScrollBy,{
-        passText:String(scrollBy),
-        targetStateUpdated:state=>scrollBy=Number(state),
-      })]
-    :[f.newTriggerTarget(SelectingTitles.UpButton,{
+  return [f.newTriggerTarget(SelectingTitles.UpButton,{
       targetStateUpdated:()=>list.swapItemDown(),
     }),
       f.newTriggerTarget(SelectingTitles.DownButton,{
@@ -539,6 +528,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(true) new App(SimpleApps.SelectingScrolling).buildSurface();
+  if(true) new App(SimpleApps.AllNonSelecting).buildSurface();
   else new ContentingTest().buildSurface();
 }

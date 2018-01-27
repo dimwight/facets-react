@@ -154,7 +154,7 @@ class TargetCore extends NotifyingCore {
     }
     notifiesTargeter() {
         const extra = this.extra;
-        return extra && extra instanceof Array;
+        return !extra ? false : extra instanceof Array;
     }
     elements() {
         if (!this.extra)
@@ -279,8 +279,19 @@ class Textual$$1 extends TargetCore {
             this.state_ = coupler.passText;
     }
     state() {
-        return this.state_ !== TargetCore.NoState ? this.state_
-            : this.extra.getText(this.title());
+        const coupler = !this.extra ? null : this.extra;
+        if (this.state_ !== TargetCore.NoState) {
+            return this.state_;
+        }
+        else if (!coupler || !coupler.getText)
+            return '';
+        else {
+            const text = coupler.getText(this.title());
+            if (!text)
+                if (text === null)
+                    throw new Error('Null text');
+            return text;
+        }
     }
 }
 
@@ -469,12 +480,12 @@ class Facets {
             : frameTitle + '.Indexing';
         const indexing = new Indexing$$1(indexingTitle, {
             getIndexables: title => p.getIndexables(),
-            newUiSelectable: !p.newUiSelectable ? null : i => p.newUiSelectable(i)
+            newUiSelectable: i => !p.newUiSelectable ? null : p.newUiSelectable(i)
         });
         this.trace('Created indexing ' + indexingTitle);
         const frame = new class extends IndexingFrame$$1 {
             lazyElements() {
-                return p.newFrameTargets();
+                return p.newFrameTargets ? p.newFrameTargets() : [];
             }
             newIndexedTargets(indexed) {
                 const titler = p.newIndexedTreeTitle, title = titler ? titler(indexed) : this.title() + '|indexed';
