@@ -19,17 +19,18 @@ import {
   TextualLabel,
   TogglingCheckbox,
   TriggerButton,
+  FieldSpec,
 } from './react/_globals';
 import {
   ScrollableItems,
   SelectingTitles,
-} from './facets/Selecting';
+  SurfaceApp,
+} from './facets/_globals';
 import {
   traceThing,
   SkippableItem,
 } from './util/_globals';
-import {SurfaceApp} from './facets/Surface';
-import {FieldSpec} from './react/Facet';
+import {DateTitles} from './calendar/_globals';
 namespace SimpleTitles{
   export const FirstTextual='First',SecondTextual='Second',
     Indexing='Choose Item',
@@ -365,9 +366,6 @@ class DateContent implements SkippableItem<Date>{
   newSkipped(skip:number):SkippableItem<any>{
     return new DateContent(new Date(this.date.valueOf()+skip))
   }
-}
-namespace DateTitles{
-  export const App='DateSelecting',Chooser='Select Date';
 }
 function newDateSelectingTree(facets){
   const frame:IndexingFramePolicy={

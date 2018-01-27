@@ -8,6 +8,7 @@ export {
   ShowPanel,
   newFormField,
   FieldType,
+  FieldSpec,
 } from './Facet';
 export {
   IndexingDropdown,
