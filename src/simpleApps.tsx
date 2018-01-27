@@ -8,6 +8,7 @@ import {
   Target,
 } from 'facets-js';
 import {
+  FieldSpec,
   FieldType,
   IndexingDropdown,
   IndexingList,
@@ -19,18 +20,18 @@ import {
   TextualLabel,
   TogglingCheckbox,
   TriggerButton,
-  FieldSpec,
 } from './react/_globals';
 import {
   ScrollableItems,
   SelectingTitles,
   SurfaceApp,
 } from './facets/_globals';
+import {traceThing,} from './util/_globals';
 import {
-  traceThing,
-  SkippableItem,
-} from './util/_globals';
-import {DateTitles} from './calendar/_globals';
+  DateTitles,
+  buildDateSelecting,
+  newDateSelectingTree,
+} from './calendar/_globals';
 namespace SimpleTitles{
   export const FirstTextual='First',SecondTextual='Second',
     Indexing='Choose Item',
@@ -357,39 +358,6 @@ function buildSelectingScrolling(facets){
           <TextualField title={SelectingTitles.OpenEditButton} facets={facets} cols={30}/>
         </PanelRow>
       </RowPanel>
-    </RowPanel>,
-    document.getElementById('root'),
-  );
-}
-class DateContent implements SkippableItem<Date>{
-  constructor(public readonly date:Date){}
-  newSkipped(skip:number):SkippableItem<any>{
-    return new DateContent(new Date(this.date.valueOf()+skip))
-  }
-}
-function newDateSelectingTree(facets){
-  const frame:IndexingFramePolicy={
-    frameTitle:DateTitles.App,
-    indexingTitle:DateTitles.Chooser,
-    newFrameTargets:()=>list.newActionTargets(),
-    getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(item:DateContent)=>item.date.valueOf(),
-    newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
-  };
-  const list=new ScrollableItems([new DateContent(new Date())],7,facets,frame.indexingTitle);
-  return facets.newIndexingFrame(frame);
-}
-function buildDateSelecting(facets){
-  ReactDOM.render(<RowPanel title={SimpleApps.DateSelecting.name} withRubric={true}>
-      <IndexingList
-        title={DateTitles.Chooser}
-        facets={facets}
-        listWidth={false?null:200}/>
-      <PanelRow>
-        <TriggerButton title={SelectingTitles.ScrollUp} facets={facets}/>
-        <TriggerButton title={SelectingTitles.ScrollDown} facets={facets}/>
-      </PanelRow>
-      <TextualField title={SelectingTitles.ScrollBy} facets={facets} cols={1}/>
     </RowPanel>,
     document.getElementById('root'),
   );

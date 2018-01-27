@@ -30,7 +30,7 @@ import {
   traceThing,
   SkippableItem,
 } from '../util/_globals';
-export class DateContent implements SkippableItem<Date>{
+class DateContent implements SkippableItem<Date>{
   constructor(public readonly date:Date){}
   newSkipped(skip:number):SkippableItem<any>{
     return new DateContent(new Date(this.date.valueOf()+skip))

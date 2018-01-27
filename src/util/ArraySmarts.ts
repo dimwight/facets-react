@@ -85,7 +85,7 @@ export class SkippableItems{
     else for (let add=skip;add>0;add--)
       items.unshift(items[0].newSkipped(-1));
     const adjust=skip+this.trimShift(false,maxLength);
-    traceThing('skipBack',true?this.traceValue(items)
+    traceThing('^skipBack',true?this.traceValue(items)
       :{'skip':skip,'adjust':adjust});
     return thenFrom-by+adjust
   }
@@ -96,7 +96,7 @@ export class SkippableItems{
     else for (let add=skip;add>0;add--)
       items.push(items[items.length-1].newSkipped(1));
     const adjust=this.trimShift(true,maxLength);
-    traceThing('skipForward',true?this.traceValue(items)
+    traceThing('^skipForward',true?this.traceValue(items)
       :{'skip':skip,'adjust':adjust});
     return thenFrom+by+adjust
   }
@@ -107,7 +107,7 @@ export class SkippableItems{
     items.push(first.newSkipped(skip));
     for(let add=this.baseLength; add>0; add--)
       items.push(items[items.length-1].newSkipped(1));
-    traceThing('bigSkip',true?this.traceValue(items)
+    traceThing('^bigSkip',true?this.traceValue(items)
       :{'skip':skip});
     return 0;
   }
@@ -118,7 +118,7 @@ export class SkippableItems{
     if(before) while(count-->0) items.shift();
     else while(count-->0) items.pop();
     const shift=before?-trim:0;
-    traceThing('trimShift',true?this.traceValue(items)
+    traceThing('^trimShift',true?this.traceValue(items)
       :{'before':before,'trim':trim,'shift':shift});
     return shift;
   }
