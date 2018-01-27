@@ -9,7 +9,13 @@ export class Textual extends TargetCore{
     if(coupler.passText)this.state_=coupler.passText;
   }
   state(): SimpleState {
-    return this.state_!==TargetCore.NoState?this.state_
-      :(this.extra as TextualCoupler).getText(this.title());
+    const coupler=!this.extra?null:this.extra as TextualCoupler;
+    if(this.state_!==TargetCore.NoState){return this.state_;}
+    else if(!coupler||!coupler.getText)return '';
+    else {
+      const text=coupler.getText(this.title());
+      if(!text)if(text===null)throw new Error('Null text');
+      return text;
+    }
   }
 }

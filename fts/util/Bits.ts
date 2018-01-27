@@ -3,13 +3,13 @@
  * @param top heading for message 
  * @param thing suitable for JSON serialization
  */
-export function traceThing(top:string, thing?) {
+export function traceThing(top:string, thing?:any) {
 
   // Allow for quick disable
   if(top.charAt(0)==='^')return;
 
   // Allow for callback eg to find and kill circular references
-  const callback=false ? null : (key, value) => {
+  const callback=(key:string, value:any) => {
     if(false)console.log(key);
     return '|notifiable_|elements_|'.includes(key)?key:value;
   };

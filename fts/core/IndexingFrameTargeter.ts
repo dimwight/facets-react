@@ -34,7 +34,7 @@ export class IndexingFrameTargeter extends TargeterCore{
       this.updateToTarget()
     }
     this.indexing.retarget(this.indexingTarget);
-    this.indexed=this.titleTargeters.get(this.indexedTitle);
+    this.indexed=this.titleTargeters.get(this.indexedTitle)as Targeter;
     if(!this.indexed) throw new Error('No indexed for '+this.indexedTitle);
     this.indexed.retarget(this.indexedTarget)
   }

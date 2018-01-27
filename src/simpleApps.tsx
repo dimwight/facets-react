@@ -42,14 +42,14 @@ namespace SimpleTitles{
     ToggleStart=false,
     NumericField='Number',NumericLabel='Value',NumericStart=123;
 }
-class TestApp extends SurfaceApp{
+class App extends SurfaceApp{
   constructor(readonly test:SimpleApp){
     super(newInstance(false));
   }
   getContentTrees():Target|Target[]{
     return this.test.newTrees(this.facets)
   }
-  onRetargeted(active){
+  onRetargeted(active:string){
     const onRetargeted=this.test.onRetargeted;
     if(onRetargeted) onRetargeted(this.facets,active)
   }
@@ -73,15 +73,15 @@ const textContents=[
   new TextContent('Hello, sailor!'),
 ];
 class TextContentType{
-  constructor(readonly name,
-              readonly titleTail,){}
+  constructor(readonly name:string,
+              readonly titleTail:string,){}
   static Standard=new TextContentType('Standard','');
   static ShowChars=new TextContentType('ShowChars','|ShowChars');
   static getContentType(content:TextContent){
     return content.text.length>20?TextContentType.ShowChars:TextContentType.Standard;
   }
 }
-function newTextualTree(facets){
+function newTextualTree(facets:Facets){
   const first=facets.newTextualTarget(SimpleTitles.FirstTextual,{
       passText:'Some text for '+SimpleTitles.FirstTextual,
       targetStateUpdated:state=>{
@@ -94,11 +94,11 @@ function newTextualTree(facets){
     });
   return facets.newTargetGroup('TextualTest',[first,second]);
 }
-function newTogglingTree(facets,setLive){
+function newTogglingTree(facets:Facets,setLive:boolean){
   const toggling=facets.newTogglingTarget(SimpleTitles.Toggling,{
       passSet:SimpleTitles.ToggleStart,
       targetStateUpdated:state=>{
-        if(setLive) setSimplesLive(facets,state)
+        if(setLive) setSimplesLive(facets,state as boolean)
       },
     }),
     toggled=facets.newTextualTarget(SimpleTitles.Toggled,{
@@ -106,7 +106,7 @@ function newTogglingTree(facets,setLive){
     });
   return facets.newTargetGroup('TogglingTest',[toggling,toggled]);
 }
-function newTriggerTree(facets){
+function newTriggerTree(facets:Facets){
   let triggers:number=0;
   const trigger=facets.newTriggerTarget(SimpleTitles.Trigger,{
       targetStateUpdated:(state,title)=>{
@@ -122,7 +122,7 @@ function newTriggerTree(facets){
     });
   return facets.newTargetGroup('TriggerTest',[trigger,triggered]);
 }
-function newIndexingTree(facets){
+function newIndexingTree(facets:Facets){
   const indexing=facets.newIndexingTarget(SimpleTitles.Indexing,{
       passIndex:0,
       newUiSelectable:(indexable)=>indexable,
@@ -136,7 +136,7 @@ function newIndexingTree(facets){
     });
   return facets.newTargetGroup('IndexingTest',[indexing,index,indexed]);
 }
-function newAllSimplesTree(facets):Target{
+function newAllSimplesTree(facets:Facets):Target{
   return facets.newTargetGroup('AllSimples',[
     newTextualTree(facets),
     newTogglingTree(facets,true),
@@ -145,7 +145,7 @@ function newAllSimplesTree(facets):Target{
 }
 function newSelectingTypedTree(facets:Facets){
   function listAt():number{
-    return facets.getTargetState(frame.indexingTitle) as number;
+    return facets.getTargetState(frame.indexingTitle as string) as number;
   }
   function getType(indexed:TextContent){
     return TextContentType.getContentType(indexed);
@@ -183,13 +183,16 @@ function newSelectingTypedTree(facets:Facets){
   };
   return facets.newIndexingFrame(frame);
 }
-function newSelectingScrollingTree(facets){
+function newSelectingScrollingTree(facets:Facets){
+  let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
+  const list:ScrollableItems=new ScrollableItems(textContents,3,facets,
+    SelectingTitles.Chooser,createNew);
   const frame:IndexingFramePolicy={
     frameTitle:SelectingTitles.Frame,
     indexingTitle:SelectingTitles.Chooser,
-    newFrameTargets:()=>list.newActionTargets(),
+    newFrameTargets:()=>newListActionTargets(facets,list),
     getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:false?null:(item:TextContent)=>item.text,
+    newUiSelectable:(item:TextContent)=>item.text,
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
     newIndexedTree:(indexed:TextContent,title:string)=>{
       traceThing('^newIndexedTargets',{indexed:indexed});
@@ -205,12 +208,9 @@ function newSelectingScrollingTree(facets){
       ])
     },
   };
-  let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
-  const list=new ScrollableItems(textContents,3,facets,
-    frame.indexingTitle,createNew);
   return facets.newIndexingFrame(frame);
 }
-function buildTextual(facets){
+function buildTextual(facets:Facets){
   const first=SimpleTitles.FirstTextual,second=SimpleTitles.SecondTextual;
   ReactDOM.render(
     <RowPanel title={SimpleApps.Textual.name} withRubric={true}>
@@ -222,7 +222,7 @@ function buildTextual(facets){
     document.getElementById('root'),
   );
 }
-function buildToggling(facets){
+function buildToggling(facets:Facets){
   ReactDOM.render(
     <RowPanel title={SimpleApps.TogglingLive.name} withRubric={true}>
       <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
@@ -232,7 +232,7 @@ function buildToggling(facets){
   );
 
 }
-function buildTrigger(facets){
+function buildTrigger(facets:Facets){
   ReactDOM.render(
     <RowPanel title={SimpleApps.Trigger.name} withRubric={true}>
       <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
@@ -241,7 +241,7 @@ function buildTrigger(facets){
     document.getElementById('root'),
   )
 }
-function buildIndexing(facets){
+function buildIndexing(facets:Facets){
   ReactDOM.render(
     <RowPanel title={SimpleApps.Indexing.name} withRubric={true}>
       <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
@@ -251,7 +251,7 @@ function buildIndexing(facets){
     document.getElementById('root'),
   );
 }
-function buildAllSimples(facets){
+function buildAllSimples(facets:Facets){
   const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
   ReactDOM.render(<div>
       <RowPanel title={SimpleApps.Textual.name} withRubric={true}>
@@ -277,7 +277,7 @@ function buildAllSimples(facets){
     document.getElementById('root'),
   );
 }
-function buildAllSimplesForm(facets){
+function buildAllSimplesForm(facets:Facets){
   const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
   const specs:FieldSpec[]=[
     {type:FieldType.TextualField,title:textual1},
@@ -299,7 +299,7 @@ function buildAllSimplesForm(facets){
     document.getElementById('root'),
   );
 }
-function setSimplesLive(facets,state){
+function setSimplesLive(facets:Facets,state:boolean){
   [SimpleTitles.FirstTextual,SimpleTitles.SecondTextual,
     SimpleTitles.Indexed,SimpleTitles.Indexing,SimpleTitles.Index,
     SimpleTitles.Trigger,SimpleTitles.Triggereds,
@@ -307,8 +307,8 @@ function setSimplesLive(facets,state){
     facets.setTargetLive(title,state);
   })
 }
-function buildSelectingTyped(facets){
-  function newEditField(tail){
+function buildSelectingTyped(facets:Facets){
+  function newEditField(tail:string){
     return false?null:<PanelRow>
       <TextualField title={SelectingTitles.OpenEditButton+tail} facets={facets}
                     cols={30}/>
@@ -340,14 +340,15 @@ function buildSelectingTyped(facets){
     document.getElementById('root'),
   );
 }
-function buildSelectingScrolling(facets){
-  ReactDOM.render(<RowPanel title={SimpleApps.SelectingScrolling.name} withRubric={true}>
+function buildSelectingScrolling(facets:Facets){
+  ReactDOM.render(
+    <RowPanel title={SimpleApps.SelectingScrolling.name} withRubric={true}>
       <RowPanel title={SelectingTitles.Frame}>
         {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>:
           <IndexingList
-            title={SelectingTitles.Chooser}
+            title={SelectingTitles.Chooser }
             facets={facets}
-            listWidth={false?null:200}/>}
+            listWidth={false?NaN:200}/>}
         <PanelRow>
           <TriggerButton title={SelectingTitles.UpButton} facets={facets}/>
           <TriggerButton title={SelectingTitles.DownButton} facets={facets}/>
@@ -363,10 +364,10 @@ function buildSelectingScrolling(facets){
   );
 }
 class SimpleApp{
-  constructor(readonly name,
-              readonly newTrees,
-              readonly buildLayout,
-              readonly onRetargeted?,){}
+  constructor(readonly name:string,
+              readonly newTrees:(f:Facets,flag?:boolean)=>Target,
+              readonly buildLayout:(f:Facets)=>void,
+              readonly onRetargeted?:(facets:Facets,active:string)=>void,){}
 }
 const SimpleApps={
   Textual:new SimpleApp('Textual',newTextualTree,buildTextual),
@@ -380,7 +381,7 @@ const SimpleApps={
   AllNonSelecting:new SimpleApp('AllNonSelecting',newAllSimplesTree,
     false?buildAllSimples:buildAllSimplesForm),
   SelectingTyped:new SimpleApp('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
-    (facets,activeTitle)=>{
+    (facets:Facets,activeTitle:string)=>{
       traceThing('^onRetargeted:no live',{activeTitle:activeTitle});
       const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
       if(live!==null) [SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
@@ -390,13 +391,38 @@ const SimpleApps={
       );
     }),
   SelectingScrolling:new SimpleApp('SelectingScrolling',newSelectingScrollingTree,buildSelectingScrolling),
-  DateSelecting:new SimpleApp(DateTitles.App,newDateSelectingTree,buildDateSelecting),
 };
+function newListActionTargets(f:Facets,list:ScrollableItems){
+  let scrollBy=30;
+  return false?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
+      targetStateUpdated:()=>list.scrollItems(-scrollBy),
+    }),
+      f.newTriggerTarget(SelectingTitles.ScrollDown,{
+        targetStateUpdated:()=>list.scrollItems(scrollBy),
+      }),
+      f.newTextualTarget(SelectingTitles.ScrollBy,{
+        passText:String(scrollBy),
+        targetStateUpdated:state=>scrollBy=Number(state),
+      })]
+    :[f.newTriggerTarget(SelectingTitles.UpButton,{
+      targetStateUpdated:()=>list.swapItemDown(),
+    }),
+      f.newTriggerTarget(SelectingTitles.DownButton,{
+        targetStateUpdated:()=>list.swapItemUp(),
+      }),
+      f.newTriggerTarget(SelectingTitles.DeleteButton,{
+        targetStateUpdated:()=>list.deleteItem(),
+      }),
+      f.newTriggerTarget(SelectingTitles.NewButton,{
+        targetStateUpdated:()=>list.addItem(),
+      }),
+    ]
+}
 class ContentingTest extends SurfaceApp{
   readonly fullChooserTargets=false;
   readonly chooserTitle=SelectingTitles.Chooser;
   readonly indexingTitle=SimpleTitles.Indexing;
-  readonly list;
+  readonly list:ScrollableItems;
   constructor(){
     super(newInstance(true));
     this.list=new ScrollableItems(textContents,3,this.facets,
@@ -407,13 +433,13 @@ class ContentingTest extends SurfaceApp{
       f.activateContentTree(SelectingTitles.Chooser);
     }
     function newContentTree(content:TextContent):Target{
-      function newEditTarget(indexed:TextContent,tail){
+      function newEditTarget(indexed:TextContent,tail:string){
         return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
           passText:indexed.text,
           targetStateUpdated:(state,title)=>indexed.text=state as string,
         })
       }
-      function newCharsTarget(tail){
+      function newCharsTarget(tail:string){
         return f.newTextualTarget(SelectingTitles.CharsCount+tail,{
           getText:(title)=>''+(f.getTargetState(
             SelectingTitles.TextEditField+TextContentType.ShowChars.titleTail)as string).length,
@@ -437,7 +463,7 @@ class ContentingTest extends SurfaceApp{
     }
     let f=this.facets;
     let active:TextContent,edit:TextContent;
-    let chooserTargets=this.fullChooserTargets?this.list.newActionTargets():[];
+    let chooserTargets=this.fullChooserTargets?newListActionTargets(f,this.list):[];
     chooserTargets.push(
       f.newTriggerTarget(SelectingTitles.OpenEditButton,{
         targetStateUpdated:()=>{
@@ -454,7 +480,7 @@ class ContentingTest extends SurfaceApp{
       f.newIndexingFrame({
         frameTitle:this.chooserTitle,
         indexingTitle:this.indexingTitle,
-        getIndexables:()=>this.list.getScrollings(),
+        getIndexables:()=>this.list.getScrolledItems(),
         newFrameTargets:()=>chooserTargets,
         newUiSelectable:(item:TextContent)=>item.text,
       }));
@@ -465,7 +491,7 @@ class ContentingTest extends SurfaceApp{
     traceThing('^onRetargeted',activeTitle);
   }
   buildLayout(){
-    function newEditField(tail){
+    function newEditField(tail:string){
       return (<PanelRow>
         <TextualField title={SelectingTitles.TextEditField+tail} facets={f} cols={30}/>
       </PanelRow>)
@@ -513,6 +539,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(true) new TestApp(SimpleApps.DateSelecting).buildSurface();
+  if(true) new App(SimpleApps.SelectingScrolling).buildSurface();
   else new ContentingTest().buildSurface();
 }

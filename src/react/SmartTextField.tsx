@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ChangeEvent} from 'react';
 import {
   FnPassString,
   FnGetString,
@@ -18,9 +18,9 @@ interface TextFieldState{
   startText?:string
 }
 export class SmartTextField extends React.Component<TextFieldProps,TextFieldState> {
-  constructor(props){
+  constructor(props:TextFieldProps){
     super(props);
-    let hint=props.hint,startText=props.getStartText();
+    let hint=props.hint,startText:string=props.getStartText?props.getStartText():' ';
     this.state={
       text:startText?startText:hint?hint:'',
       disabled:props.isDisabled(),
@@ -37,21 +37,21 @@ export class SmartTextField extends React.Component<TextFieldProps,TextFieldStat
     if(hint&&this.state.text===hint)
       this.setText('');
   };
-  onChange=(e)=>{
-    this.setText(e.target.value)
+  onChange=(e:ChangeEvent<any>)=>{
+    this.setText((e.target as HTMLInputElement).value)
   };
-  onKeyPress=(e)=>{
+  onKeyPress=(e:KeyboardEvent)=>{
     if(e.key==='Enter'){
       e.preventDefault();
       let text=this.state.text;
       this.props.onEnter(text);
     }
   };
-  onKeyDown=(e)=>{
-    if(e.keyCode===27)this.setText(this.state.startText)
+  onKeyDown=(e:KeyboardEvent)=>{
+    if(e.keyCode===27)this.setText(this.state.startText as string)
   };
   componentWillReceiveProps(){
-    let startText=this.props.getStartText(),
+    let startText=this.props.getStartText?this.props.getStartText():'',
       disabled=this.props.isDisabled();
     this.setState({
       startText: startText,
@@ -66,10 +66,10 @@ export class SmartTextField extends React.Component<TextFieldProps,TextFieldStat
          className={this.state.disabled?'textDisabled':''}
          size={this.props.cols||20}
          value={this.state.text}
-         onKeyPress={this.onKeyPress}
-         onKeyDown={this.onKeyDown}
-         onChange={this.onChange}
-         onMouseDown={this.onClick}
+         onKeyPress={this.onKeyPress as any}
+         onKeyDown={this.onKeyDown as any}
+         onChange={this.onChange as any}
+         onMouseDown={this.onClick as any}
          disabled={this.state.disabled}
         />
       </span>

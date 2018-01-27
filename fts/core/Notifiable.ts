@@ -1,3 +1,3 @@
 export interface Notifiable{
-  notify(notice);
+  notify(notice:any):void;
 }

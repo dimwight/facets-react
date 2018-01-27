@@ -23,7 +23,7 @@ export class TargetCore extends NotifyingCore implements Targety {
   }
   notifiesTargeter():boolean{
     const extra=this.extra;
-    return extra&&extra instanceof Array;
+    return !extra?false:extra instanceof Array;
   }
   elements():Targety[]{
     if(!this.extra)this.extra=this.lazyElements();

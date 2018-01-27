@@ -7,7 +7,7 @@ import {
 import {IndexingFrameTargeter} from './_locals';
 import {traceThing} from '../../src/util/Bits';
 export class IndexingFrame extends TargetCore{
-  constructor(title, readonly indexing_:Indexing){
+  constructor(title:string, readonly indexing_:Indexing){
     super(title);
     this.indexing_.setNotifiable(this)
   }

@@ -1,7 +1,7 @@
 import {traceThing} from './_globals';
 export class SmartItems{
   constructor(private readonly items:any[]){}
-  swapItem(at,down){
+  swapItem(at:number,down:boolean){
     const src=this.items;
     //  Debug?
     traceThing('^swapItem',{index:at,down:down,src:src});
@@ -56,7 +56,7 @@ export class SmartItems{
     });
     return atEnd;
   }
-  addItem(at:number,createNew:(from)=>any){
+  addItem(at:number,createNew:(from:any)=>any){
     const list=this.items;
     const length=list.length,atEnd=at===length-1;
     const top=list.slice(0,at+1),tail=atEnd?[]:list.slice(at+1),

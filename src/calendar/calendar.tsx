@@ -39,24 +39,51 @@ class DateContent implements SkippableItem<Date>{
 export namespace DateTitles{
   export const App='DateSelecting',Chooser='Select Date';
 }
-export function newDateSelectingTree(facets){
+function newListActionTargets(f:Facets,list:ScrollableItems){
+  let scrollBy=30;
+  return false?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
+      targetStateUpdated:()=>list.scrollItems(-scrollBy),
+    }),
+      f.newTriggerTarget(SelectingTitles.ScrollDown,{
+        targetStateUpdated:()=>list.scrollItems(scrollBy),
+      }),
+      f.newTextualTarget(SelectingTitles.ScrollBy,{
+        passText:String(scrollBy),
+        targetStateUpdated:state=>scrollBy=Number(state),
+      })]
+    :[f.newTriggerTarget(SelectingTitles.UpButton,{
+      targetStateUpdated:()=>list.swapItemDown(),
+    }),
+      f.newTriggerTarget(SelectingTitles.DownButton,{
+        targetStateUpdated:()=>list.swapItemUp(),
+      }),
+      f.newTriggerTarget(SelectingTitles.DeleteButton,{
+        targetStateUpdated:()=>list.deleteItem(),
+      }),
+      f.newTriggerTarget(SelectingTitles.NewButton,{
+        targetStateUpdated:()=>list.addItem(),
+      }),
+    ]
+}
+export function newDateSelectingTree(facets:Facets){
+  const list=new ScrollableItems([new DateContent(new Date())],7,facets,
+    DateTitles.Chooser);
   const frame:IndexingFramePolicy={
     frameTitle:DateTitles.App,
     indexingTitle:DateTitles.Chooser,
-    newFrameTargets:()=>list.newActionTargets(),
+    newFrameTargets:()=>newListActionTargets(facets,list),
     getIndexables:()=>list.getScrolledItems(),
     newUiSelectable:(item:DateContent)=>item.date.valueOf(),
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
   };
-  const list=new ScrollableItems([new DateContent(new Date())],7,facets,frame.indexingTitle);
   return facets.newIndexingFrame(frame);
 }
-export function buildDateSelecting(facets){
+export function buildDateSelecting(facets:Facets){
   ReactDOM.render(<RowPanel title={DateTitles.App} withRubric={true}>
       <IndexingList
         title={DateTitles.Chooser}
         facets={facets}
-        listWidth={false?null:200}/>
+        listWidth={false?NaN:200}/>
       <PanelRow>
         <TriggerButton title={SelectingTitles.ScrollUp} facets={facets}/>
         <TriggerButton title={SelectingTitles.ScrollDown} facets={facets}/>

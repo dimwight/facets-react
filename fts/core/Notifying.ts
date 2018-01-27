@@ -1,8 +1,8 @@
 import {Notifiable} from './Notifiable';
 export interface Notifying extends Notifiable{
   title():string;
-  setNotifiable(n:Notifiable);
+  setNotifiable(n:Notifiable):void;
   notifiable():Notifiable;
   elements():Notifying[];
-  notifyParent();
+  notifyParent():void;
 }

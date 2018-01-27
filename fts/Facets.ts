@@ -25,7 +25,7 @@ export function newInstance(trace:boolean):Facets{
   return new Facets(trace);
 }
 export class Facets{
-  trace(msg){
+  trace(msg:string){
     if(this.doTrace)console.log('> '+msg)
   }
   readonly times={
@@ -40,17 +40,17 @@ export class Facets{
       this.rootTargeter.retargetFacets();
     },
   };
-  private onRetargeted;
+  private onRetargeted:(title:string)=>any;
   titleTargeters=new Map<string,Targeter>();
   titleTrees=new Map<string,Targety>();
   root:IndexingFrame;
   rootTargeter:Targeter;
-  constructor(private readonly doTrace){
+  constructor(private readonly doTrace:boolean){
     let activeTitle=this.activeContentTitle;
     let indexedTargetTitle=()=>this.root.indexedTarget().title();
     const indexing=new Indexing('RootIndexing',{
       getIndexables:()=>{
-        const trees=[];
+        const trees:Targety[]=[];
         this.titleTrees.forEach(t=>trees.push(t));
         return trees
       }
@@ -96,22 +96,22 @@ export class Facets{
     this.root.indexing().setIndexed(tree);
     this.notifiable.notify(title);
   }
-  newTextualTarget(title,coupler:TextualCoupler):Target{
+  newTextualTarget(title:string,coupler:TextualCoupler):Target{
     const textual=new Textual(title,coupler);
     this.trace('Created textual title='+title);
     return textual;
   }
-  newTogglingTarget(title,coupler:TogglingCoupler):Target{
+  newTogglingTarget(title:string,coupler:TogglingCoupler):Target{
     const toggling=new Toggling(title,coupler);
     this.trace('Created toggling title='+title);
     return toggling;
   }
-  newTriggerTarget (title,coupler:TargetCoupler):Target{
+  newTriggerTarget (title:string,coupler:TargetCoupler):Target{
     const trigger=new TargetCore(title,coupler);
     this.trace('Created trigger title='+title);
     return trigger;
   }
-  newTargetGroup(title,members:Target[]):Target{
+  newTargetGroup(title:string,members:Target[]):Target{
     return new TargetCore(title,members as Targety[]);
   }
   addTitleTargeters(t:Targeter){
@@ -121,8 +121,8 @@ export class Facets{
     this.trace('Added targeter: title='+title+': elements='+elements.length);
     elements.forEach((e)=>this.addTitleTargeters(e));
   }
-  attachFacet(title,updater:FacetUpdater):void{
-    const t:Targeter=this.titleTargeters.get(title);
+  attachFacet(title:string,updater:FacetUpdater):void{
+    const t:Targeter=this.titleTargeters.get(title)as Targeter;
     if(!t)throw new Error('No targeter for '+title);
     this.trace('Attaching facet: title='+title);
     const facet={
@@ -133,29 +133,29 @@ export class Facets{
     };
     t.attachFacet(facet);
   }
-  updateTargetState(title,update:SimpleState):void{
+  updateTargetState(title:string,update:SimpleState):void{
     this.titleTarget(title).updateState(update);
     this.notifiable.notify(title);
   }
-  getTargetState(title):SimpleState{
+  getTargetState(title:string):SimpleState{
     return this.titleTarget(title).state();
   }
-  isTargetLive(title):boolean{
+  isTargetLive(title:string):boolean{
     return this.titleTarget(title).isLive();
   }
-  setTargetLive(title,live){
+  setTargetLive(title:string,live:boolean){
     this.titleTarget(title).setLive(live);
   }
-  notifyTargetUpdated(title){
+  notifyTargetUpdated(title:string){
     const target=this.titleTarget(title);
     target.notifyParent();
   }
-  titleTarget(title):Targety{
+  titleTarget(title:string):Targety{
     const got=this.titleTargeters.get(title);
     if(!got)throw new Error('No targeter for '+title);
     return got.target();
   }
-  newIndexingTarget(title,coupler:IndexingCoupler):Targety{
+  newIndexingTarget(title:string,coupler:IndexingCoupler):Targety{
     const indexing=new Indexing(title,coupler);
     this.trace('Created indexing title='+title);
     return indexing;
@@ -168,7 +168,7 @@ export class Facets{
       indexed:i.indexed(),
     };
   }
-  private indexingFrames;
+  private indexingFrames:number;
   newIndexingFrame(p: IndexingFramePolicy): Targety{
     const frameTitle = p.frameTitle?p.frameTitle
       :'IndexingFrame' +this.indexingFrames++,
@@ -176,12 +176,13 @@ export class Facets{
       :frameTitle + '.Indexing';
     const indexing = new Indexing(indexingTitle,{
       getIndexables:title=>p.getIndexables(),
-      newUiSelectable:!p.newUiSelectable?null:i=>p.newUiSelectable(i)
+      newUiSelectable:i=>
+        !p.newUiSelectable?null:p.newUiSelectable(i)
     });
     this.trace('Created indexing '+ indexingTitle);
     const frame = new class extends IndexingFrame{
       lazyElements():Targety[]{
-        return p.newFrameTargets()as Targety[]
+        return p.newFrameTargets?p.newFrameTargets()as Targety[]:[]
       }
       protected newIndexedTargets(indexed:any):Targety {
         const titler=p.newIndexedTreeTitle,

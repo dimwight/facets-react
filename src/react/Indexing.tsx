@@ -12,25 +12,28 @@ interface IndexingValues extends TargetValues{
   listWidth?:number
 }
 abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>{
-  protected readUpdate(update){
+  constructor(props:IndexingValues){
+    super(props)
+  }
+  protected readUpdate(update:any){
     return {
       index:Number(update),
       selectables:this.props.facets.getIndexingState(this.props.title).uiSelectables,
     }
   }
-  indexChanged(index){
+  indexChanged(index:any){
     this.stateChanged(Number(index));
   }
-  render(){
+  render():any{
     let state=this.state;
     return this.renderUi({
-      selectables:state.selectables,
-      selectedAt:(state as IndexingValues).index,
+      selectables:state.selectables as string[],
+      selectedAt:(state as IndexingValues).index as number,
       disabled:!state.live,
       rubric:this.props.title,
     });
   }
-  protected abstract renderUi(props:IndexingUiProps);
+  protected abstract renderUi(props:IndexingUiProps):void;
 }
 interface IndexingUiProps{
   selectables:string[]
@@ -48,8 +51,11 @@ function SelectOption(props:SelectOptionProps){
   return <option value={props.value}>{props.text}</option>
 }
 export class IndexingDropdown extends IndexingFacet{
-  onChange=(e)=>{
-    this.indexChanged(e.target.value)
+  constructor(props:IndexingValues){
+    super(props)
+  }
+  onChange=(e:any)=>{
+    this.indexChanged((e.target as any).value)
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingDropdown',props);
@@ -76,8 +82,8 @@ interface ListItemProps{
   tabIndex:number
   text:string
   id:string
-  onClick:(e)=>void
-  onKeyDown:(e)=>void
+  onClick:(e:any)=>void
+  onKeyDown:(e:any)=>void
   key:string
 }
 export function ListItem(p:ListItemProps){
@@ -96,11 +102,14 @@ export function ListItem(p:ListItemProps){
 }
 export class IndexingList extends IndexingFacet{
   private boxWidth=0;
-  onClick=(e)=>{
-    this.indexChanged(e.target.id.substr(0,1));
+  onClick=(e:KeyboardEvent)=>{
+    if(!this.state.live)return;
+    this.indexChanged((e.target as HTMLElement).id.substr(0,1));
   };
-  onKeyDown=(e)=>{
-    let indexThen=e.target.id.substr(0,1),indexNow=indexThen;
+  onKeyDown=(e:KeyboardEvent)=>{
+    if(!this.state.live)return;
+    let indexThen:number=Number((e.target as HTMLElement).id.substr(0,1)),
+      indexNow:number=indexThen;
     if(e.key==='ArrowDown'){
       indexNow++;
     }
@@ -108,7 +117,7 @@ export class IndexingList extends IndexingFacet{
       indexNow--;
     }
     if(indexNow!==indexThen){
-      if(indexNow>=0&&indexNow<this.state.selectables.length)
+      if(indexNow>=0&&indexNow<(this.state.selectables as any[]).length)
         this.indexChanged(indexNow);
       else if(this.props.facets.supplement)
         (this.props.facets.supplement as ItemScroller
@@ -117,15 +126,15 @@ export class IndexingList extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingList',props);
-    let disabled=false?true:!this.state.live,selectables=props.selectables;
+    let disabled=!this.state.live,selectables=props.selectables;
     let items=selectables.map((s, at)=>{
       let selected=at===props.selectedAt;
       traceThing('^IndexingList',{at:at,s:s,selected:selected});
       return (<ListItem
         className={(selected?'listSelected':'listItem')+(disabled?'Disabled':'')}
-        tabIndex={selected&&!disabled?1:null}
-        onClick={disabled?null:this.onClick}
-        onKeyDown={disabled?null:this.onKeyDown}
+        tabIndex={selected&&!disabled?1:NaN}
+        onClick={this.onClick}
+        onKeyDown={this.onKeyDown}
         id={at+this.unique}
         text={s}
         key={s+(Facet.ids++)}
@@ -136,7 +145,7 @@ export class IndexingList extends IndexingFacet{
            style={{
              display:'table',
              width:this.boxWidth||null,
-             overflow:true?null:'scroll',
+             overflow:true?'auto':'scroll',
            }}
            id={'listBox'+this.unique}
       >{items}</div>
@@ -144,6 +153,7 @@ export class IndexingList extends IndexingFacet{
   }
   private fixBoxWidth(){
     let box=document.getElementById('listBox'+this.unique);
+    if(!box)throw new Error('No box');
     let renderWidth=Number(box.offsetWidth);
     traceThing('^componentDidUpdate',{
       renderWidth:renderWidth,
@@ -152,11 +162,13 @@ export class IndexingList extends IndexingFacet{
     if(this.boxWidth===0)this.boxWidth=renderWidth;
   }
   private setSelectedFocus(){
-    let selected=this.state.index+this.unique;
-    document.getElementById(selected).focus();
+    let selected=this.state.index+this.unique as string;
+    const element=document.getElementById(selected);
+    if(!element)throw new Error('No element');
+    else element.focus();
   }
   componentWillMount(){
-    this.boxWidth=0|this.props.listWidth;
+    this.boxWidth=this.props.listWidth||0;
   }
   componentDidMount(){
     super.componentDidMount();

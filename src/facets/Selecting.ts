@@ -24,7 +24,7 @@ export namespace SelectingTitles{
     CharsCount='Characters';
 }
 export interface ItemScroller{
-  scrollItems(skip:number)
+  scrollItems(skip:number):void
 }
 export class ScrollableItems implements ItemScroller{
   onFacetsRetargeted=()=>{
@@ -37,19 +37,19 @@ export class ScrollableItems implements ItemScroller{
     traceThing('^onRetargeted',this.items);
   };
   private readonly smarts:SmartItems;
-  private readonly skipper:SkippableItems;
-  private readonly maxLength;
+  private readonly skipper:SkippableItems|null;
+  private readonly maxLength:number;
   private showFrom=0;
   constructor(private readonly items:any[],
-              private readonly showLength,
+              private readonly showLength:number,
               private readonly facets:Facets,
-              private readonly indexingTitle,
-              private readonly createNew?:(from)=>any,){
+              private readonly indexingTitle:string,
+              private readonly createNew?:(from:any)=>any,){
     this.smarts=new SmartItems(items);
     const length=items.length;
     if(!length) throw new Error('At least one item!');
-    else this.skipper=(items[0] as SkippableItem<any>).newSkipped?
-      new SkippableItems(showLength,items):null;
+    else this.skipper=items[0].newSkipped?
+      new SkippableItems(showLength,items): null;
     if(length<showLength){
       if(!this.skipper) throw new Error('Items not extensible!');
       else this.skipper.skipForward(showLength-length,0);
@@ -106,7 +106,7 @@ export class ScrollableItems implements ItemScroller{
     }
     this.setShowAt(showNow)
   }
-  itemAt(showAt):number{
+  itemAt(showAt:number):number{
     return showAt+this.showFrom;
   }
   getShowAt():number{
@@ -114,33 +114,6 @@ export class ScrollableItems implements ItemScroller{
   }
   setShowAt(at:number){
     this.facets.updateTargetState(this.indexingTitle,at)
-  }
-  newActionTargets(){
-    const f=this.facets;
-    let scrollBy=30;
-    return true?[f.newTriggerTarget(SelectingTitles.ScrollUp,{
-        targetStateUpdated:()=>this.scrollItems(-scrollBy),
-      }),
-      f.newTriggerTarget(SelectingTitles.ScrollDown,{
-        targetStateUpdated:()=>this.scrollItems(scrollBy),
-      }),
-      f.newTextualTarget(SelectingTitles.ScrollBy,{
-        passText:String(scrollBy),
-        targetStateUpdated:state=>scrollBy=Number(state),
-      })]
-      :[f.newTriggerTarget(SelectingTitles.UpButton,{
-      targetStateUpdated:()=>this.swapItemDown(),
-    }),
-      f.newTriggerTarget(SelectingTitles.DownButton,{
-        targetStateUpdated:()=>this.swapItemUp(),
-      }),
-      f.newTriggerTarget(SelectingTitles.DeleteButton,{
-        targetStateUpdated:()=>this.deleteItem(),
-      }),
-      f.newTriggerTarget(SelectingTitles.NewButton,{
-        targetStateUpdated:()=>this.addItem(),
-      }),
-    ]
   }
 }
 

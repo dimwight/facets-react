@@ -10,6 +10,6 @@ import {
 export interface Targeter extends Notifying,Notifiable,Retargetable{
   target():Targety;
   elements():Targeter[];
-  attachFacet(f:Facet);
-  retargetFacets();
+  attachFacet(f:Facet):void;
+  retargetFacets():void;
 }

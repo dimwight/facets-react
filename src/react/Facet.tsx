@@ -8,7 +8,7 @@ import {SmartTextField} from './_locals';
 import {IndexingDropdown} from './_globals';
 import './Facet.css';
 export type FnGetBoolean=()=>boolean
-export type FnPassString=(string)=>void
+export type FnPassString=(string:string)=>void
 export type FnGetString=()=>string
 export interface TargetValues{
   title:string
@@ -22,13 +22,13 @@ export class Facet<I extends TargetValues,K extends TargetValues>
   private canSetState:boolean;
   public static ids=0;
   protected readonly unique:string;
-  constructor(props){
+  constructor(props:I){
     super(props);
     this.unique=props.title+Facet.ids++;
     traceThing('^ Facet',{'title':props.title});
     props.facets.attachFacet(props.title,this.facetUpdated);
   }
-  facetUpdated=(update)=>{
+  facetUpdated=(update:any)=>{
     let updateWithLive:{}=Object.assign({},
       this.readUpdate(update),{
         live:this.props.facets.isTargetLive(this.props.title),
@@ -49,12 +49,12 @@ export class Facet<I extends TargetValues,K extends TargetValues>
   componentWillUnmount(){
     this.canSetState=false;
   }
-  protected readUpdate(update):{}{
+  protected readUpdate(update:any):{}{
     return {state:update}
   }
 }
 export class TriggerButton extends Facet<TargetValues,TargetValues>{
-  protected readUpdate(update){
+  protected readUpdate(update:any){
     return {}
   }
   onClick=()=>{
@@ -67,13 +67,6 @@ export class TriggerButton extends Facet<TargetValues,TargetValues>{
     >{this.state.showTitle}
     </button>)
   }
-}
-interface LabelValues{
-  text:string
-  disabled:boolean
-  target?:string
-  style?:any
-  classes?:string
 }
 export function LabelText(props:LabelValues){
   return (<span className={props.disabled?'textDisabled':''}>
@@ -91,11 +84,11 @@ interface TogglingValues extends TargetValues{
   set?:boolean
 }
 export class TogglingCheckbox extends Facet<TogglingValues,TogglingValues>{
-  protected readUpdate(update):{}{
+  protected readUpdate(update:any):{}{
     return {set:Boolean(update)}
   }
-  onChange=(e)=>{
-    let set=e.target.checked;
+  onChange=(e:Event)=>{
+    let set=(e.target as HTMLInputElement).checked;
     this.stateChanged(set);
     this.setState({
       set:set,
@@ -103,39 +96,47 @@ export class TogglingCheckbox extends Facet<TogglingValues,TogglingValues>{
   };
   render(){
     return (<span>
-      <LabelRubric text={this.state.showTitle} disabled={!this.state.live}
+      <LabelRubric text={this.state.showTitle as string} disabled={!this.state.live}
                    target={this.state.showTitle}/>
         <input
           id={this.props.title}
-          type="checkbox"
+          type='checkbox'
           style={{verticalAlign:'middle'}}
-          onChange={this.onChange}
-          checked={this.state.set}
-          disabled={!this.state.live}
+          onChange={this.onChange as any}
+          checked={this.state.set as any}
+          disabled={!this.state.live as any}
         />
     </span>)
   }
+}
+interface LabelValues{
+  text:string
+  disabled:boolean
+  target?:string
+  style?:any
+  classes?:string
 }
 interface TextualValues extends TargetValues{
   text?:string
   cols?:number
 }
 export class TextualField extends Facet<TextualValues,TextualValues>{
-  protected readUpdate(update){
+  protected readUpdate(update:any){
     return {text:String(update)}
   }
-  onFieldEnter=(text)=>{
+  onFieldEnter=(text:string)=>{
     this.stateChanged(text);
   };
-  getStateText=()=>this.state.text;
-  isDisabled=()=>!this.state.live;
+  getStateText=():string=>this.state.text as string;
+  isDisabled=()=>!this.state.live as boolean;
   render(){
     return (<div className={'textualField'}>
-        <LabelRubric text={this.state.showTitle} disabled={!this.state.live}/>
+        <LabelRubric text={this.state.showTitle as string}
+                     disabled={!this.state.live}/>
         <SmartTextField
           getStartText={this.getStateText}
-          onEnter={this.onFieldEnter}
-          cols={this.props.cols}
+          onEnter={this.onFieldEnter as FnPassString}
+          cols={this.props.cols as number}
           isDisabled={this.isDisabled}
           hint={'Hint'}
         />
@@ -144,30 +145,30 @@ export class TextualField extends Facet<TextualValues,TextualValues>{
   }
 }
 export class TextualLabel extends Facet<TextualValues,TextualValues>{
-  constructor(props){
+  constructor(props:TextualValues){
     super(props);
     traceThing('^TextualLabel.constructor',this.props);
   }
-  protected readUpdate(update):{}{
+  protected readUpdate(update:any):{}{
     return {text:String(update)}
   }
   render(){
     traceThing('^TextualLabel',this.state);
     let disabled=!this.state.live;
     return (<span>
-      <LabelRubric text={this.state.showTitle} disabled={disabled}/>
+      <LabelRubric text={this.state.showTitle as string} disabled={disabled}/>
       &nbsp;
-      <LabelText text={this.state.text} disabled={disabled}/>
+      <LabelText text={this.state.text as string} disabled={disabled}/>
         </span>)
   }
 }
 export class ShowPanel extends Facet<TextualValues,TextualValues>{
-  protected readUpdate(update):{}{
+  protected readUpdate(update:any):{}{
     return {text:String(update)}
   }
   render(){
-    let all=this.props.children as any[],show;
-    all.forEach((child,at)=>{
+    let all:any[]|any=this.props.children,show=all;
+    all.forEach((child:any,at:number)=>{
       traceThing('^ShowPanel_',child);
       if(child.props.title===this.state.text) show=child;
     });
@@ -181,7 +182,7 @@ interface RowPanelProps{
   title?:string
   withRubric?:boolean
   key?:string
-  children
+  children?:any
 }
 function PanelRubric(props:LabelValues){
   let text=props.text,
@@ -193,13 +194,13 @@ export function RowPanel(props:RowPanelProps){
     return <div className={'panelMount'}>{child}</div>
   });
   const title=props.title;
-  return <div className={'panel'} key={false?null:title}>
+  return <div className={'panel'} key={false?'':title}>
     {title&&props.withRubric?
       <PanelRubric text={title} disabled={false} classes={'panelRubric'}/>:null}
     {children}
   </div>
 }
-export function PanelRow(props){
+export function PanelRow(props:RowPanelProps){
   let children=React.Children.map(props.children,child=>{
     return (<span>{child} </span>)
   });
@@ -217,7 +218,7 @@ export interface FieldSpec{
   title:string
   cols?:number
 }
-export function newFormField(spec:FieldSpec,facets:Facets,key){
+export function newFormField(spec:FieldSpec,facets:Facets,key:any){
   switch(spec.type){
     case FieldType.TextualField:
       return <TextualField key={key} title={spec.title} facets={facets}

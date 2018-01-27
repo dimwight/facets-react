@@ -1,5 +1,5 @@
 import {traceThing} from './_globals';
-export function swapArrayElement(source: any[], index, down) {
+export function swapArrayElement(source: any[], index:number, down:boolean) {
   /* 
   1. Define source indices of elements to be swapped.
   2. Define output indices to swap them to.
