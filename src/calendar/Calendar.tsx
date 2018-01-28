@@ -12,6 +12,7 @@ import {
   RowPanel,
   TextualField,
   TriggerButton,
+  TextualLabel
 } from '../react/_globals';
 import {
   ScrollableList,
@@ -62,6 +63,10 @@ export function newTree(f:Facets){
 }
 export function buildLayout(facets:Facets){
   ReactDOM.render(<RowPanel title={DateTitles.CalendarApp} withRubric={true}>
+      <PanelRow>
+        <TextualLabel title={DateTitles.Year} facets={facets}/>
+        <TextualLabel title={DateTitles.Month} facets={facets}/>
+      </PanelRow>
       <IndexingList
         title={DateTitles.Chooser}
         facets={facets}
