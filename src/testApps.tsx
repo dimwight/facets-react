@@ -42,8 +42,8 @@ namespace SimpleTitles{
     ToggleStart=false,
     NumericField='Number',NumericLabel='Value',NumericStart=123;
 }
-class App extends SurfaceApp{
-  constructor(readonly test:SimpleApp){
+class SimpleApp extends SurfaceApp{
+  constructor(readonly test:SimpleTest){
     super(newInstance(false));
   }
   getContentTrees():Target|Target[]{
@@ -51,6 +51,7 @@ class App extends SurfaceApp{
   }
   onRetargeted(active:string){
     const onRetargeted=this.test.onRetargeted;
+    traceThing('^onRetargeted',onRetargeted);
     if(onRetargeted) onRetargeted(this.facets,active)
   }
   buildLayout():void{
@@ -213,7 +214,7 @@ function newSelectingScrollingTree(facets:Facets){
 function buildTextual(facets:Facets){
   const first=SimpleTitles.FirstTextual,second=SimpleTitles.SecondTextual;
   ReactDOM.render(
-    <RowPanel title={SimpleApps.Textual.name} withRubric={true}>
+    <RowPanel title={SimpleTests.Textual.name} withRubric={true}>
       <TextualField title={first} facets={facets}/>
       <TextualLabel title={first} facets={facets}/>
       <TextualField title={second} facets={facets} cols={40}/>
@@ -224,7 +225,7 @@ function buildTextual(facets:Facets){
 }
 function buildToggling(facets:Facets){
   ReactDOM.render(
-    <RowPanel title={SimpleApps.TogglingLive.name} withRubric={true}>
+    <RowPanel title={SimpleTests.TogglingLive.name} withRubric={true}>
       <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
       <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
     </RowPanel>,
@@ -234,7 +235,7 @@ function buildToggling(facets:Facets){
 }
 function buildTrigger(facets:Facets){
   ReactDOM.render(
-    <RowPanel title={SimpleApps.Trigger.name} withRubric={true}>
+    <RowPanel title={SimpleTests.Trigger.name} withRubric={true}>
       <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
       <TextualLabel title={SimpleTitles.Triggereds} facets={facets}/>
     </RowPanel>,
@@ -243,7 +244,7 @@ function buildTrigger(facets:Facets){
 }
 function buildIndexing(facets:Facets){
   ReactDOM.render(
-    <RowPanel title={SimpleApps.Indexing.name} withRubric={true}>
+    <RowPanel title={SimpleTests.Indexing.name} withRubric={true}>
       <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
       <TextualLabel title={SimpleTitles.Index} facets={facets}/>
       <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
@@ -254,22 +255,22 @@ function buildIndexing(facets:Facets){
 function buildAllSimples(facets:Facets){
   const textual1=SimpleTitles.FirstTextual,textual2=SimpleTitles.SecondTextual;
   ReactDOM.render(<div>
-      <RowPanel title={SimpleApps.Textual.name} withRubric={true}>
+      <RowPanel title={SimpleTests.Textual.name} withRubric={true}>
         <TextualField title={textual1} facets={facets}/>
         <TextualLabel title={textual1} facets={facets}/>
         <TextualField title={textual2} facets={facets} cols={40}/>
         <TextualLabel title={textual2} facets={facets}/>
       </RowPanel>
-      <RowPanel title={SimpleApps.TogglingLive.name} withRubric={true}>
+      <RowPanel title={SimpleTests.TogglingLive.name} withRubric={true}>
         <TogglingCheckbox title={SimpleTitles.Toggling} facets={facets}/>
         <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
       </RowPanel>
-      <RowPanel title={SimpleApps.Indexing.name} withRubric={true}>
+      <RowPanel title={SimpleTests.Indexing.name} withRubric={true}>
         <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
         <TextualLabel title={SimpleTitles.Index} facets={facets}/>
         <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
       </RowPanel>
-      <RowPanel title={SimpleApps.Trigger.name} withRubric={true}>
+      <RowPanel title={SimpleTests.Trigger.name} withRubric={true}>
         <TriggerButton title={SimpleTitles.Trigger} facets={facets}/>
         <TextualLabel title={SimpleTitles.Triggereds} facets={facets}/>
       </RowPanel>
@@ -293,7 +294,7 @@ function buildAllSimplesForm(facets:Facets){
     {type:FieldType.TextualLabel,title:SimpleTitles.Triggereds},
   ];
   ReactDOM.render(
-    <RowPanel title={SimpleApps.AllNonSelecting.name+'Form'} withRubric={false}>
+    <RowPanel title={SimpleTests.AllNonSelecting.name+'Form'} withRubric={false}>
       {specs.map((spec,key)=>newFormField(spec,facets,key))}
     </RowPanel>,
     document.getElementById('root'),
@@ -318,7 +319,7 @@ function buildSelectingTyped(facets:Facets){
   let liveCheckbox=true?null:<PanelRow>
     <TogglingCheckbox title={SelectingTitles.Live} facets={facets}/>
   </PanelRow>;
-  ReactDOM.render(<RowPanel title={SimpleApps.SelectingTyped.name} withRubric={true}>
+  ReactDOM.render(<RowPanel title={SimpleTests.SelectingTyped.name} withRubric={true}>
       {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>
         :<IndexingList title={SelectingTitles.Chooser} facets={facets}/>}
       {true?null:<PanelRow>
@@ -342,7 +343,7 @@ function buildSelectingTyped(facets:Facets){
 }
 function buildSelectingScrolling(facets:Facets){
   ReactDOM.render(
-    <RowPanel title={SimpleApps.SelectingScrolling.name} withRubric={true}>
+    <RowPanel title={SimpleTests.SelectingScrolling.name} withRubric={true}>
       <RowPanel title={SelectingTitles.Frame}>
         {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>:
           <IndexingList
@@ -363,26 +364,26 @@ function buildSelectingScrolling(facets:Facets){
     document.getElementById('root'),
   );
 }
-class SimpleApp{
+class SimpleTest{
   constructor(readonly name:string,
               readonly newTrees:(f:Facets,flag?:boolean)=>Target,
               readonly buildLayout:(f:Facets)=>void,
               readonly onRetargeted?:(facets:Facets,active:string)=>void,){}
 }
-const SimpleApps={
-  Textual:new SimpleApp('Textual',newTextualTree,buildTextual),
-  TogglingLive:new SimpleApp('TogglingLive',newTogglingTree,buildToggling,
+const SimpleTests={
+  Textual:new SimpleTest('Textual',newTextualTree,buildTextual),
+  TogglingLive:new SimpleTest('TogglingLive',newTogglingTree,buildToggling,
     (facets:Facets)=>{
       facets.setTargetLive(SimpleTitles.Toggled,
         facets.getTargetState(SimpleTitles.Toggling)as boolean);
     }),
-  Indexing:new SimpleApp('Indexing',newIndexingTree,buildIndexing),
-  Trigger:new SimpleApp('Trigger',newTriggerTree,buildTrigger),
-  AllNonSelecting:new SimpleApp('AllNonSelecting',newAllSimplesTree,
+  Indexing:new SimpleTest('Indexing',newIndexingTree,buildIndexing),
+  Trigger:new SimpleTest('Trigger',newTriggerTree,buildTrigger),
+  AllNonSelecting:new SimpleTest('AllNonSelecting',newAllSimplesTree,
     false?buildAllSimples:buildAllSimplesForm),
-  SelectingTyped:new SimpleApp('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
+  SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,buildSelectingTyped,
     (facets:Facets,activeTitle:string)=>{
-      traceThing('^onRetargeted:no live',{activeTitle:activeTitle});
+      traceThing('onRetargeted:no live',{activeTitle:activeTitle});
       const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
       if(live!==null) [SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
@@ -390,7 +391,7 @@ const SimpleApps={
         ),
       );
     }),
-  SelectingScrolling:new SimpleApp('SelectingScrolling',newSelectingScrollingTree,buildSelectingScrolling),
+  SelectingScrolling:new SimpleTest('SelectingScrolling',newSelectingScrollingTree,buildSelectingScrolling),
 };
 function newListActionTargets(f:Facets,list:ScrollableItems){
   return [f.newTriggerTarget(SelectingTitles.UpButton,{
@@ -528,6 +529,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(true) new App(SimpleApps.AllNonSelecting).buildSurface();
+  if(true) new SimpleApp(SimpleTests.SelectingScrolling).buildSurface();
   else new ContentingTest().buildSurface();
 }

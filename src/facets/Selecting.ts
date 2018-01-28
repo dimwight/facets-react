@@ -57,7 +57,7 @@ export class ScrollableItems implements ItemScroller{
     facets.supplement=this
   }
   getScrolledItems():any[]{
-    traceThing('^getScrolledItems:',this.showFrom);
+    traceThing('^getScrolledItems:',[this.showFrom]);
     return this.items.slice(this.showFrom,this.showFrom+this.showLength);
   }
   scrollItems(by:number){
@@ -66,12 +66,13 @@ export class ScrollableItems implements ItemScroller{
     const skipper=this.skipper;
     if(!by) return;
     else if(by<0){
-      if(showFrom+by>0) this.showFrom+=by;
+      if(showFrom+by>=0) this.showFrom+=by;
       else if(skipper)
         this.showFrom=skipper.skipBack(by*-1,showFrom);
     }
     else{
-      if(thenStop+by<this.items.length) this.showFrom+=by;
+      traceThing('^scrollItems',{'by':by,'thenStop':thenStop})
+      if(thenStop+by<=this.items.length) this.showFrom+=by;
       else if(skipper)
         this.showFrom=skipper.skipForward(by,showFrom);
     }
