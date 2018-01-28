@@ -2,24 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {
   Facets,
-  IndexingCoupler,
   IndexingFramePolicy,
   newInstance,
   Target,
 } from 'facets-js';
 import {
-  FieldType,
-  IndexingDropdown,
   IndexingList,
-  newFormField,
   PanelRow,
   RowPanel,
-  ShowPanel,
   TextualField,
-  TextualLabel,
-  TogglingCheckbox,
   TriggerButton,
-  FieldSpec,
 } from '../react/_globals';
 import {
   ScrollableItems,
@@ -27,18 +19,9 @@ import {
   SurfaceApp,
 } from '../facets/_globals';
 import {
-  traceThing,
-  SkippableItem,
+  DateContent,
+  DateTitles,
 } from '../util/_globals';
-class DateContent implements SkippableItem<Date>{
-  constructor(public readonly date:Date){}
-  newSkipped(skip:number):SkippableItem<any>{
-    return new DateContent(new Date(this.date.valueOf()+skip))
-  }
-}
-export namespace DateTitles{
-  export const App='DateSelecting',Chooser='Select Date';
-}
 function newListActionTargets(f:Facets,list:ScrollableItems){
   let scrollBy=30;
   return [f.newTriggerTarget(SelectingTitles.ScrollUp,{
@@ -59,7 +42,7 @@ export function newDateSelectingTree(facets:Facets){
     indexingTitle:DateTitles.Chooser,
     newFrameTargets:()=>newListActionTargets(facets,list),
     getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(item:DateContent)=>item.date.valueOf(),
+    newUiSelectable:(item:DateContent)=>item.selectable(),
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
   };
   return facets.newIndexingFrame(frame);

@@ -27,11 +27,6 @@ import {
   SurfaceApp,
 } from './facets/_globals';
 import {traceThing,} from './util/_globals';
-import {
-  DateTitles,
-  buildDateSelecting,
-  newDateSelectingTree,
-} from './calendar/_globals';
 namespace SimpleTitles{
   export const FirstTextual='First',SecondTextual='Second',
     Indexing='Choose Item',
