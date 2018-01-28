@@ -5,7 +5,8 @@ import {
   traceThing,
 } from '../util/_globals';
 export namespace SelectingTitles{
-  export const Frame='Selecting',
+  export const Frame='Frame',
+    Selected='Selected',
     Chooser='Select Content',
     Actions='Actions',
     Live='Live',

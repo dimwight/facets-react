@@ -158,7 +158,7 @@ function newSelectingTypedTree(facets:Facets){
       }),
     ]
     ,
-    newIndexedTreeTitle:indexed=>SelectingTitles.Frame+getType(indexed).titleTail,
+    newIndexedTreeTitle:indexed=>SelectingTitles.Selected+getType(indexed).titleTail,
     newIndexedTree:(indexed:TextContent,title:string)=>{
       const tail=getType(indexed).titleTail;
       return facets.newTargetGroup(title,tail===''?[
@@ -329,7 +329,7 @@ const SimpleTests={
   SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,
     buildSelectingTyped,
     (facets:Facets,activeTitle:string)=>{
-      traceThing('onRetargeted:no live',{activeTitle:activeTitle});
+      traceThing('^onRetargeted',{activeTitle:activeTitle});
       const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
       if(live!==null) [SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
@@ -373,7 +373,7 @@ function newSelectingScrollingTree(facets:Facets){
     newFrameTargets:()=>newListActionTargets(facets,list),
     getIndexables:()=>list.getScrolledItems(),
     newUiSelectable:(item:TextContent)=>item.text,
-    newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
+    newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
     newIndexedTree:(indexed:TextContent,title:string)=>{
       traceThing('^newIndexedTargets',{indexed:indexed});
       return facets.newTargetGroup(title,[
@@ -535,6 +535,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(false) new SimpleApp(SimpleTests.SelectingScrolling).buildSurface();
+  if(true) new SimpleApp(SimpleTests.SelectingTyped).buildSurface();
   else new ContentingTest().buildSurface();
 }

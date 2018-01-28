@@ -6,7 +6,7 @@ export class DayItem implements SkippableItem<Date>{
     return new DayItem(addDays(this.date,skip))
   }
   weekDay():string{
-    return format(this.date,'ddd MMMM D');
+    return format(this.date,'ddd D');
   }
   month(){
     return format(this.date,'MMMM');
@@ -16,7 +16,7 @@ export class DayItem implements SkippableItem<Date>{
   }
 }
 export namespace DateTitles{
-  export const TestApp='DateSelecting',Chooser='Select Date',
+  export const TestApp='DateSelecting',Indexing='Select Date',
     Year='Year',Month='Month',Day='Day',CalendarApp='Calendar?';
 }
 

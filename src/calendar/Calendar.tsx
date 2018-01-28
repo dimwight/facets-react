@@ -4,7 +4,6 @@ import {
   Facets,
   IndexingFramePolicy,
   newInstance,
-  Target,
 } from 'facets-js';
 import {
   IndexingList,
@@ -47,45 +46,45 @@ export function newTree(f:Facets){
       }),
     ])
   }
-  const list=new ScrollableList([new DayItem(new Date())],7,f,DateTitles.Chooser);
+  const list=new ScrollableList([new DayItem(new Date())],7,f,DateTitles.Indexing);
   const frame:IndexingFramePolicy={
     frameTitle:DateTitles.CalendarApp,
-    indexingTitle:DateTitles.Chooser,
+    indexingTitle:DateTitles.Indexing,
     newFrameTargets:()=>newListTargets(list),
-    newIndexedTree:(day:DayItem)=>{
+    newIndexedTree:(day)=>{
       return newItemTargets(day);
     },
     getIndexables:()=>list.getScrolledItems(),
     newUiSelectable:(day:DayItem)=>day.weekDay(),
-    newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
+    newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
   };
   return f.newIndexingFrame(frame);
 }
-export function buildLayout(facets:Facets){
+export function buildLayout(f:Facets){
   ReactDOM.render(<RowPanel title={DateTitles.CalendarApp} withRubric={true}>
       <PanelRow>
-        <TextualLabel title={DateTitles.Year} facets={facets}/>
-        <TextualLabel title={DateTitles.Month} facets={facets}/>
+        <TextualLabel title={DateTitles.Year} facets={f}/>
+        <TextualLabel title={DateTitles.Month} facets={f}/>
       </PanelRow>
       <IndexingList
-        title={DateTitles.Chooser}
-        facets={facets}
-        listWidth={false?NaN:200}/>
+        title={DateTitles.Indexing}
+        facets={f}
+        listWidth={false?NaN:20}/>
       <PanelRow>
-        <TriggerButton title={SelectingTitles.ScrollUp} facets={facets}/>
-        <TriggerButton title={SelectingTitles.ScrollDown} facets={facets}/>
+        <TriggerButton title={SelectingTitles.ScrollUp} facets={f}/>
+        <TriggerButton title={SelectingTitles.ScrollDown} facets={f}/>
       </PanelRow>
-      <TextualField title={SelectingTitles.ScrollBy} facets={facets} cols={1}/>
+      <TextualField title={SelectingTitles.ScrollBy} facets={f} cols={1}/>
     </RowPanel>,
     document.getElementById('root'),
   );
 }
 export function launchApp(){
   new class extends SurfaceApp{
-    getContentTrees():Target|Target[]{
+    getContentTrees(){
       return newTree(this.facets)
     }
-    buildLayout():void{
+    buildLayout(){
       buildLayout(this.facets)
     }
   }(newInstance(false)).buildSurface();
