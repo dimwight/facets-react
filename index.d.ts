@@ -127,7 +127,7 @@ export interface IndexingFramePolicy {
    * Supply object to expose indexable in the UI.
    * Analogue of {@link IndexingCoupler} function.
    * @param {any} indexable to represent
-   * @returns {selectable} the representation
+   * @returns {weekDay} the representation
    */
   newUiSelectable? (indexable: any):any;
   /**

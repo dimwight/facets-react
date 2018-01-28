@@ -19,12 +19,13 @@ import {
   SurfaceApp,
 } from '../facets/_globals';
 import {
-  DateContent,
+  DayItem,
   DateTitles,
 } from '../util/_globals';
-function newListActionTargets(f:Facets,list:ScrollableItems){
-  let scrollBy=30;
-  return [f.newTriggerTarget(SelectingTitles.ScrollUp,{
+export function newDateSelectingTree(f:Facets){
+  function newListTargets(list:ScrollableItems){
+    let scrollBy=7;
+    return [f.newTriggerTarget(SelectingTitles.ScrollUp,{
       targetStateUpdated:()=>list.scrollItems(-scrollBy),
     }),
       f.newTriggerTarget(SelectingTitles.ScrollDown,{
@@ -34,18 +35,27 @@ function newListActionTargets(f:Facets,list:ScrollableItems){
         passText:String(scrollBy),
         targetStateUpdated:state=>scrollBy=Number(state),
       })]
-}
-export function newDateSelectingTree(facets:Facets){
-  const list=new ScrollableItems([new DateContent(new Date())],7,facets,DateTitles.Chooser);
+  }
+  const list=new ScrollableItems([new DayItem(new Date())],7,f,DateTitles.Chooser);
   const frame:IndexingFramePolicy={
     frameTitle:DateTitles.App,
     indexingTitle:DateTitles.Chooser,
-    newFrameTargets:()=>newListActionTargets(facets,list),
+    newFrameTargets:()=>newListTargets(list),
+    newIndexedTree:(day:DayItem)=>{
+      return f.newTargetGroup(DateTitles.Day,[
+        f.newTextualTarget(DateTitles.Year,{
+          passText:day.year()
+        }),
+        f.newTextualTarget(DateTitles.Month,{
+          passText:day.month()
+        })
+      ])
+    },
     getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(item:DateContent)=>item.selectable(),
+    newUiSelectable:(day:DayItem)=>day.weekDay(),
     newIndexedTreeTitle:indexed=>SelectingTitles.Frame,
   };
-  return facets.newIndexingFrame(frame);
+  return f.newIndexingFrame(frame);
 }
 export function buildDateSelecting(facets:Facets){
   ReactDOM.render(<RowPanel title={DateTitles.App} withRubric={true}>
