@@ -4,7 +4,6 @@ import {
   SmartItems,
   traceThing,
 } from '../util/_globals';
-import {SkippableItem} from '../util/ArraySmarts';
 export namespace SelectingTitles{
   export const Frame='Selecting',
     Chooser='Select Content',
@@ -71,7 +70,7 @@ export class ScrollableItems implements ItemScroller{
         this.showFrom=skipper.skipBack(by*-1,showFrom);
     }
     else{
-      traceThing('^scrollItems',{'by':by,'thenStop':thenStop})
+      traceThing('^scrollItems',{'by':by,'thenStop':thenStop});
       if(thenStop+by<=this.items.length) this.showFrom+=by;
       else if(skipper)
         this.showFrom=skipper.skipForward(by,showFrom);
