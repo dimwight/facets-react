@@ -53,8 +53,7 @@ function newListActionTargets(f:Facets,list:ScrollableItems){
       })]
 }
 export function newDateSelectingTree(facets:Facets){
-  const list=new ScrollableItems([new DateContent(new Date())],7,facets,
-    DateTitles.Chooser);
+  const list=new ScrollableItems([new DateContent(new Date())],7,facets,DateTitles.Chooser);
   const frame:IndexingFramePolicy={
     frameTitle:DateTitles.App,
     indexingTitle:DateTitles.Chooser,

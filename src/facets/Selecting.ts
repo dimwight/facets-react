@@ -14,6 +14,8 @@ export namespace SelectingTitles{
     ScrollDown='Scroll Down',
     ScrollBy='Scroll By',
     UpButton='Move Up',
+    BackButton='Back',
+    ForwardButton='Forward',
     DownButton='Move Down',
     DeleteButton='Delete',
     OpenEditButton='Edit',
@@ -110,9 +112,12 @@ export class ScrollableItems implements ItemScroller{
     return showAt+this.showFrom;
   }
   getShowAt():number{
-    return this.facets.getTargetState(this.indexingTitle) as number;
+    const at=this.facets.getTargetState(this.indexingTitle) as number;
+    traceThing('^getShowAt',{'at':at});
+    return at;
   }
   setShowAt(at:number){
+    traceThing('^setShowAt',{'at':at});
     this.facets.updateTargetState(this.indexingTitle,at)
   }
 }
