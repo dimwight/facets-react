@@ -344,10 +344,7 @@ const SimpleTests={
     }),
   SelectingScrolling:new SimpleTest('SelectingScrolling',newSelectingScrollingTree,
     buildSelectingScrolling,
-    (facets:Facets,activeTitle:string)=>{
-      traceThing('^onRetargeted',{'supplement':facets.supplement});
-      (facets.supplement as ScrollableItems).onFacetsRetargeted()
-    }),
+    (f:Facets,activeTitle:string)=>listFacetsRetargeted(f)),
 };
 function buildSelectingScrolling(facets:Facets){
   ReactDOM.render(
@@ -414,13 +411,22 @@ function newListActionTargets(f:Facets,list:ScrollableItems){
     }),
   ]
 }
+function listFacetsRetargeted(f:Facets){
+  let items:ScrollableItems=f.supplement as ScrollableItems;
+  traceThing('^listFacetsRetargeted');
+  const itemAt=items.itemAt(items.getShowAt());
+  f.setTargetLive(SelectingTitles.DeleteButton,textContents.length>1);
+  f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
+  f.setTargetLive(SelectingTitles.DownButton,
+    itemAt<textContents.length-1);
+}
 class ContentingTest extends SurfaceApp{
-  readonly fullChooserTargets=false;
-  readonly chooserTitle=SelectingTitles.Chooser;
-  readonly indexingTitle=SimpleTitles.Indexing;
-  readonly list:ScrollableItems;
+  private readonly fullListTargets=true;
+  private readonly chooserTitle=SelectingTitles.Chooser;
+  private readonly indexingTitle=SimpleTitles.Indexing;
+  private readonly list:ScrollableItems;
   constructor(){
-    super(newInstance(true));
+    super(newInstance(false));
     this.list=new ScrollableItems(textContents,3,this.facets,this.indexingTitle);
   }
   getContentTrees():Target|Target[]{
@@ -458,7 +464,7 @@ class ContentingTest extends SurfaceApp{
     }
     let f=this.facets;
     let active:TextContent,edit:TextContent;
-    let chooserTargets=this.fullChooserTargets?newListActionTargets(f,this.list):[];
+    let chooserTargets=this.fullListTargets?newListActionTargets(f,this.list):[];
     chooserTargets.push(
       f.newTriggerTarget(SelectingTitles.OpenEditButton,{
         targetStateUpdated:()=>{
@@ -482,7 +488,7 @@ class ContentingTest extends SurfaceApp{
     return trees;
   }
   onRetargeted(activeTitle:string){
-    if(this.fullChooserTargets) this.list.onFacetsRetargeted();
+    if(this.fullListTargets) listFacetsRetargeted(this.facets);
     traceThing('^onRetargeted',activeTitle);
   }
   buildLayout(){
@@ -505,11 +511,11 @@ class ContentingTest extends SurfaceApp{
             title={SimpleTitles.Indexing}
             facets={f}
             listWidth={200}/>
-          {this.fullChooserTargets?<PanelRow>
+          {this.fullListTargets?<PanelRow>
               <TriggerButton title={SelectingTitles.UpButton} facets={f}/>
               <TriggerButton title={SelectingTitles.DownButton} facets={f}/>
               <TriggerButton title={SelectingTitles.DeleteButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.NewButton} facets={f}/>
+              <br/><br/>
               <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
             </PanelRow>
             :<PanelRow>
@@ -534,6 +540,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(true) new SimpleApp(SimpleTests.SelectingScrolling).buildSurface();
+  if(false) new SimpleApp(SimpleTests.SelectingScrolling).buildSurface();
   else new ContentingTest().buildSurface();
 }

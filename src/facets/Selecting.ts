@@ -28,15 +28,6 @@ export interface ItemScroller{
   scrollItems(skip:number):void
 }
 export class ScrollableItems implements ItemScroller{
-  onFacetsRetargeted=()=>{
-    const itemAt=this.itemAt(this.getShowAt());
-    const f=this.facets;
-    f.setTargetLive(SelectingTitles.DeleteButton,this.items.length>1);
-    f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
-    f.setTargetLive(SelectingTitles.DownButton,
-      itemAt<this.items.length-1);
-    traceThing('^onRetargeted',this.items);
-  };
   private readonly smarts:SmartItems;
   private readonly skipper:SkippableItems|null;
   private readonly maxLength:number;
