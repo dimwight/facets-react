@@ -16,8 +16,8 @@ export class DayItem implements SkippableItem<Date>{
   }
 }
 export namespace DateTitles{
-  export const App='DateSelecting',Chooser='Select Date',
-    Year='Year',Month='Month',Day='Day';
+  export const TestApp='DateSelecting',Chooser='Select Date',
+    Year='Year',Month='Month',Day='Day',CalendarApp='Calendar?';
 }
 
 

@@ -1,7 +1,7 @@
 import {Facets,} from 'facets-js';
 import {
-  SkippableItems,
-  SmartItems,
+  SkippableList,
+  SmartList,
   traceThing,
 } from '../util/_globals';
 export namespace SelectingTitles{
@@ -27,9 +27,9 @@ export namespace SelectingTitles{
 export interface ItemScroller{
   scrollItems(skip:number):void
 }
-export class ScrollableItems implements ItemScroller{
-  private readonly smarts:SmartItems;
-  private readonly skipper:SkippableItems|null;
+export class ScrollableList implements ItemScroller{
+  private readonly smarts:SmartList;
+  private readonly skipper:SkippableList|null;
   private readonly maxLength:number;
   private showFrom=0;
   constructor(private readonly items:any[],
@@ -37,11 +37,11 @@ export class ScrollableItems implements ItemScroller{
               private readonly facets:Facets,
               private readonly indexingTitle:string,
               private readonly createNew?:(from:any)=>any,){
-    this.smarts=new SmartItems(items);
+    this.smarts=new SmartList(items);
     const length=items.length;
     if(!length) throw new Error('At least one item!');
     else this.skipper=items[0].newSkipped?
-      new SkippableItems(showLength,items): null;
+      new SkippableList(showLength,items): null;
     if(length<showLength){
       if(!this.skipper) throw new Error('Items not extensible!');
       else this.skipper.skipForward(showLength-length,0);

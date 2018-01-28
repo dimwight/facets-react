@@ -1,5 +1,5 @@
 import {traceThing} from './_globals';
-export class SmartItems{
+export class SmartList{
   constructor(private readonly items:any[]){}
   swapItem(at:number,down:boolean){
     const src=this.items;
@@ -73,7 +73,7 @@ export class SmartItems{
 export interface SkippableItem<T>{
   newSkipped(skip:number):SkippableItem<T>
 }
-export class SkippableItems{
+export class SkippableList{
   constructor(
     private readonly baseLength:number,
     private readonly items:SkippableItem<any>[])

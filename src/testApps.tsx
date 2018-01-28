@@ -22,7 +22,7 @@ import {
   TriggerButton,
 } from './react/_globals';
 import {
-  ScrollableItems,
+  ScrollableList,
   SelectingTitles,
   SurfaceApp,
 } from './facets/_globals';
@@ -366,7 +366,7 @@ function buildSelectingScrolling(facets:Facets){
 }
 function newSelectingScrollingTree(facets:Facets){
   let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
-  const list:ScrollableItems=new ScrollableItems(textContents,3,facets,SelectingTitles.Chooser,createNew);
+  const list:ScrollableList=new ScrollableList(textContents,3,facets,SelectingTitles.Chooser,createNew);
   const frame:IndexingFramePolicy={
     frameTitle:SelectingTitles.Frame,
     indexingTitle:SelectingTitles.Chooser,
@@ -390,7 +390,7 @@ function newSelectingScrollingTree(facets:Facets){
   };
   return facets.newIndexingFrame(frame);
 }
-function newListActionTargets(f:Facets,list:ScrollableItems){
+function newListActionTargets(f:Facets,list:ScrollableList){
   return [
     f.newTriggerTarget(SelectingTitles.UpButton,{
       targetStateUpdated:()=>list.swapItemDown(),
@@ -407,7 +407,7 @@ function newListActionTargets(f:Facets,list:ScrollableItems){
   ]
 }
 function listFacetsRetargeted(f:Facets){
-  let items:ScrollableItems=f.supplement as ScrollableItems;
+  let items:ScrollableList=f.supplement as ScrollableList;
   traceThing('^listFacetsRetargeted');
   const itemAt=items.itemAt(items.getShowAt());
   f.setTargetLive(SelectingTitles.DeleteButton,textContents.length>1);
@@ -419,10 +419,10 @@ class ContentingTest extends SurfaceApp{
   private readonly fullListTargets=true;
   private readonly chooserTitle=SelectingTitles.Chooser;
   private readonly indexingTitle=SimpleTitles.Indexing;
-  private readonly list:ScrollableItems;
+  private readonly list:ScrollableList;
   constructor(){
     super(newInstance(false));
-    this.list=new ScrollableItems(textContents,3,this.facets,this.indexingTitle);
+    this.list=new ScrollableList(textContents,3,this.facets,this.indexingTitle);
   }
   getContentTrees():Target|Target[]{
     function activateChooser(){

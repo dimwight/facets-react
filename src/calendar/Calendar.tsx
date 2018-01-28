@@ -14,16 +14,16 @@ import {
   TriggerButton,
 } from '../react/_globals';
 import {
-  ScrollableItems,
+  ScrollableList,
   SelectingTitles,
   SurfaceApp,
 } from '../facets/_globals';
 import {
-  DayItem,
   DateTitles,
+  DayItem,
 } from '../util/_globals';
-export function newDateSelectingTree(f:Facets){
-  function newListTargets(list:ScrollableItems){
+export function newTree(f:Facets){
+  function newListTargets(list:ScrollableList){
     let scrollBy=7;
     return [f.newTriggerTarget(SelectingTitles.ScrollUp,{
       targetStateUpdated:()=>list.scrollItems(-scrollBy),
@@ -36,20 +36,23 @@ export function newDateSelectingTree(f:Facets){
         targetStateUpdated:state=>scrollBy=Number(state),
       })]
   }
-  const list=new ScrollableItems([new DayItem(new Date())],7,f,DateTitles.Chooser);
+  function newItemTargets(day:DayItem){
+    return f.newTargetGroup(DateTitles.Day,[
+      f.newTextualTarget(DateTitles.Year,{
+        passText:day.year(),
+      }),
+      f.newTextualTarget(DateTitles.Month,{
+        passText:day.month(),
+      }),
+    ])
+  }
+  const list=new ScrollableList([new DayItem(new Date())],7,f,DateTitles.Chooser);
   const frame:IndexingFramePolicy={
-    frameTitle:DateTitles.App,
+    frameTitle:DateTitles.CalendarApp,
     indexingTitle:DateTitles.Chooser,
     newFrameTargets:()=>newListTargets(list),
     newIndexedTree:(day:DayItem)=>{
-      return f.newTargetGroup(DateTitles.Day,[
-        f.newTextualTarget(DateTitles.Year,{
-          passText:day.year()
-        }),
-        f.newTextualTarget(DateTitles.Month,{
-          passText:day.month()
-        })
-      ])
+      return newItemTargets(day);
     },
     getIndexables:()=>list.getScrolledItems(),
     newUiSelectable:(day:DayItem)=>day.weekDay(),
@@ -57,8 +60,8 @@ export function newDateSelectingTree(f:Facets){
   };
   return f.newIndexingFrame(frame);
 }
-export function buildDateSelecting(facets:Facets){
-  ReactDOM.render(<RowPanel title={DateTitles.App} withRubric={true}>
+export function buildLayout(facets:Facets){
+  ReactDOM.render(<RowPanel title={DateTitles.CalendarApp} withRubric={true}>
       <IndexingList
         title={DateTitles.Chooser}
         facets={facets}
@@ -75,10 +78,10 @@ export function buildDateSelecting(facets:Facets){
 export function launchApp(){
   new class extends SurfaceApp{
     getContentTrees():Target|Target[]{
-      return newDateSelectingTree(this.facets)
+      return newTree(this.facets)
     }
     buildLayout():void{
-      buildDateSelecting(this.facets)
+      buildLayout(this.facets)
     }
   }(newInstance(false)).buildSurface();
 }
