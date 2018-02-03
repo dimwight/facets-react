@@ -6,6 +6,7 @@ import {
   LabelRubric,
 } from './_locals';
 import {ItemScroller} from "../facets/_globals";
+import './Indexing.css'
 interface IndexingValues extends TargetValues{
   selectables?:string[]
   index?:number
@@ -179,27 +180,27 @@ export class IndexingList extends IndexingFacet{
   }
 }
 export class IndexingListFlex extends IndexingFacet{
-  private boxWidth=0;
-  onClick=(e:KeyboardEvent)=>{
+  onItemClick=(e:KeyboardEvent)=>{
     if(!this.state.live)return;
     this.indexChanged((e.target as HTMLElement).id.substr(0,1));
   };
-  onKeyDown=(e:KeyboardEvent)=>{
+  onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live)return;
     let indexThen:number=Number((e.target as HTMLElement).id.substr(0,1)),
       indexNow:number=indexThen;
-    if(e.key==='ArrowDown'){
+    traceThing('^IndexingListFlex',e.key);
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'){
       indexNow++;
     }
-    else if(e.key==='ArrowUp'){
+    else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){
       indexNow--;
     }
     if(indexNow!==indexThen){
       if(indexNow>=0&&indexNow<(this.state.selectables as any[]).length)
         this.indexChanged(indexNow);
       else if(this.props.facets.supplement)
-        (this.props.facets.supplement as ItemScroller
-        ).scrollItems(indexNow<0?-1:1)
+        (this.props.facets.supplement as ItemScroller)
+          .scrollItems(indexNow<0?-1:1)
     }
   };
   protected renderUi(props:IndexingUiProps){
@@ -209,35 +210,24 @@ export class IndexingListFlex extends IndexingFacet{
       let selected=at===props.selectedAt;
       traceThing('^IndexingListFlex',{at:at,s:s,selected:selected});
       return (<ListItem
-        className={(selected?'listSelected':'listItem')+(disabled?'Disabled':'')}
+        className={(selected?'listFlexSelected':'listItemFlex')+(disabled?'Disabled':'')}
         tabIndex={selected&&!disabled?1:NaN}
-        onClick={this.onClick}
-        onKeyDown={this.onKeyDown}
+        onClick={this.onItemClick}
+        onKeyDown={this.onItemKeyDown}
         id={at+this.unique}
         text={s}
         key={s+(Facet.ids++)}
       />)});
     return (<span>
       <LabelRubric text={props.rubric} disabled={disabled}/>
-      <div className={'listBox'}
+      <div className={'listBoxFlex'}
            style={{
-             display:'flex',
-             width:this.boxWidth||null,
-             overflow:true?'auto':'scroll',
+             display:false?'table':'flex',
+             flexFlow: 'row wrap'
            }}
            id={'listBox'+this.unique}
       >{items}</div>
       </span>)
-  }
-  private fixBoxWidth(){
-    let box=document.getElementById('listBox'+this.unique);
-    if(!box)throw new Error('No box');
-    let renderWidth=Number(box.offsetWidth);
-    traceThing('^componentDidUpdate',{
-      renderWidth:renderWidth,
-      boxWidth:this.boxWidth
-    });
-    if(this.boxWidth===0)this.boxWidth=renderWidth;
   }
   private setSelectedFocus(){
     let selected=this.state.index+this.unique as string;
@@ -246,11 +236,9 @@ export class IndexingListFlex extends IndexingFacet{
     else element.focus();
   }
   componentWillMount(){
-    this.boxWidth=this.props.listWidth||0;
   }
   componentDidMount(){
     super.componentDidMount();
-    this.fixBoxWidth();
   }
   componentDidUpdate(){
     this.setSelectedFocus();

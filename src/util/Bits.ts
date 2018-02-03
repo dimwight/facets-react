@@ -3,7 +3,7 @@ export function traceThing(top:string,thing?:any){
   if(!thing)console.log(top);
   else console.info(top,
     JSON.stringify(thing, (key, value) => {
-      if(false)console.log(key);
+      if(true)console.log(key);
       if(key==='date')value=new Date(value).valueOf();
       else 'facets,__parent,notifiable_'.split(',').forEach(check=>{
         if(key===check)value=key;

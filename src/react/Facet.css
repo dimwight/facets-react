@@ -3,18 +3,6 @@ body {
   padding: 10px;
   font-family: Calibri,serif;
 }
-.listBox{
-  border-style: inset;
-  border-width: 2px;
-}
-.listSelected{
-  color: white;
-  background: darkblue;
-}
-.listSelectedDisabled{
-  color: darkgray;
-  background: lightgrey;
-}
 .rubric{
   font-weight: bold;
 }

@@ -1,0 +1,12 @@
+.listBox,.listBoxFlex{
+  border-style: inset;
+  border-width: 2px;
+}
+.listSelected,.listFlexSelected{
+  color: white;
+  background: darkblue;
+}
+.listSelectedDisabled{
+  color: darkgray;
+  background: lightgrey;
+}
