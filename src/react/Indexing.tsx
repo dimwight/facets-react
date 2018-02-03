@@ -1,9 +1,9 @@
 import React from 'react';
 import {traceThing} from '../util/_globals';
 import {
-  TargetValues,
   Facet,
   LabelRubric,
+  TargetValues,
 } from './_locals';
 import {ItemScroller} from "../facets/_globals";
 import './Indexing.css'
@@ -93,21 +93,7 @@ function ListItem(p:ListItemProps){
     className={'listItem'+p.classTail}
     style={{
       cursor:'default',
-      whiteSpace: false?null:'nowrap',
-      overflow:'hidden',
-    }}
-    tabIndex={p.tabIndex}
-    onClick={p.onClick}
-    onKeyDown={p.onKeyDown}
-  >{p.text}</div>;
-}
-function ListItemFlex(p:ListItemProps){
-  return <div
-    id={p.id}
-    className={'listItemFlex'+p.classTail}
-    style={{
-      cursor:'default',
-      whiteSpace: false?null:'nowrap',
+      whiteSpace:false?null:'nowrap',
       overflow:'hidden',
     }}
     tabIndex={p.tabIndex}
@@ -118,11 +104,11 @@ function ListItemFlex(p:ListItemProps){
 export class IndexingList extends IndexingFacet{
   private boxWidth=0;
   onClick=(e:KeyboardEvent)=>{
-    if(!this.state.live)return;
+    if(!this.state.live) return;
     this.indexChanged((e.target as HTMLElement).id.substr(0,1));
   };
   onKeyDown=(e:KeyboardEvent)=>{
-    if(!this.state.live)return;
+    if(!this.state.live) return;
     let indexThen:number=Number((e.target as HTMLElement).id.substr(0,1)),
       indexNow:number=indexThen;
     if(e.key==='ArrowDown'){
@@ -142,18 +128,19 @@ export class IndexingList extends IndexingFacet{
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingList',props);
     let disabled=!this.state.live,selectables=props.selectables;
-    let items=selectables.map((s, at)=>{
+    let items=selectables.map((s,at)=>{
       let selected=at===props.selectedAt;
       traceThing('^IndexingList',{at:at,s:s,selected:selected});
       return (<ListItem
-        classTail={(selected&&!disabled?'Selected':'')+(disabled?'Disabled':'')}
-        tabIndex={selected&&!disabled?1:NaN}
+        classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
+        tabIndex={selected&& !disabled?1:NaN}
         onClick={this.onClick}
         onKeyDown={this.onKeyDown}
         id={at+this.unique}
         text={s}
         key={s+(Facet.ids++)}
-      />)});
+      />)
+    });
     return (<span>
       <LabelRubric text={props.rubric} disabled={disabled}/>
       <div className={'listBox'}
@@ -168,18 +155,18 @@ export class IndexingList extends IndexingFacet{
   }
   private fixBoxWidth(){
     let box=document.getElementById('listBox'+this.unique);
-    if(!box)throw new Error('No box');
+    if(!box) throw new Error('No box');
     let renderWidth=Number(box.offsetWidth);
     traceThing('^componentDidUpdate',{
       renderWidth:renderWidth,
-      boxWidth:this.boxWidth
+      boxWidth:this.boxWidth,
     });
-    if(this.boxWidth===0)this.boxWidth=renderWidth;
+    if(this.boxWidth===0) this.boxWidth=renderWidth;
   }
   private setSelectedFocus(){
     let selected=this.state.index+this.unique as string;
     const element=document.getElementById(selected);
-    if(!element)throw new Error('No element');
+    if(!element) throw new Error('No element');
     else element.focus();
   }
   componentWillMount(){
@@ -193,13 +180,29 @@ export class IndexingList extends IndexingFacet{
     this.setSelectedFocus();
   }
 }
+function ListItemFlex(p:ListItemProps){
+  return <div
+    id={p.id}
+    className={'listItemFlex'+p.classTail}
+    style={{
+      cursor:'default',
+      fontSize:'110%',
+      flexBasis:50,
+      flexGrow:p.classTail.includes('Selected')?2:1,
+      textAlign:'center',
+    }}
+    tabIndex={p.tabIndex}
+    onClick={p.onClick}
+    onKeyDown={p.onKeyDown}
+  >{p.text}</div>;
+}
 export class IndexingListFlex extends IndexingFacet{
   onItemClick=(e:KeyboardEvent)=>{
-    if(!this.state.live)return;
+    if(!this.state.live) return;
     this.indexChanged((e.target as HTMLElement).id.substr(0,1));
   };
   onItemKeyDown=(e:KeyboardEvent)=>{
-    if(!this.state.live)return;
+    if(!this.state.live) return;
     let indexThen:number=Number((e.target as HTMLElement).id.substr(0,1)),
       indexNow:number=indexThen;
     traceThing('^IndexingListFlex',e.key);
@@ -220,24 +223,25 @@ export class IndexingListFlex extends IndexingFacet{
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingListFlex',props);
     let disabled=!this.state.live,selectables=props.selectables;
-    let items=selectables.map((s, at)=>{
+    let items=selectables.map((s,at)=>{
       let selected=at===props.selectedAt;
       traceThing('^IndexingListFlex',{at:at,s:s,selected:selected});
       return (<ListItemFlex
-        classTail={(selected&&!disabled?'Selected':'')+(disabled?'Disabled':'')}
-        tabIndex={selected&&!disabled?1:NaN}
+        classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
+        tabIndex={selected&& !disabled?1:NaN}
         onClick={this.onItemClick}
         onKeyDown={this.onItemKeyDown}
         id={at+this.unique}
         text={s}
         key={s+(Facet.ids++)}
-      />)});
+      />)
+    });
     return (<span>
       <LabelRubric text={props.rubric} disabled={disabled}/>
       <div className={'listBoxFlex'}
            style={{
              display:false?'table':'flex',
-             flexFlow: 'row wrap'
+             flexFlow:'row auto',
            }}
            id={'listBox'+this.unique}
       >{items}</div>
@@ -246,7 +250,7 @@ export class IndexingListFlex extends IndexingFacet{
   private setSelectedFocus(){
     let selected=this.state.index+this.unique as string;
     const element=document.getElementById(selected);
-    if(!element)throw new Error('No element');
+    if(!element) throw new Error('No element');
     else element.focus();
   }
   componentWillMount(){
