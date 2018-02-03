@@ -86,6 +86,7 @@ interface ListItemProps{
   onClick:(e:any)=>void
   onKeyDown:(e:any)=>void
   key:string
+  height?:number
 }
 function ListItem(p:ListItemProps){
   return <div
@@ -181,6 +182,8 @@ export class IndexingList extends IndexingFacet{
   }
 }
 function ListItemFlex(p:ListItemProps){
+  const selected=p.classTail.includes('Selected');
+  const debug=false;
   return <div
     id={p.id}
     className={'listItemFlex'+p.classTail}
@@ -188,13 +191,22 @@ function ListItemFlex(p:ListItemProps){
       cursor:'default',
       fontSize:'110%',
       flexBasis:50,
-      flexGrow:p.classTail.includes('Selected')?2:1,
-      textAlign:'center',
+      flexGrow:selected?4:1,
+      height:p.height,
+      display:'flex',
+      alignItems:'center',
+      border:debug?'1px dotted':null,
     }}
     tabIndex={p.tabIndex}
     onClick={p.onClick}
     onKeyDown={p.onKeyDown}
-  >{p.text}</div>;
+  >
+   <div style={{
+      flexGrow:1,
+      textAlign:'center',
+     border:debug?'1px solid':null,
+    }}>{p.text}</div>
+  </div>;
 }
 export class IndexingListFlex extends IndexingFacet{
   onItemClick=(e:KeyboardEvent)=>{
@@ -222,6 +234,7 @@ export class IndexingListFlex extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingListFlex',props);
+    const height=70;
     let disabled=!this.state.live,selectables=props.selectables;
     let items=selectables.map((s,at)=>{
       let selected=at===props.selectedAt;
@@ -234,14 +247,17 @@ export class IndexingListFlex extends IndexingFacet{
         id={at+this.unique}
         text={s}
         key={s+(Facet.ids++)}
+        height={height}
       />)
     });
     return (<span>
       <LabelRubric text={props.rubric} disabled={disabled}/>
       <div className={'listBoxFlex'}
            style={{
-             display:false?'table':'flex',
+             display:'flex',
+             alignItems:'center',
              flexFlow:'row auto',
+             height: height,
            }}
            id={'listBox'+this.unique}
       >{items}</div>
