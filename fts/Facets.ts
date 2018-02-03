@@ -83,7 +83,7 @@ export class Facets{
   }
   private callOnRetargeted(){
     const title=this.root.title();
-    this.trace('Calling onRetargeted with active='+title);
+    this.trace('Calling disableAll with active='+title);
     this.onRetargeted(title);
   }
   addContentTree(tree:Targety){

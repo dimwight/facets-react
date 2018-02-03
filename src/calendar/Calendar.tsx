@@ -12,7 +12,7 @@ import {
   TextualField,
   TriggerButton,
   TextualLabel,
-  IndexingListFlex
+  IndexingListFlex,
 } from '../react/_globals';
 import {
   ScrollableList,
@@ -22,6 +22,7 @@ import {
 import {
   DateTitles,
   DayItem,
+  traceThing,
 } from '../util/_globals';
 export function newTree(f:Facets){
   function newListTargets(list:ScrollableList){
@@ -83,9 +84,23 @@ export function buildLayout(f:Facets){
     document.getElementById('root'),
   );
 }
+function disableAll(f:Facets){
+  traceThing('^onRetargeted');
+  if(false)[
+    DateTitles.Year,
+    DateTitles.Month,
+    DateTitles.Indexing,
+    SelectingTitles.ScrollUp,
+    SelectingTitles.ScrollDown,
+    SelectingTitles.ScrollBy
+  ].forEach(title=>{
+    f.setTargetLive(title,false)
+  })
+}
 export function launchApp(){
   new class extends SurfaceApp{
     getContentTrees(){
+      this.onRetargeted=activeTitle=>disableAll(this.facets);
       return newTree(this.facets)
     }
     buildLayout(){

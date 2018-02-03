@@ -1782,7 +1782,7 @@ class Facets extends Tracer {
     }
     callOnRetargeted() {
         let title = this.root.indexedTarget().title();
-        this.trace$java_lang_String(" > Calling onRetargeted with active=" + title);
+        this.trace$java_lang_String(" > Calling disableAll with active=" + title);
         (target => (typeof target === 'function') ? target(title) : target.accept(title))(this.onRetargeted);
     }
     newTextualTarget(title, c) {

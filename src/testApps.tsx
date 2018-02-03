@@ -46,7 +46,7 @@ class SimpleApp extends SurfaceApp{
   }
   onRetargeted(active:string){
     const onRetargeted=this.test.onRetargeted;
-    traceThing('^onRetargeted',onRetargeted);
+    traceThing('^disableAll',onRetargeted);
     if(onRetargeted) onRetargeted(this.facets,active)
   }
   buildLayout():void{
@@ -330,7 +330,7 @@ const SimpleTests={
   SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,
     buildSelectingTyped,
     (facets:Facets,activeTitle:string)=>{
-      traceThing('^onRetargeted',{activeTitle:activeTitle});
+      traceThing('^disableAll',{activeTitle:activeTitle});
       const live=true?null:facets.getTargetState(SelectingTitles.Live) as boolean;
       if(live!==null) [SelectingTitles.OpenEditButton,SelectingTitles.CharsCount].forEach(title=>
         ['',TextContentType.ShowChars.titleTail].forEach(tail=>
@@ -485,7 +485,7 @@ class ContentingTest extends SurfaceApp{
   }
   onRetargeted(activeTitle:string){
     if(this.fullListTargets) listFacetsRetargeted(this.facets);
-    traceThing('^onRetargeted',activeTitle);
+    traceThing('^disableAll',activeTitle);
   }
   buildLayout(){
     function newEditField(tail:string){

@@ -23,6 +23,7 @@ class NotifyingCore {
             this.notifiable_.notify(this.title());
     }
 }
+//# sourceMappingURL=NotifyingCore.js.map
 
 /**
  * Simplifies instrumenting code
@@ -42,6 +43,11 @@ function traceThing(top, thing) {
     // Issue complete message
     console.log(top, tail);
 }
+//# sourceMappingURL=Bits.js.map
+
+//# sourceMappingURL=SwapArrayElement.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 class TargeterCore$$1 extends NotifyingCore {
     constructor() {
@@ -91,6 +97,7 @@ class TargeterCore$$1 extends NotifyingCore {
     }
 }
 TargeterCore$$1.type = 'Targeter';
+//# sourceMappingURL=TargeterCore.js.map
 
 class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
     constructor() {
@@ -141,6 +148,9 @@ class IndexingFrameTargeter$$1 extends TargeterCore$$1 {
         this.indexedTitle = this.indexedTarget.title();
     }
 }
+//# sourceMappingURL=IndexingFrameTargeter.js.map
+
+//# sourceMappingURL=_locals.js.map
 
 class TargetCore extends NotifyingCore {
     constructor(title, extra) {
@@ -189,6 +199,7 @@ class TargetCore extends NotifyingCore {
 }
 TargetCore.type = 'Targety';
 TargetCore.NoState = 'No state set';
+//# sourceMappingURL=TargetCore.js.map
 
 function traceThing$1(top, thing) {
     if (top.charAt(0) === '^')
@@ -208,6 +219,8 @@ function traceThing$1(top, thing) {
             return value;
         }, 1));
 }
+
+//# sourceMappingURL=Bits.js.map
 
 class Indexing$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -264,6 +277,7 @@ class Indexing$$1 extends TargetCore {
         this.setIndex(update);
     }
 }
+//# sourceMappingURL=Indexing.js.map
 
 class Toggling$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -272,6 +286,7 @@ class Toggling$$1 extends TargetCore {
         this.state_ = coupler.passSet;
     }
 }
+//# sourceMappingURL=Toggling.js.map
 
 class Textual$$1 extends TargetCore {
     constructor(title, coupler) {
@@ -295,6 +310,7 @@ class Textual$$1 extends TargetCore {
         }
     }
 }
+//# sourceMappingURL=Textual.js.map
 
 class IndexingFrame$$1 extends TargetCore {
     constructor(title, indexing_) {
@@ -321,6 +337,9 @@ class IndexingFrame$$1 extends TargetCore {
         return true;
     }
 }
+//# sourceMappingURL=IndexingFrame.js.map
+
+//# sourceMappingURL=_globals.js.map
 
 function newInstance(trace) {
     return new Facets(trace);
@@ -385,7 +404,7 @@ class Facets {
     }
     callOnRetargeted() {
         const title = this.root.title();
-        this.trace('Calling onRetargeted with active=' + title);
+        this.trace('Calling disableAll with active=' + title);
         this.onRetargeted(title);
     }
     addContentTree(tree) {
@@ -499,6 +518,7 @@ class Facets {
         return frame;
     }
 }
+//# sourceMappingURL=Facets.js.map
 
 exports.newInstance = newInstance;
 exports.Facets = Facets;
