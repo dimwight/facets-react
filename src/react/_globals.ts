@@ -13,5 +13,6 @@ export {
 export {
   IndexingDropdown,
   IndexingList,
+  IndexingListFlex
 } from './Indexing'
 

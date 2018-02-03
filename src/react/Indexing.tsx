@@ -178,3 +178,81 @@ export class IndexingList extends IndexingFacet{
     this.setSelectedFocus();
   }
 }
+export class IndexingListFlex extends IndexingFacet{
+  private boxWidth=0;
+  onClick=(e:KeyboardEvent)=>{
+    if(!this.state.live)return;
+    this.indexChanged((e.target as HTMLElement).id.substr(0,1));
+  };
+  onKeyDown=(e:KeyboardEvent)=>{
+    if(!this.state.live)return;
+    let indexThen:number=Number((e.target as HTMLElement).id.substr(0,1)),
+      indexNow:number=indexThen;
+    if(e.key==='ArrowDown'){
+      indexNow++;
+    }
+    else if(e.key==='ArrowUp'){
+      indexNow--;
+    }
+    if(indexNow!==indexThen){
+      if(indexNow>=0&&indexNow<(this.state.selectables as any[]).length)
+        this.indexChanged(indexNow);
+      else if(this.props.facets.supplement)
+        (this.props.facets.supplement as ItemScroller
+        ).scrollItems(indexNow<0?-1:1)
+    }
+  };
+  protected renderUi(props:IndexingUiProps){
+    traceThing('^IndexingList',props);
+    let disabled=!this.state.live,selectables=props.selectables;
+    let items=selectables.map((s, at)=>{
+      let selected=at===props.selectedAt;
+      traceThing('^IndexingList',{at:at,s:s,selected:selected});
+      return (<ListItem
+        className={(selected?'listSelected':'listItem')+(disabled?'Disabled':'')}
+        tabIndex={selected&&!disabled?1:NaN}
+        onClick={this.onClick}
+        onKeyDown={this.onKeyDown}
+        id={at+this.unique}
+        text={s}
+        key={s+(Facet.ids++)}
+      />)});
+    return (<span>
+      <LabelRubric text={props.rubric} disabled={disabled}/>
+      <div className={'listBox'}
+           style={{
+             display:'table',
+             width:this.boxWidth||null,
+             overflow:true?'auto':'scroll',
+           }}
+           id={'listBox'+this.unique}
+      >{items}</div>
+      </span>)
+  }
+  private fixBoxWidth(){
+    let box=document.getElementById('listBox'+this.unique);
+    if(!box)throw new Error('No box');
+    let renderWidth=Number(box.offsetWidth);
+    traceThing('^componentDidUpdate',{
+      renderWidth:renderWidth,
+      boxWidth:this.boxWidth
+    });
+    if(this.boxWidth===0)this.boxWidth=renderWidth;
+  }
+  private setSelectedFocus(){
+    let selected=this.state.index+this.unique as string;
+    const element=document.getElementById(selected);
+    if(!element)throw new Error('No element');
+    else element.focus();
+  }
+  componentWillMount(){
+    this.boxWidth=this.props.listWidth||0;
+  }
+  componentDidMount(){
+    super.componentDidMount();
+    this.fixBoxWidth();
+  }
+  componentDidUpdate(){
+    this.setSelectedFocus();
+  }
+}

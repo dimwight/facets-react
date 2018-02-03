@@ -11,7 +11,8 @@ import {
   RowPanel,
   TextualField,
   TriggerButton,
-  TextualLabel
+  TextualLabel,
+  IndexingListFlex
 } from '../react/_globals';
 import {
   ScrollableList,
@@ -66,10 +67,13 @@ export function buildLayout(f:Facets){
         <TextualLabel title={DateTitles.Year} facets={f}/>
         <TextualLabel title={DateTitles.Month} facets={f}/>
       </PanelRow>
-      <IndexingList
+      {true?<IndexingList
         title={DateTitles.Indexing}
         facets={f}
         listWidth={false?NaN:20}/>
+        :<IndexingListFlex
+        title={DateTitles.Indexing}
+        facets={f}/>}
       <PanelRow>
         <TriggerButton title={SelectingTitles.ScrollUp} facets={f}/>
         <TriggerButton title={SelectingTitles.ScrollDown} facets={f}/>
