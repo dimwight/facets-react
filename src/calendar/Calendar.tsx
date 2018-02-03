@@ -86,7 +86,7 @@ export function buildLayout(f:Facets){
 }
 function disableAll(f:Facets){
   traceThing('^onRetargeted');
-  if(false)[
+  [
     DateTitles.Year,
     DateTitles.Month,
     DateTitles.Indexing,
@@ -100,8 +100,10 @@ function disableAll(f:Facets){
 export function launchApp(){
   new class extends SurfaceApp{
     getContentTrees(){
-      this.onRetargeted=activeTitle=>disableAll(this.facets);
       return newTree(this.facets)
+    }
+    onRetargeted(activeTitle:string){
+      if(false)disableAll(this.facets);
     }
     buildLayout(){
       buildLayout(this.facets)
