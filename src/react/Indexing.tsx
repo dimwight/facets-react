@@ -26,7 +26,7 @@ abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>{
     this.stateChanged(Number(index));
   }
   render():any{
-    let state=this.state;
+    const state=this.state;
     return this.renderUi({
       selectables:state.selectables as string[],
       selectedAt:(state as IndexingValues).index as number,
@@ -60,7 +60,7 @@ export class IndexingDropdown extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingDropdown',props);
-    let options=props.selectables.map((s,at)=>
+    const options=props.selectables.map((s,at)=>
       <SelectOption
         text={s}
         key={s+(++Facet.ids)}
@@ -110,8 +110,8 @@ export class IndexingList extends IndexingFacet{
   };
   onKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
-    let indexThen:number=Number((e.target as HTMLElement).id.substr(0,1)),
-      indexNow:number=indexThen;
+    const indexThen:number=Number((e.target as HTMLElement).id.substr(0,1));
+    let indexNow:number=indexThen;
     if(e.key==='ArrowDown'){
       indexNow++;
     }
@@ -128,9 +128,9 @@ export class IndexingList extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingList',props);
-    let disabled=!this.state.live,selectables=props.selectables;
-    let items=selectables.map((s,at)=>{
-      let selected=at===props.selectedAt;
+    const disabled=!this.state.live,selectables=props.selectables;
+    const items=selectables.map((s,at)=>{
+      const selected=at===props.selectedAt;
       traceThing('^IndexingList',{at:at,s:s,selected:selected});
       return (<ListItem
         classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
@@ -155,9 +155,9 @@ export class IndexingList extends IndexingFacet{
       </span>)
   }
   private fixBoxWidth(){
-    let box=document.getElementById('listBox'+this.unique);
+    const box=document.getElementById('listBox'+this.unique);
     if(!box) throw new Error('No box');
-    let renderWidth=Number(box.offsetWidth);
+    const renderWidth=Number(box.offsetWidth);
     traceThing('^componentDidUpdate',{
       renderWidth:renderWidth,
       boxWidth:this.boxWidth,
@@ -165,7 +165,7 @@ export class IndexingList extends IndexingFacet{
     if(this.boxWidth===0) this.boxWidth=renderWidth;
   }
   private setSelectedFocus(){
-    let selected=this.state.index+this.unique as string;
+    const selected=this.state.index+this.unique as string;
     const element=document.getElementById(selected);
     if(!element) throw new Error('No element');
     else element.focus();
@@ -215,8 +215,8 @@ export class IndexingListFlex extends IndexingFacet{
   };
   onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
-    let indexThen:number=Number((e.target as HTMLElement).id.substr(0,1)),
-      indexNow:number=indexThen;
+    const indexThen:number=Number((e.target as HTMLElement).id.substr(0,1));
+    let indexNow:number=indexThen;
     traceThing('^IndexingListFlex',e.key);
     if(e.key==='ArrowDown'||e.key==='ArrowRight'){
       indexNow++;
@@ -235,9 +235,9 @@ export class IndexingListFlex extends IndexingFacet{
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingListFlex',props);
     const height=70;
-    let disabled=!this.state.live,selectables=props.selectables;
-    let items=selectables.map((s,at)=>{
-      let selected=at===props.selectedAt;
+    const disabled=!this.state.live,selectables=props.selectables;
+    const items=selectables.map((s,at)=>{
+      const selected=at===props.selectedAt;
       traceThing('^IndexingListFlex',{at:at,s:s,selected:selected});
       return (<ListItemFlex
         classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
@@ -264,7 +264,7 @@ export class IndexingListFlex extends IndexingFacet{
       </span>)
   }
   private setSelectedFocus(){
-    let selected=this.state.index+this.unique as string;
+    const selected=this.state.index+this.unique as string;
     const element=document.getElementById(selected);
     if(!element) throw new Error('No element');
     else element.focus();
