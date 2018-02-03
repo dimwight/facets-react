@@ -104,7 +104,7 @@ function ListItem(p:ListItemProps){
 function ListItemFlex(p:ListItemProps){
   return <div
     id={p.id}
-    className={'ListItemFlex'+p.classTail}
+    className={'listItemFlex'+p.classTail}
     style={{
       cursor:'default',
       whiteSpace: false?null:'nowrap',
