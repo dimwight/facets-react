@@ -2,11 +2,11 @@
   border-style: inset;
   border-width: 2px;
 }
-.listSelected,.listFlexSelected{
+.listItemSelected,.listItemFlexSelected{
   color: white;
   background: darkblue;
 }
-.listSelectedDisabled{
+.listItemDisabled,.listItemFlexDisabled{
   color: darkgray;
   background: lightgrey;
 }

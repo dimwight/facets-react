@@ -79,7 +79,7 @@ export class IndexingDropdown extends IndexingFacet{
   }
 }
 interface ListItemProps{
-  className:string
+  classTail:string
   tabIndex:number
   text:string
   id:string
@@ -87,10 +87,24 @@ interface ListItemProps{
   onKeyDown:(e:any)=>void
   key:string
 }
-export function ListItem(p:ListItemProps){
+function ListItem(p:ListItemProps){
   return <div
     id={p.id}
-    className={p.className}
+    className={'listItem'+p.classTail}
+    style={{
+      cursor:'default',
+      whiteSpace: false?null:'nowrap',
+      overflow:'hidden',
+    }}
+    tabIndex={p.tabIndex}
+    onClick={p.onClick}
+    onKeyDown={p.onKeyDown}
+  >{p.text}</div>;
+}
+function ListItemFlex(p:ListItemProps){
+  return <div
+    id={p.id}
+    className={'ListItemFlex'+p.classTail}
     style={{
       cursor:'default',
       whiteSpace: false?null:'nowrap',
@@ -132,7 +146,7 @@ export class IndexingList extends IndexingFacet{
       let selected=at===props.selectedAt;
       traceThing('^IndexingList',{at:at,s:s,selected:selected});
       return (<ListItem
-        className={(selected?'listSelected':'listItem')+(disabled?'Disabled':'')}
+        classTail={(selected&&!disabled?'Selected':'')+(disabled?'Disabled':'')}
         tabIndex={selected&&!disabled?1:NaN}
         onClick={this.onClick}
         onKeyDown={this.onKeyDown}
@@ -209,8 +223,8 @@ export class IndexingListFlex extends IndexingFacet{
     let items=selectables.map((s, at)=>{
       let selected=at===props.selectedAt;
       traceThing('^IndexingListFlex',{at:at,s:s,selected:selected});
-      return (<ListItem
-        className={(selected?'listFlexSelected':'listItemFlex')+(disabled?'Disabled':'')}
+      return (<ListItemFlex
+        classTail={(selected&&!disabled?'Selected':'')+(disabled?'Disabled':'')}
         tabIndex={selected&&!disabled?1:NaN}
         onClick={this.onItemClick}
         onKeyDown={this.onItemKeyDown}

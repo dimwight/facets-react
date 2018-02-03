@@ -234,7 +234,8 @@ function buildAllSimples(facets:Facets){
         <TextualLabel title={SimpleTitles.Toggled} facets={facets}/>
       </RowPanel>
       <RowPanel title={SimpleTests.Indexing.name} withRubric={true}>
-        <IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
+        {false?<IndexingDropdown title={SimpleTitles.Indexing} facets={facets}/>
+          :<IndexingList title={SimpleTitles.Indexing} facets={facets}/>}
         <TextualLabel title={SimpleTitles.Index} facets={facets}/>
         <TextualLabel title={SimpleTitles.Indexed} facets={facets}/>
       </RowPanel>
@@ -325,7 +326,7 @@ const SimpleTests={
   Indexing:new SimpleTest('Indexing',newIndexingTree,buildIndexing),
   Trigger:new SimpleTest('Trigger',newTriggerTree,buildTrigger),
   AllNonSelecting:new SimpleTest('AllNonSelecting',newAllSimplesTree,
-    false?buildAllSimples:buildAllSimplesForm),
+    true?buildAllSimples:buildAllSimplesForm),
   SelectingTyped:new SimpleTest('SelectingTyped',newSelectingTypedTree,
     buildSelectingTyped,
     (facets:Facets,activeTitle:string)=>{
@@ -535,6 +536,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(true) new SimpleApp(SimpleTests.SelectingTyped).buildSurface();
+  if(true) new SimpleApp(SimpleTests.AllNonSelecting).buildSurface();
   else new ContentingTest().buildSurface();
 }
