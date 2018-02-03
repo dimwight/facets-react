@@ -203,11 +203,11 @@ export class IndexingListFlex extends IndexingFacet{
     }
   };
   protected renderUi(props:IndexingUiProps){
-    traceThing('^IndexingList',props);
+    traceThing('^IndexingListFlex',props);
     let disabled=!this.state.live,selectables=props.selectables;
     let items=selectables.map((s, at)=>{
       let selected=at===props.selectedAt;
-      traceThing('^IndexingList',{at:at,s:s,selected:selected});
+      traceThing('^IndexingListFlex',{at:at,s:s,selected:selected});
       return (<ListItem
         className={(selected?'listSelected':'listItem')+(disabled?'Disabled':'')}
         tabIndex={selected&&!disabled?1:NaN}
@@ -221,7 +221,7 @@ export class IndexingListFlex extends IndexingFacet{
       <LabelRubric text={props.rubric} disabled={disabled}/>
       <div className={'listBox'}
            style={{
-             display:'table',
+             display:'flex',
              width:this.boxWidth||null,
              overflow:true?'auto':'scroll',
            }}

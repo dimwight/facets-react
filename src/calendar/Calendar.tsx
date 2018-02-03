@@ -67,11 +67,11 @@ export function buildLayout(f:Facets){
         <TextualLabel title={DateTitles.Year} facets={f}/>
         <TextualLabel title={DateTitles.Month} facets={f}/>
       </PanelRow>
-      {true?<IndexingList
+      {false?<IndexingList
         title={DateTitles.Indexing}
         facets={f}
-        listWidth={false?NaN:20}/>
-        :<IndexingListFlex
+        listWidth={false?NaN:20}/>:
+        <IndexingListFlex
         title={DateTitles.Indexing}
         facets={f}/>}
       <PanelRow>
