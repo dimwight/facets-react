@@ -119,7 +119,8 @@ export class IndexingList extends IndexingFacet{
       indexNow--;
     }
     if(indexNow!==indexThen){
-      if(indexNow>=0&&indexNow<(this.state.selectables as any[]).length)
+      if(!this.state.selectables)throw new Error('No selectables');
+      if(indexNow>=0&&indexNow<this.state.selectables.length)
         this.indexChanged(indexNow);
       else if(this.props.facets.supplement)
         (this.props.facets.supplement as ItemScroller
