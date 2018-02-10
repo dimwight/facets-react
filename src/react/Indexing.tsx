@@ -254,7 +254,7 @@ export class IndexingListFlex extends IndexingFacet{
       />)
     };
     let selectables=props.selectables,rows:any[]=[];
-    const rowHeight=30,rowCount=2,rowItemCount=selectables.length/rowCount;
+    const rowHeight=30,rowCount=5,rowItemCount=selectables.length/rowCount;
     const disabled=!this.state.live;
     const items=selectables.map(newItem);
     for(let rowAt=0;rowAt<rowCount;rowAt++){
@@ -265,11 +265,12 @@ export class IndexingListFlex extends IndexingFacet{
            display:'flex',
            alignItems:'center',
            flexFlow:'row auto',
+           // flexBasis:150,
            height: rowHeight,
            border:true?'1px dotted':null,
          }}
          key={'listRow'+rowAt+this.unique}
-        >{rowAt}{items}</div>
+        >{items}</div>
       )
     }
     return (<span>
@@ -277,8 +278,8 @@ export class IndexingListFlex extends IndexingFacet{
       <div className={'listBoxFlex'}
            style={{
              display:'flex',
-             alignItems:'center',
-             flexFlow:'column auto',
+             alignItems:'stretch',
+             flexDirection :'column',
              height: rowHeight*rowCount,
            }}
            id={'listBox'+this.unique}
