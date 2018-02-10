@@ -239,10 +239,8 @@ export class IndexingListFlex extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingListFlex',props);
-    const itemHeight=30,rows=2;
-    const disabled=!this.state.live,selectables=props.selectables;
-    const items=selectables.map((s,at)=>{
-      const selected=at===props.selectedAt;
+    let newItem=(s:string,at:number)=>{
+      const selected=false&&at===props.selectedAt;
       traceThing('^IndexingListFlex',{at:at,s:s,selected:selected});
       return (<ListItemFlex
         classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
@@ -252,20 +250,39 @@ export class IndexingListFlex extends IndexingFacet{
         id={at+this.unique}
         text={s}
         key={s+(Facet.ids++)}
-        height={itemHeight}
+        height={rowHeight}
       />)
-    });
+    };
+    let selectables=props.selectables,rows:any[]=[];
+    const rowHeight=30,rowCount=2,rowItemCount=selectables.length/rowCount;
+    const disabled=!this.state.live;
+    const items=selectables.map(newItem);
+    for(let rowAt=0;rowAt<rowCount;rowAt++){
+      let items=selectables.slice(rowAt*rowItemCount,rowAt*rowItemCount+rowItemCount)
+        .map(newItem);
+      rows.push(<div className={'listRowFlex'}
+         style={{
+           display:'flex',
+           alignItems:'center',
+           flexFlow:'row auto',
+           height: rowHeight,
+           border:true?'1px dotted':null,
+         }}
+         key={'listRow'+rowAt+this.unique}
+        >{rowAt}{items}</div>
+      )
+    }
     return (<span>
       <LabelRubric text={props.rubric} disabled={disabled}/>
       <div className={'listBoxFlex'}
            style={{
              display:'flex',
              alignItems:'center',
-             flexFlow:'row auto',
-             height: itemHeight,
+             flexFlow:'column auto',
+             height: rowHeight*rowCount,
            }}
            id={'listBox'+this.unique}
-      >{items}</div>
+      >{rows}</div>
       </span>)
   }
   componentDidUpdate(){
