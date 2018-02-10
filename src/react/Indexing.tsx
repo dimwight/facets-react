@@ -239,7 +239,7 @@ export class IndexingListFlex extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingListFlex',props);
-    const height=70;
+    const itemHeight=30,rows=2;
     const disabled=!this.state.live,selectables=props.selectables;
     const items=selectables.map((s,at)=>{
       const selected=at===props.selectedAt;
@@ -252,7 +252,7 @@ export class IndexingListFlex extends IndexingFacet{
         id={at+this.unique}
         text={s}
         key={s+(Facet.ids++)}
-        height={height}
+        height={itemHeight}
       />)
     });
     return (<span>
@@ -262,24 +262,16 @@ export class IndexingListFlex extends IndexingFacet{
              display:'flex',
              alignItems:'center',
              flexFlow:'row auto',
-             height: height,
+             height: itemHeight,
            }}
            id={'listBox'+this.unique}
       >{items}</div>
       </span>)
   }
-  private setSelectedFocus(){
+  componentDidUpdate(){
     const selected=this.state.index+this.unique as string;
     const element=document.getElementById(selected);
     if(!element) throw new Error('No element');
     else element.focus();
-  }
-  componentWillMount(){
-  }
-  componentDidMount(){
-    super.componentDidMount();
-  }
-  componentDidUpdate(){
-    this.setSelectedFocus();
   }
 }
