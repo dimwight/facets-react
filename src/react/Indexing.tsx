@@ -218,19 +218,23 @@ export class IndexingListFlex extends IndexingFacet{
     if(!this.state.live) return;
     const indexThen:number=Number((e.target as HTMLElement).id.substr(0,1));
     let indexNow:number=indexThen;
-    traceThing('^IndexingListFlex',e.key);
-    if(e.key==='ArrowDown'||e.key==='ArrowRight'){
-      indexNow++;
+    const key=e.key;
+    if(key==='ArrowDown'||key==='ArrowRight'){
+      indexNow+=key==='ArrowDown'?3:1;
     }
-    else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){
-      indexNow--;
+    else if(key==='ArrowUp'||key==='ArrowLeft'){
+      indexNow-=key==='ArrowUp'?3:1;
     }
     if(indexNow!==indexThen){
-      if(indexNow>=0&&indexNow<(this.state.selectables as any[]).length)
+      const selectables=this.state.selectables;
+      if(!selectables)throw new Error('No selectables');
+      if(indexNow>=0&&indexNow<selectables.length)
         this.indexChanged(indexNow);
-      else if(this.props.facets.supplement)
-        (this.props.facets.supplement as ItemScroller)
-          .scrollItems(indexNow<0?-1:1)
+      else if(this.props.facets.supplement){
+        const skip=indexNow<0?indexNow:indexNow-selectables.length+1;
+        traceThing('^IndexingListFlex',skip);
+        (this.props.facets.supplement as ItemScroller).scrollItems(skip)
+      }
     }
   };
   protected renderUi(props:IndexingUiProps){
