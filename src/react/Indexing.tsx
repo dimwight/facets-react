@@ -108,7 +108,7 @@ export class IndexingList extends IndexingFacet{
     if(!this.state.live) return;
     this.indexChanged((e.target as HTMLElement).id.substr(0,1));
   };
-  onKeyDown=(e:KeyboardEvent)=>{
+  onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
     const indexThen:number=Number((e.target as HTMLElement).id.substr(0,1));
     let indexNow:number=indexThen;
@@ -137,7 +137,7 @@ export class IndexingList extends IndexingFacet{
         classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
         tabIndex={selected&& !disabled?1:NaN}
         onClick={this.onClick}
-        onKeyDown={this.onKeyDown}
+        onKeyDown={this.onItemKeyDown}
         id={at+this.unique}
         text={s}
         key={s+(Facet.ids++)}
