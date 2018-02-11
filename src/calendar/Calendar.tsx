@@ -99,7 +99,8 @@ class IndexingRowList extends IndexingFacet{
   };
   onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
-    const indexThen:number=Number((e.target as HTMLElement).id.substr(0,1));
+    const id=(e.target as HTMLElement).id,
+      indexThen:number=Number(id.substr(0,id.indexOf('_')));
     let indexNow:number=indexThen;
     const key=e.key;
     if(key==='ArrowDown'||key==='ArrowRight'){
@@ -115,7 +116,7 @@ class IndexingRowList extends IndexingFacet{
         this.indexChanged(indexNow);
       else if(this.props.facets.supplement){
         const skip=indexNow<0?indexNow:indexNow-selectables.length+1;
-        traceThing('^IndexingRowList',skip);
+        traceThing('IndexingRowList',skip);
         (this.props.facets.supplement as ItemScroller).scrollItems(skip)
       }
     }
@@ -145,7 +146,7 @@ class IndexingRowList extends IndexingFacet{
           tabIndex={selected&& !disabled?1:NaN}
           onClick={this.onItemClick}
           onKeyDown={this.onItemKeyDown}
-          id={globalAt+this.unique}
+          id={globalAt+'_'+this.unique}
           text={keyAt===0?day.dayName():day.dayNumber()}
           key={day.dayName()+day.dayNumber()+(Facet.ids++)}
           height={rowHeight}
