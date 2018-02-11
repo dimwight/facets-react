@@ -8,7 +8,7 @@ import {
 import {ItemScroller} from "../facets/_globals";
 import './Indexing.css'
 interface IndexingValues extends TargetValues{
-  selectables?:string[]
+  selectables?:any[]
   index?:number
   listWidth?:number
 }
@@ -28,7 +28,7 @@ export abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>
   render():any{
     const state=this.state;
     return this.renderUi({
-      selectables:state.selectables as string[],
+      selectables:state.selectables as any[],
       selectedAt:(state as IndexingValues).index as number,
       disabled:!state.live,
       rubric:this.props.title,
@@ -37,7 +37,7 @@ export abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>
   protected abstract renderUi(props:IndexingUiProps):void;
 }
 export interface IndexingUiProps{
-  selectables:string[]
+  selectables:any[]
   disabled:boolean
   selectedAt:number
   rubric:string
@@ -129,8 +129,8 @@ export class IndexingList extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingRowList',props);
-    const disabled=!this.state.live,selectables=props.selectables;
-    const items=selectables.map((s,at)=>{
+    const disabled=!this.state.live;
+    const items=props.selectables.map((s,at)=>{
       const selected=at===props.selectedAt;
       traceThing('^IndexingRowList',{at:at,s:s,selected:selected});
       return (<ListItem

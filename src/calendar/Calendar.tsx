@@ -52,7 +52,7 @@ function newTree(f:Facets){
       }),
     ])
   }
-  const list=new ScrollableList([new DayItem(new Date())],35,f,DateTitles.Indexing);
+  const list=new ScrollableList([new DayItem(new Date())],20,f,DateTitles.Indexing);
   const frame:IndexingFramePolicy={
     frameTitle:DateTitles.CalendarApp,
     indexingTitle:DateTitles.Indexing,
@@ -61,7 +61,7 @@ function newTree(f:Facets){
       return newItemTargets(day);
     },
     getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(day:DayItem)=>day.weekDay(),
+    newUiSelectable:(day:DayItem)=>true?day:day.weekDay(),
     newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
   };
   return f.newIndexingFrame(frame);
@@ -127,17 +127,17 @@ class IndexingRowList extends IndexingFacet{
     const disabled=!this.state.live;
     for(let rowAt=0;rowAt<rowCount;rowAt++){
       let items=selectables.slice(rowAt*rowItemCount,rowAt*rowItemCount+rowItemCount)
-        .map((s:string,at:number)=>{
+        .map((day:DayItem,at:number)=>{
           const selected=false&&at===props.selectedAt;
-          traceThing('^IndexingRowList',{at:at,s:s,selected:selected});
+          traceThing('^IndexingRowList',{at:at,s:day,selected:selected});
           return (<RowItem
             classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
             tabIndex={selected&& !disabled?1:NaN}
             onClick={this.onItemClick}
             onKeyDown={this.onItemKeyDown}
             id={at+this.unique}
-            text={s}
-            key={s+(Facet.ids++)}
+            text={day.weekDay()}
+            key={day.weekDay()+(Facet.ids++)}
             height={rowHeight}
           />)
         });
