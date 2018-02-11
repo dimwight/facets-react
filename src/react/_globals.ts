@@ -9,10 +9,14 @@ export {
   newFormField,
   FieldType,
   FieldSpec,
+  Facet,
+  LabelRubric,
 } from './Facet';
 export {
   IndexingDropdown,
   IndexingList,
-  IndexingListFlex
+  IndexingFacet,
+  ListItemProps,
+  IndexingUiProps,
 } from './Indexing'
 
