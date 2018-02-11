@@ -52,7 +52,7 @@ function newTree(f:Facets){
       }),
     ])
   }
-  const list=new ScrollableList([new DayItem(new Date())],20,f,DateTitles.Indexing);
+  const list=new ScrollableList([new DayItem(new Date())],35,f,DateTitles.Indexing);
   const frame:IndexingFramePolicy={
     frameTitle:DateTitles.CalendarApp,
     indexingTitle:DateTitles.Indexing,

@@ -5,6 +5,12 @@ export class DayItem implements SkippableItem<Date>{
   newSkipped(skip:number):DayItem{
     return new DayItem(addDays(this.date,skip))
   }
+  dayName():string{
+    return format(this.date,'ddd');
+  }
+  dayNumber():string{
+    return format(this.date,'D');
+  }
   weekDay():string{
     return format(this.date,'ddd D');
   }
