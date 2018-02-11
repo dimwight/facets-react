@@ -103,10 +103,10 @@ class IndexingRowList extends IndexingFacet{
     let indexNow:number=indexThen;
     const key=e.key;
     if(key==='ArrowDown'||key==='ArrowRight'){
-      indexNow+=key==='ArrowDown'?3:1;
+      indexNow+=key==='ArrowDown'?7:1;
     }
     else if(key==='ArrowUp'||key==='ArrowLeft'){
-      indexNow-=key==='ArrowUp'?3:1;
+      indexNow-=key==='ArrowUp'?7:1;
     }
     if(indexNow!==indexThen){
       const selectables=this.state.selectables;
@@ -137,14 +137,15 @@ class IndexingRowList extends IndexingFacet{
           border:false?'1px dotted':null,
         }}
       >{slice.map((day:DayItem,at:number)=>{
-        const selected=at+(keyAt-1)*slice.length===props.selectedAt;
+        const globalAt=at+(keyAt-1)*slice.length;
+        const selected=globalAt===props.selectedAt;
         traceThing('^IndexingRowList',{at:at,s:day,selected:selected});
         return (<RowItem
           classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
           tabIndex={selected&& !disabled?1:NaN}
           onClick={this.onItemClick}
           onKeyDown={this.onItemKeyDown}
-          id={at+this.unique}
+          id={globalAt+this.unique}
           text={keyAt===0?day.dayName():day.dayNumber()}
           key={day.dayName()+day.dayNumber()+(Facet.ids++)}
           height={rowHeight}
