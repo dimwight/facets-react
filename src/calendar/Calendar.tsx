@@ -137,7 +137,7 @@ class IndexingRowList extends IndexingFacet{
           border:false?'1px dotted':null,
         }}
       >{slice.map((day:DayItem,at:number)=>{
-        const selected=false&&at===props.selectedAt;
+        const selected=at+(keyAt-1)*slice.length===props.selectedAt;
         traceThing('^IndexingRowList',{at:at,s:day,selected:selected});
         return (<RowItem
           classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
