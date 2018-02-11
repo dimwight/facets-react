@@ -11,9 +11,6 @@ export class DayItem implements SkippableItem<Date>{
   dayNumber():string{
     return format(this.date,'D');
   }
-  weekDay():string{
-    return format(this.date,'ddd D');
-  }
   month(){
     return format(this.date,'MMMM');
   }

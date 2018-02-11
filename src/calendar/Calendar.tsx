@@ -61,7 +61,7 @@ function newTree(f:Facets){
       return newItemTargets(day);
     },
     getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(day:DayItem)=>true?day:day.weekDay(),
+    newUiSelectable:(day:DayItem)=>day,
     newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
   };
   return f.newIndexingFrame(frame);
@@ -122,37 +122,38 @@ class IndexingRowList extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingRowList',props);
-    let selectables=props.selectables,rows:any[]=[];
+    const selectables=props.selectables,rows:any[]=[];
     const rowHeight=30,rowCount=5,rowItemCount=selectables.length/rowCount;
     const disabled=!this.state.live;
-    for(let rowAt=0;rowAt<rowCount;rowAt++){
-      let items=selectables.slice(rowAt*rowItemCount,rowAt*rowItemCount+rowItemCount)
-        .map((day:DayItem,at:number)=>{
-          const selected=false&&at===props.selectedAt;
-          traceThing('^IndexingRowList',{at:at,s:day,selected:selected});
-          return (<RowItem
-            classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
-            tabIndex={selected&& !disabled?1:NaN}
-            onClick={this.onItemClick}
-            onKeyDown={this.onItemKeyDown}
-            id={at+this.unique}
-            text={day.weekDay()}
-            key={day.weekDay()+(Facet.ids++)}
-            height={rowHeight}
-          />)
-        });
-      rows.push(<div
+    const newRow=(keyAt:number,slice:any[])=>{
+      return <div
         className={'listRowFlex'}
-        key={'listRow'+rowAt+this.unique}
+        key={'listRow'+keyAt+this.unique}
         style={{
-         display:'flex',
-         alignItems:'center',
-         flexFlow:'row auto',
-         height: rowHeight,
-         border:false?'1px dotted':null,
+          display:'flex',
+          alignItems:'center',
+          flexFlow:'row auto',
+          height: rowHeight,
+          border:false?'1px dotted':null,
         }}
-        >{items}</div>,
-      )
+      >{slice.map((day:DayItem,at:number)=>{
+        const selected=false&&at===props.selectedAt;
+        traceThing('^IndexingRowList',{at:at,s:day,selected:selected});
+        return (<RowItem
+          classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
+          tabIndex={selected&& !disabled?1:NaN}
+          onClick={this.onItemClick}
+          onKeyDown={this.onItemKeyDown}
+          id={at+this.unique}
+          text={keyAt===0?day.dayName():day.dayNumber()}
+          key={day.dayName()+day.dayNumber()+(Facet.ids++)}
+          height={rowHeight}
+        />)
+      })}</div>
+    };
+    rows.push(newRow(0,selectables.slice(0,rowItemCount)));
+    for(let rowAt=0;rowAt<rowCount;rowAt++){
+      rows.push(newRow(rowAt+1,selectables.slice(rowAt*rowItemCount,rowAt*rowItemCount+rowItemCount)))
     }
     return (<span>
       <LabelRubric text={props.rubric} disabled={disabled}/>
@@ -161,7 +162,7 @@ class IndexingRowList extends IndexingFacet{
              display:'flex',
              alignItems:'stretch',
              flexDirection :'column',
-             height: rowHeight*rowCount,
+             height: rowHeight*(rowCount+1),
            }}
            id={'listBox'+this.unique}
       >{rows}</div>
