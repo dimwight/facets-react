@@ -72,6 +72,9 @@ function RowItem(p:ListItemProps){
   return <div
     id={p.id}
     className={'listItemFlex'+p.classTail}
+    tabIndex={p.tabIndex}
+    onClick={p.onClick}
+    onKeyDown={p.onKeyDown}
     style={{
       cursor:'default',
       fontSize:'110%',
@@ -81,11 +84,7 @@ function RowItem(p:ListItemProps){
       display:'flex',
       alignItems:'center',
       border:debug?'1px dotted':null,
-    }}
-    tabIndex={p.tabIndex}
-    onClick={p.onClick}
-    onKeyDown={p.onKeyDown}
-  >
+    }}>
     <div style={{
       flexGrow:1,
       textAlign:'center',
@@ -123,37 +122,35 @@ class IndexingRowList extends IndexingFacet{
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingRowList',props);
-    let newItem=(s:string,at:number)=>{
-      const selected=false&&at===props.selectedAt;
-      traceThing('^IndexingRowList',{at:at,s:s,selected:selected});
-      return (<RowItem
-        classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
-        tabIndex={selected&& !disabled?1:NaN}
-        onClick={this.onItemClick}
-        onKeyDown={this.onItemKeyDown}
-        id={at+this.unique}
-        text={s}
-        key={s+(Facet.ids++)}
-        height={rowHeight}
-      />)
-    };
     let selectables=props.selectables,rows:any[]=[];
     const rowHeight=30,rowCount=5,rowItemCount=selectables.length/rowCount;
     const disabled=!this.state.live;
-    const items=selectables.map(newItem);
     for(let rowAt=0;rowAt<rowCount;rowAt++){
       let items=selectables.slice(rowAt*rowItemCount,rowAt*rowItemCount+rowItemCount)
-        .map(newItem);
-      rows.push(<div className={'listRowFlex'}
-                     style={{
-                       display:'flex',
-                       alignItems:'center',
-                       flexFlow:'row auto',
-                       // flexBasis:150,
-                       height: rowHeight,
-                       border:false?'1px dotted':null,
-                     }}
-                     key={'listRow'+rowAt+this.unique}
+        .map((s:string,at:number)=>{
+          const selected=false&&at===props.selectedAt;
+          traceThing('^IndexingRowList',{at:at,s:s,selected:selected});
+          return (<RowItem
+            classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
+            tabIndex={selected&& !disabled?1:NaN}
+            onClick={this.onItemClick}
+            onKeyDown={this.onItemKeyDown}
+            id={at+this.unique}
+            text={s}
+            key={s+(Facet.ids++)}
+            height={rowHeight}
+          />)
+        });
+      rows.push(<div
+        className={'listRowFlex'}
+        key={'listRow'+rowAt+this.unique}
+        style={{
+         display:'flex',
+         alignItems:'center',
+         flexFlow:'row auto',
+         height: rowHeight,
+         border:false?'1px dotted':null,
+        }}
         >{items}</div>,
       )
     }
@@ -183,13 +180,7 @@ function buildLayout(f:Facets){
         <TextualLabel title={DateTitles.Year} facets={f}/>
         <TextualLabel title={DateTitles.Month} facets={f}/>
       </PanelRow>
-      {false?<IndexingRowList
-        title={DateTitles.Indexing}
-        facets={f}
-        listWidth={false?NaN:20}/>:
-        <IndexingRowList
-        title={DateTitles.Indexing}
-        facets={f}/>}
+      <IndexingRowList title={DateTitles.Indexing} facets={f}/>
       <PanelRow>
         <TriggerButton title={SelectingTitles.ScrollUp} facets={f}/>
         <TriggerButton title={SelectingTitles.ScrollDown} facets={f}/>
