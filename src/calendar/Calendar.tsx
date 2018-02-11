@@ -99,27 +99,20 @@ class IndexingRowList extends IndexingFacet{
   };
   onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
-    const id=(e.target as HTMLElement).id,
-      indexThen:number=Number(id.substr(0,id.indexOf('_')));
+    const id=(e.target as HTMLElement).id;
+    const indexThen:number=Number(id.substr(0,false?1:id.indexOf('_')));
     let indexNow:number=indexThen;
     const key=e.key;
-    if(key==='ArrowDown'||key==='ArrowRight'){
-      indexNow+=key==='ArrowDown'?7:1;
-    }
-    else if(key==='ArrowUp'||key==='ArrowLeft'){
-      indexNow-=key==='ArrowUp'?7:1;
-    }
-    if(indexNow!==indexThen){
-      const selectables=this.state.selectables;
-      if(!selectables)throw new Error('No selectables');
-      if(indexNow>=0&&indexNow<selectables.length)
-        this.indexChanged(indexNow);
-      else if(this.props.facets.supplement){
-        const skip=indexNow<0?indexNow:indexNow-selectables.length+1;
-        traceThing('IndexingRowList',skip);
-        (this.props.facets.supplement as ItemScroller).scrollItems(skip)
-      }
-    }
+    const jump=key==='ArrowDown'?7:key==='ArrowUp'?-7:
+      key==='ArrowRight'?1:key==='ArrowLeft'?-1:0;
+    indexNow+=jump;
+    if(indexNow===indexThen)return;
+    const selectables=this.state.selectables;
+    if(!selectables)throw new Error('No selectables');
+    if(indexNow>=0&&indexNow<selectables.length)
+      this.indexChanged(indexNow);
+    else if(this.props.facets.supplement)
+      (this.props.facets.supplement as ItemScroller).scrollItems(jump)
   };
   protected renderUi(props:IndexingUiProps){
     traceThing('^IndexingRowList',props);
@@ -171,7 +164,7 @@ class IndexingRowList extends IndexingFacet{
       </span>)
   }
   componentDidUpdate(){
-    const selected=this.state.index+this.unique as string;
+    const selected=this.state.index+'_'+this.unique as string;
     const element=document.getElementById(selected);
     if(!element) throw new Error('No element');
     else element.focus();
