@@ -6,22 +6,22 @@ import {
   newInstance,
 } from 'facets-js';
 import {
+  Facet,
+  IndexingFacet,
+  IndexingUiProps,
+  LabelRubric,
+  ListItemProps,
   PanelRow,
   RowPanel,
   TextualField,
-  TriggerButton,
   TextualLabel,
-  IndexingFacet,
-  ListItemProps,
-  IndexingUiProps,
-  Facet,
-  LabelRubric,
+  TriggerButton,
 } from '../react/_globals';
 import {
+  ItemScroller,
   ScrollableList,
   SelectingTitles,
   SurfaceApp,
-  ItemScroller,
 } from '../facets/_globals';
 import {
   DateTitles,
@@ -100,15 +100,15 @@ class IndexingRowList extends IndexingFacet{
   onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
     const id=(e.target as HTMLElement).id;
-    const indexThen:number=Number(id.substr(0,false?1:id.indexOf('_')));
+    const indexThen:number=Number(id.substr(0,id.indexOf('_')));
     let indexNow:number=indexThen;
     const key=e.key;
     const jump=key==='ArrowDown'?7:key==='ArrowUp'?-7:
       key==='ArrowRight'?1:key==='ArrowLeft'?-1:0;
     indexNow+=jump;
-    if(indexNow===indexThen)return;
+    if(indexNow===indexThen) return;
     const selectables=this.state.selectables;
-    if(!selectables)throw new Error('No selectables');
+    if(!selectables) throw new Error('No selectables');
     if(indexNow>=0&&indexNow<selectables.length)
       this.indexChanged(indexNow);
     else if(this.props.facets.supplement)
@@ -119,7 +119,7 @@ class IndexingRowList extends IndexingFacet{
     const selectables=props.selectables,rows:any[]=[];
     const rowHeight=30,rowCount=5,rowItemCount=selectables.length/rowCount;
     const disabled=!this.state.live;
-    const newRow=(keyAt:number,slice:any[])=>{
+    const newSliceRow=(keyAt:number,slice:any[])=>{
       return <div
         className={'listRowFlex'}
         key={'listRow'+keyAt+this.unique}
@@ -127,45 +127,45 @@ class IndexingRowList extends IndexingFacet{
           display:'flex',
           alignItems:'center',
           flexFlow:'row auto',
-          height: rowHeight,
+          height:rowHeight,
           border:false?'1px dotted':null,
         }}
       >{slice.map((day:DayItem,at:number)=>{
         const globalAt=at+(keyAt-1)*slice.length;
         const selected=globalAt===props.selectedAt;
-        traceThing('^IndexingRowList',{at:at,s:day,selected:selected});
+        const dayName=day.dayName(),dayNumber=day.dayNumber();
         return (<RowItem
           classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
           tabIndex={selected&& !disabled?1:NaN}
           onClick={this.onItemClick}
           onKeyDown={this.onItemKeyDown}
           id={globalAt+'_'+this.unique}
-          text={keyAt===0?day.dayName():day.dayNumber()}
-          key={day.dayName()+day.dayNumber()+(Facet.ids++)}
+          text={keyAt===0?dayName:dayNumber}
+          key={dayName+dayNumber+(Facet.ids++)}
           height={rowHeight}
         />)
       })}</div>
     };
-    rows.push(newRow(0,selectables.slice(0,rowItemCount)));
-    for(let rowAt=0;rowAt<rowCount;rowAt++){
-      rows.push(newRow(rowAt+1,selectables.slice(rowAt*rowItemCount,rowAt*rowItemCount+rowItemCount)))
-    }
+    rows.push(newSliceRow(0,selectables.slice(0,rowItemCount)));
+    for(let rowAt=0; rowAt<rowCount; rowAt++)
+      rows.push(newSliceRow(rowAt+1,selectables.slice(rowAt*rowItemCount,
+        rowAt*rowItemCount+rowItemCount)))
     return (<span>
       <LabelRubric text={props.rubric} disabled={disabled}/>
       <div className={'listBoxFlex'}
            style={{
              display:'flex',
              alignItems:'stretch',
-             flexDirection :'column',
-             height: rowHeight*(rowCount+1),
+             flexDirection:'column',
+             height:rowHeight*(rowCount+1),
            }}
            id={'listBox'+this.unique}
       >{rows}</div>
       </span>)
   }
   componentDidUpdate(){
-    const selected=this.state.index+'_'+this.unique as string;
-    const element=document.getElementById(selected);
+    const id=this.state.index+'_'+this.unique as string;
+    const element=document.getElementById(id);
     if(!element) throw new Error('No element');
     else element.focus();
   }
@@ -205,7 +205,7 @@ export function launchApp(){
       return newTree(this.facets)
     }
     onRetargeted(activeTitle:string){
-      if(false)disableAll(this.facets);
+      if(false) disableAll(this.facets);
     }
     buildLayout(){
       buildLayout(this.facets)
