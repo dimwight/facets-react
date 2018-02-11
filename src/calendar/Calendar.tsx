@@ -85,7 +85,9 @@ function RowItem(p:ListItemProps){
       alignItems:'center',
       border:debug?'1px dotted':null,
     }}>
-    <div style={{
+    <div
+      id={p.id}
+      style={{
       flexGrow:1,
       textAlign:'center',
       border:debug?'1px solid':null,
@@ -95,7 +97,10 @@ function RowItem(p:ListItemProps){
 class IndexingRowList extends IndexingFacet{
   onItemClick=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
-    this.indexChanged((e.target as HTMLElement).id.substr(0,1));
+    const id=(e.target as HTMLElement).id;
+    traceThing('^IndexingRowList',{'id':id});
+    const index=Number(id.substr(0,id.indexOf('_')));
+    if(index>=0)this.indexChanged(index);
   };
   onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
