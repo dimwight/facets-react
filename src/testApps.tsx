@@ -536,6 +536,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(true) new SimpleApp(SimpleTests.AllNonSelecting).buildSurface();
+  if(true) new SimpleApp(SimpleTests.SelectingScrolling).buildSurface();
   else new ContentingTest().buildSurface();
 }
