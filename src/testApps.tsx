@@ -32,7 +32,7 @@ namespace SimpleTitles{
     Indexing='Choose Item',
     Index='Index',Indexed='Indexed',IndexStart=0,
     TextualIndexables=[FirstTextual,SecondTextual],
-    Toggling='Click to toggle',Toggled='TogglingLive state',
+    Toggling='Click to toggle',Toggled='Toggled state',
     Trigger='Click Me!',Triggereds='Button presses',
     ToggleStart=false,
     NumericField='Number',NumericLabel='Value',NumericStart=123;
@@ -49,7 +49,7 @@ class SimpleApp extends SurfaceApp{
     traceThing('^disableAll',onRetargeted);
     if(onRetargeted) onRetargeted(this.facets,active)
   }
-  buildLayout():void{
+  buildLayout(){
     this.test.buildLayout(this.facets)
   }
 }

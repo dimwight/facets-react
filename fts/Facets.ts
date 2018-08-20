@@ -1,6 +1,7 @@
 import {
   Targety,
   TargetCore,
+  TargeterCore,
   Targeter,
   Notifiable,
   Indexing,
@@ -20,7 +21,6 @@ import {
   TargetCoupler,
   IndexingFramePolicy,
 } from 'facets-js';
-import {TargeterCore} from './core/TargeterCore';
 export function newInstance(trace:boolean):Facets{
   return new Facets(trace);
 }
