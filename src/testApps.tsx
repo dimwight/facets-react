@@ -444,7 +444,7 @@ class ContentingTest extends SurfaceApp{
       }
       let type=TextContentType.getContentType(content);
       let tail=type.titleTail;
-      let members=[];
+      let members:Target[]=[];
       members.push(newEditTarget(content,tail));
       if(type==TextContentType.ShowChars) members.push(newCharsTarget(tail));
       members.push(f.newTriggerTarget(SelectingTitles.SaveEditButton+tail,{
@@ -470,7 +470,7 @@ class ContentingTest extends SurfaceApp{
             edit=active.clone()));
         },
       }));
-    let trees=[];
+    let trees:Target[]=[];
     trees.push(
       newContentTree(textContents[0]),
       newContentTree(textContents[1]),
