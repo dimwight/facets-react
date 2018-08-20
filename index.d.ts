@@ -127,7 +127,7 @@ export interface IndexingFramePolicy {
    * Supply object to expose indexable in the UI.
    * Analogue of {@link IndexingCoupler} function.
    * @param {any} indexable to represent
-   * @returns {weekDay} the representation
+   * @returns {string} the representation
    */
   newUiSelectable? (indexable: any):any;
   /**
@@ -183,7 +183,7 @@ export interface Facets {
    */
   readonly times: Times;
   /**
-   * Should the {@link Facets} instance issue trace messages?
+   * Should the instance issue trace messages?
    */
   doTrace: boolean;
   /** Creates a textual {@link Target}.
@@ -232,7 +232,7 @@ export interface Facets {
   newIndexingFrame(policy: IndexingFramePolicy): Target;
   /** Adds a content tree to the application.
    * The tree added becomes the active tree with its title passed
-   * to {@link FacetsApp#onRetargeted};
+   * to {@link FacetsApp#onRetargeted(string)};
    * it replaces any existing tree with the same title, thus ensuring
    * synchronisation of the UI.
    * @param {Target} add the new tree
@@ -306,8 +306,8 @@ interface FacetsApp {
    * before updating facets in the UI.
    * @param {string} activeTitle the {@link Target} last created
    * in {@link getContentTrees()}
-   * or {@link Facets#addContentTree()},
-   * or whose title was last passed to {@link Facets#activateContentTree()}.
+   * or {@link Facets#addContentTree(Target)},
+   * or whose title was last passed to {@link Facets#activateContentTree(string)}.
    */
   onRetargeted(activeTitle: string): void;
   /** Construct a UI with facets exposing {@link Target}s defined
