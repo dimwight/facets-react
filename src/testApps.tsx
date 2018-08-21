@@ -450,7 +450,7 @@ class ContentingTest extends SurfaceApp{
       let members:Target[]=[];
       const saveTitle=SelectingTitles.SaveEditButton+tail;
       const onTextEdit=()=>{
-        traceThing('onTextEdit',{saveTitle:saveTitle})
+        traceThing('^onTextEdit',{saveTitle:saveTitle})
         f.setTargetLive(saveTitle,true)
       };
       members.push(newEditTarget(content,tail,onTextEdit));
@@ -503,10 +503,10 @@ class ContentingTest extends SurfaceApp{
         <TextualField title={SelectingTitles.TextEditField+tail} facets={f} cols={30}/>
       </PanelRow>)
     }
-    function newSaveCancelRow(){
+    function newSaveCancelRow(tail:string){
       return (<PanelRow>
-        <TriggerButton title={SelectingTitles.SaveEditButton} facets={f}/>
-        <TriggerButton title={SelectingTitles.CancelEditButton} facets={f}/>
+        <TriggerButton title={SelectingTitles.SaveEditButton+tail} facets={f}/>
+        <TriggerButton title={SelectingTitles.CancelEditButton+tail} facets={f}/>
       </PanelRow>)
     }
     let tail=TextContentType.ShowChars.titleTail;
@@ -531,14 +531,14 @@ class ContentingTest extends SurfaceApp{
         </RowPanel>
         <RowPanel title={TextContentType.Standard.name}>
           {newEditField('')}
-          {newSaveCancelRow()}
+          {newSaveCancelRow('')}
         </RowPanel>
         <RowPanel title={TextContentType.ShowChars.name}>
           {newEditField(tail)}
           <PanelRow>
             <TextualLabel title={SelectingTitles.CharsCount+tail} facets={f}/>
           </PanelRow>
-          {newSaveCancelRow()}
+          {newSaveCancelRow(tail)}
         </RowPanel>
       </ShowPanel>,
       document.getElementById('root'),
