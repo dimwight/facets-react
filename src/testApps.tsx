@@ -430,12 +430,12 @@ class ContentingTest extends SurfaceApp{
       f.activateContentTree(SelectingTitles.Chooser);
     }
     function newContentTree(content:TextContent):Target{
-      function newEditTarget(indexed:TextContent,tail:string,onStateChange:()=>void){
+      function newEditTarget(indexed:TextContent,tail:string,onTextEdit:()=>void){
         return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
           passText:indexed.text,
           targetStateUpdated:(state,title)=>{
-            indexed.text=state as string
-            onStateChange();
+            indexed.text=state as string;
+            onTextEdit();
           },
         })
       }
@@ -449,8 +449,11 @@ class ContentingTest extends SurfaceApp{
       let tail=type.titleTail;
       let members:Target[]=[];
       const saveTitle=SelectingTitles.SaveEditButton+tail;
-      const onStateChange=()=>f.setTargetLive(saveTitle,!f.isTargetLive(saveTitle));
-      members.push(newEditTarget(content,tail,onStateChange));
+      const onTextEdit=()=>{
+        traceThing('onTextEdit',{saveTitle:saveTitle})
+        f.setTargetLive(saveTitle,true)
+      };
+      members.push(newEditTarget(content,tail,onTextEdit));
       if(type==TextContentType.ShowChars) members.push(newCharsTarget(tail));
 
       members.push(f.newTriggerTarget(saveTitle,{
@@ -470,7 +473,6 @@ class ContentingTest extends SurfaceApp{
     let chooserTargets=this.fullListTargets?newListActionTargets(f,this.list):[];
     chooserTargets.push(
       f.newTriggerTarget(SelectingTitles.OpenEditButton,{
-        passLive:false,
         targetStateUpdated:()=>{
           active=this.facets.getIndexingState(this.indexingTitle)
             .indexed;
