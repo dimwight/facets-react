@@ -430,11 +430,12 @@ class ContentingTest extends SurfaceApp{
       f.activateContentTree(SelectingTitles.Chooser);
     }
     function newContentTree(content:TextContent):Target{
-      function newEditTarget(indexed:TextContent,tail:string){
+      function newEditTarget(indexed:TextContent,tail:string,onStateChange?:()=>void){
         return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
           passText:indexed.text,
           targetStateUpdated:(state,title)=>{
             indexed.text=state as string
+            if(onStateChange)onStateChange();
           },
         })
       }
@@ -447,9 +448,14 @@ class ContentingTest extends SurfaceApp{
       let type=TextContentType.getContentType(content);
       let tail=type.titleTail;
       let members:Target[]=[];
-      members.push(newEditTarget(content,tail));
+      const saveTitle=SelectingTitles.SaveEditButton+tail;
+      const onStateChange=()=>{
+        f.setTargetLive(saveTitle,!f.isTargetLive(saveTitle))
+      };
+      members.push(newEditTarget(content,tail,onStateChange));
       if(type==TextContentType.ShowChars) members.push(newCharsTarget(tail));
-      members.push(f.newTriggerTarget(SelectingTitles.SaveEditButton+tail,{
+
+      members.push(f.newTriggerTarget(saveTitle,{
         targetStateUpdated:(state,title)=>{
           active.copyClone(edit);
           activateChooser();
