@@ -433,7 +433,9 @@ class ContentingTest extends SurfaceApp{
       function newEditTarget(indexed:TextContent,tail:string){
         return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
           passText:indexed.text,
-          targetStateUpdated:(state,title)=>indexed.text=state as string,
+          targetStateUpdated:(state,title)=>{
+            indexed.text=state as string
+          },
         })
       }
       function newCharsTarget(tail:string){
