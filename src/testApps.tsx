@@ -463,6 +463,7 @@ class ContentingTest extends SurfaceApp{
     let chooserTargets=this.fullListTargets?newListActionTargets(f,this.list):[];
     chooserTargets.push(
       f.newTriggerTarget(SelectingTitles.OpenEditButton,{
+        passLive:false,
         targetStateUpdated:()=>{
           active=this.facets.getIndexingState(this.indexingTitle)
             .indexed;
@@ -536,6 +537,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(true) new SimpleApp(SimpleTests.TogglingLive).buildSurface();
+  if(false) new SimpleApp(SimpleTests.TogglingLive).buildSurface();
   else new ContentingTest().buildSurface();
 }

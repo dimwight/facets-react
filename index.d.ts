@@ -20,6 +20,7 @@ export interface TargetCoupler {
    * @param {string} title identifies the {@link Target}
    */
   targetStateUpdated? (state: SimpleState, title: string) : void;
+  passLive?:boolean;
 }
 /**
  Connects a textual {@link Target} with client code.

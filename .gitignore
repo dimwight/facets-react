@@ -7,4 +7,4 @@ src/**/*.jsx*
 src/**/*.jsx.map
 tool/*.js
 public/index.js*
-public/index.css
+public/*.css
