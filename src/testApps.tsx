@@ -122,7 +122,7 @@ function newIndexingTree(facets:Facets){
   const indexing=facets.newIndexingTarget(SimpleTitles.Indexing,{
       passIndex:0,
       newUiSelectable:(indexable)=>indexable,
-      getIndexables:(title)=>SimpleTitles.TextualIndexables,
+      getIndexables:()=>SimpleTitles.TextualIndexables,
     } as IndexingCoupler),
     index=facets.newTextualTarget(SimpleTitles.Index,{
       getText:()=>''+facets.getTargetState(SimpleTitles.Indexing),

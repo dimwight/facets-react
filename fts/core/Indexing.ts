@@ -24,7 +24,7 @@ export class Indexing extends TargetCore {
     }
   }
   indexables(): any[] {
-    const indexables: any[] = this.coupler().getIndexables(this.title());
+    const indexables: any[] = this.coupler().getIndexables();
     if (!indexables||indexables.length === 0) 
         throw new Error('Missing or empty indexables in ' + this);
     else return indexables;

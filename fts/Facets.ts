@@ -177,7 +177,7 @@ export class Facets{
     indexingTitle = p.indexingTitle?p.indexingTitle
       :frameTitle + '.Indexing';
     const indexing = new Indexing(indexingTitle,{
-      getIndexables:title=>p.getIndexables(),
+      getIndexables:()=>p.getIndexables(),
       newUiSelectable:i=>
         !p.newUiSelectable?null:p.newUiSelectable(i)
     });

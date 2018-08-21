@@ -86,7 +86,7 @@ export interface IndexingCoupler extends TargetCoupler {
    * @param {string} title identifies the {@link Target}
    * @returns {any[]} the contents
    */
-  getIndexables (title: string) : any[];
+  getIndexables () : any[];
   /**
    * Get representation for indexable in the UI.
    * If absent a default string will be created.

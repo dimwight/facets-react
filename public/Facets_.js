@@ -226,7 +226,7 @@ class Indexing$$1 extends TargetCore {
         }
     }
     indexables() {
-        const indexables = this.coupler().getIndexables(this.title());
+        const indexables = this.coupler().getIndexables();
         if (!indexables || indexables.length === 0)
             throw new Error('Missing or empty indexables in ' + this);
         else
@@ -481,7 +481,7 @@ class Facets {
             : 'IndexingFrame' + this.indexingFrames++, indexingTitle = p.indexingTitle ? p.indexingTitle
             : frameTitle + '.Indexing';
         const indexing = new Indexing$$1(indexingTitle, {
-            getIndexables: title => p.getIndexables(),
+            getIndexables: () => p.getIndexables(),
             newUiSelectable: i => !p.newUiSelectable ? null : p.newUiSelectable(i)
         });
         this.trace('Created indexing ' + indexingTitle);
