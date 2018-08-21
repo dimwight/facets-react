@@ -4,7 +4,7 @@ import {
   Target,
 } from 'facets-js';
 export abstract class SurfaceApp implements FacetsApp{
-  constructor(readonly facets:Facets){
+  protected constructor(readonly facets:Facets){
     facets.times.doTime=false;
   }
   abstract getContentTrees():Target|Target[];
