@@ -256,7 +256,7 @@ export interface Facets {
    * @param {string} title identifies the {@link Target}
    * @param {SimpleState} update to update the {@link Target}
    */
-  updateTargetState(title: string, update: SimpleState): void;
+  // updateTargetState(title: string, update: SimpleState): void;
   /**
    * Obtain the the state of the {@link Target} identified.
    * @param {string} title identifies the {@link Target}
@@ -267,13 +267,13 @@ export interface Facets {
    * Notify the framework of an update and trigger a retargeting.
    * @param {string} title identifies the {@link Target}
    */
-  notifyTargetUpdated(title: string): void;
+  /*notifyTargetUpdated(title: string): void;*/
   /**
    * Update {@link Target} and and trigger a retargeting.
    * @param {string} title identifies the {@link Target}
    * @param {SimpleState} update for {@link Target} state
    */
-  updateTargetWithNotify(title: string, update: SimpleState): void;
+  updateTarget/*WithNotify*/(title: string, update?: SimpleState): void;
   /** Sets the 'enabled' state of a {@link Target}.
    * Provides for disabling of UI facet.
    * @param {string} title identifies the {@link Target}

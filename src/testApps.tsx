@@ -81,7 +81,7 @@ function newTextualTree(facets:Facets){
   const first=facets.newTextualTarget(SimpleTitles.FirstTextual,{
       passText:'Some text for '+SimpleTitles.FirstTextual,
       targetStateUpdated:state=>{
-        facets.updateTargetState(SimpleTitles.SecondTextual,
+        facets.updateTarget(SimpleTitles.SecondTextual,
           SimpleTitles.FirstTextual+' has changed to: '+state);
       },
     }),

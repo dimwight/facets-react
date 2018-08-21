@@ -69,13 +69,13 @@ export class ScrollableList implements ItemScroller{
       else if(skipper)
         this.showFrom=skipper.skipForward(by,showFrom);
     }
-    this.facets.notifyTargetUpdated(this.indexingTitle)
+    this.facets.updateTarget(this.indexingTitle)
   }
   deleteItem(){
     const showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
     const atEnd=this.smarts.removeItem(itemAt);
     if(atEnd)
-      this.facets.updateTargetState(this.indexingTitle,showThen-1)
+      this.facets.updateTarget(this.indexingTitle,showThen-1)
   };
   addItem(){
     let showThen=this.getShowAt(),itemAt=this.itemAt(showThen);
@@ -110,7 +110,7 @@ export class ScrollableList implements ItemScroller{
   }
   setShowAt(at:number){
     traceThing('^setShowAt',{'at':at});
-    this.facets.updateTargetState(this.indexingTitle,at)
+    this.facets.updateTarget(this.indexingTitle,at)
   }
 }
 

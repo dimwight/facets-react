@@ -135,10 +135,6 @@ export class Facets{
     };
     t.attachFacet(facet);
   }
-  updateTargetState(title:string,update:SimpleState):void{
-    this.titleTarget(title).updateState(update);
-    this.notifiable.notify(title);
-  }
   getTargetState(title:string):SimpleState{
     return this.titleTarget(title).state();
   }
@@ -148,9 +144,9 @@ export class Facets{
   setTargetLive(title:string,live:boolean){
     this.titleTarget(title).setLive(live);
   }
-  notifyTargetUpdated(title:string){
-    const target=this.titleTarget(title);
-    target.notifyParent();
+  updateTarget(title:string,update?:SimpleState):void{
+    if(update!=null)this.titleTarget(title).updateState(update);
+    this.notifiable.notify(title);
   }
   titleTarget(title:string):Targety{
     const got=this.titleTargeters.get(title);
