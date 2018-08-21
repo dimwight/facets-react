@@ -69,7 +69,7 @@ export class Facets{
     this.onRetargeted=title=>{
       app.onRetargeted(title);
     };
-    const trees=app.getContentTrees();
+    const trees=app.newContentTrees();
     if(trees instanceof Array)
       (trees as Array<Targety>).forEach(t=>this.addContentTree(t));
     else this.addContentTree((trees as Targety));

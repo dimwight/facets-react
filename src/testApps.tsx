@@ -41,7 +41,7 @@ class SimpleApp extends SurfaceApp{
   constructor(readonly test:SimpleTest){
     super(newInstance(false));
   }
-  getContentTrees():Target|Target[]{
+  newContentTrees():Target|Target[]{
     return this.test.newTrees(this.facets)
   }
   onRetargeted(active:string){
@@ -425,7 +425,7 @@ class ContentingTest extends SurfaceApp{
     super(newInstance(false));
     this.list=new ScrollableList(textContents,3,this.facets,this.indexingTitle);
   }
-  getContentTrees():Target|Target[]{
+  newContentTrees():Target|Target[]{
     function activateChooser(){
       f.activateContentTree(SelectingTitles.Chooser);
     }

@@ -168,7 +168,7 @@ export interface Times {
    * Print {@link elapsed()} followed by the message.
    * @param {string} msg to skipForward to time
    */
-  traceElapsed(msg: string): void;
+  traceElapsed(msg?: string): void;
 }
 /**
  * Superficial application core.
@@ -302,7 +302,7 @@ interface FacetsApp {
    * To ensure construction of a complete targeter tree, {@link Target} trees
    * should include an example of each possible tree.
    */
-  getContentTrees(): Target|Target[];
+  newContentTrees(): Target|Target[];
   /** Called by framework after retargeting {@link Target} trees but
    * before updating facets in the UI.
    * @param {string} activeTitle the {@link Target} last created

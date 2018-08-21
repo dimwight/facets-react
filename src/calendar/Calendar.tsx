@@ -206,7 +206,7 @@ function disableAll(f:Facets){
 }
 export function launchApp(){
   new class extends SurfaceApp{
-    getContentTrees(){
+    newContentTrees(){
       return newTree(this.facets)
     }
     onRetargeted(activeTitle:string){
