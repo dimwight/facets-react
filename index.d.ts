@@ -102,7 +102,7 @@ interface IndexingState {
   /**
    * As last created by the {@link IndexingCoupler}; or default string[]
    */
-  uiSelectables: any[];
+  uiSelectables: string[];
   /**
    * The result of the current index into the indexables.
    */
@@ -130,7 +130,7 @@ export interface IndexingFramePolicy {
    * @param {any} indexable to represent
    * @returns {string} the representation
    */
-  newUiSelectable? (indexable: any):any;
+  newUiSelectable? (indexable: any):string;
   /**
    * Create {@link Target}s to be children of the framing {@link Target}
    * @returns {Target[]} the targets

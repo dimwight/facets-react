@@ -61,7 +61,7 @@ function newTree(f:Facets){
       return newItemTargets(day);
     },
     getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(day:DayItem)=>day,
+    newUiSelectable:(day:DayItem)=>day.dayName(),
     newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
   };
   return f.newIndexingFrame(frame);

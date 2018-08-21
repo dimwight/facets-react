@@ -373,7 +373,7 @@ function newSelectingScrollingTree(facets:Facets){
     indexingTitle:SelectingTitles.Chooser,
     newFrameTargets:()=>newListActionTargets(facets,list),
     getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(item:TextContent)=>false?item:item.text,
+    newUiSelectable:(item:TextContent)=>item.text,
     newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
     newIndexedTree:(indexed:TextContent,title:string)=>{
       traceThing('^newIndexedTargets',{indexed:indexed});
