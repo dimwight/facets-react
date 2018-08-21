@@ -139,46 +139,6 @@ function newAllSimplesTree(facets:Facets):Target{
     newIndexingTree(facets),
     newTriggerTree(facets)]);
 }
-function newSelectingTypedTree(facets:Facets){
-  function listAt():number{
-    return facets.getTargetState(frame.indexingTitle as string) as number;
-  }
-  function getType(indexed:TextContent){
-    return TextContentType.getContentType(indexed);
-  }
-  const frame:IndexingFramePolicy={
-    frameTitle:SelectingTitles.Frame,
-    indexingTitle:SelectingTitles.Chooser,
-    getIndexables:()=>textContents,
-    newUiSelectable:(item:TextContent)=>item.text,
-    newFrameTargets:()=>[
-      facets.newTextualTarget(SimpleTitles.Indexed,{
-        getText:()=>getType(facets.getIndexingState(
-          SelectingTitles.Chooser).indexed).name,
-      }),
-    ]
-    ,
-    newIndexedTreeTitle:indexed=>SelectingTitles.Selected+getType(indexed).titleTail,
-    newIndexedTree:(indexed:TextContent,title:string)=>{
-      const tail=getType(indexed).titleTail;
-      return facets.newTargetGroup(title,tail===''?[
-        facets.newTextualTarget(SelectingTitles.OpenEditButton,{
-          passText:indexed.text,
-          targetStateUpdated:state=>indexed.text=state as string,
-        }),
-      ]:[
-        facets.newTextualTarget(SelectingTitles.OpenEditButton+tail,{
-          passText:indexed.text,
-          targetStateUpdated:state=>indexed.text=state as string,
-        }),
-        facets.newTextualTarget(SelectingTitles.CharsCount+tail,{
-          getText:()=>''+indexed.text.length,
-        }),
-      ])
-    },
-  };
-  return facets.newIndexingFrame(frame);
-}
 function buildTextual(facets:Facets){
   const first=SimpleTitles.FirstTextual,second=SimpleTitles.SecondTextual;
   ReactDOM.render(
@@ -276,6 +236,46 @@ function setSimplesLive(facets:Facets,state:boolean){
   ].forEach(title=>{
     facets.setTargetLive(title,state);
   })
+}
+function newSelectingTypedTree(facets:Facets){
+  function listAt():number{
+    return facets.getTargetState(frame.indexingTitle as string) as number;
+  }
+  function getType(indexed:TextContent){
+    return TextContentType.getContentType(indexed);
+  }
+  const frame:IndexingFramePolicy={
+    frameTitle:SelectingTitles.Frame,
+    indexingTitle:SelectingTitles.Chooser,
+    getIndexables:()=>textContents,
+    newUiSelectable:(item:TextContent)=>item.text,
+    newFrameTargets:()=>[
+      facets.newTextualTarget(SimpleTitles.Indexed,{
+        getText:()=>getType(facets.getIndexingState(
+          SelectingTitles.Chooser).indexed).name,
+      }),
+    ]
+    ,
+    newIndexedTreeTitle:indexed=>SelectingTitles.Selected+getType(indexed).titleTail,
+    newIndexedTree:(indexed:TextContent,title:string)=>{
+      const tail=getType(indexed).titleTail;
+      return facets.newTargetGroup(title,tail===''?[
+        facets.newTextualTarget(SelectingTitles.OpenEditButton,{
+          passText:indexed.text,
+          targetStateUpdated:state=>indexed.text=state as string,
+        }),
+      ]:[
+        facets.newTextualTarget(SelectingTitles.OpenEditButton+tail,{
+          passText:indexed.text,
+          targetStateUpdated:state=>indexed.text=state as string,
+        }),
+        facets.newTextualTarget(SelectingTitles.CharsCount+tail,{
+          getText:()=>''+indexed.text.length,
+        }),
+      ])
+    },
+  };
+  return facets.newIndexingFrame(frame);
 }
 function buildSelectingTyped(facets:Facets){
   function newEditField(tail:string){
@@ -430,12 +430,12 @@ class ContentingTest extends SurfaceApp{
       f.activateContentTree(SelectingTitles.Chooser);
     }
     function newContentTree(content:TextContent):Target{
-      function newEditTarget(indexed:TextContent,tail:string,onStateChange?:()=>void){
+      function newEditTarget(indexed:TextContent,tail:string,onStateChange:()=>void){
         return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
           passText:indexed.text,
           targetStateUpdated:(state,title)=>{
             indexed.text=state as string
-            if(onStateChange)onStateChange();
+            onStateChange();
           },
         })
       }
@@ -449,13 +449,12 @@ class ContentingTest extends SurfaceApp{
       let tail=type.titleTail;
       let members:Target[]=[];
       const saveTitle=SelectingTitles.SaveEditButton+tail;
-      const onStateChange=()=>{
-        f.setTargetLive(saveTitle,!f.isTargetLive(saveTitle))
-      };
+      const onStateChange=()=>f.setTargetLive(saveTitle,!f.isTargetLive(saveTitle));
       members.push(newEditTarget(content,tail,onStateChange));
       if(type==TextContentType.ShowChars) members.push(newCharsTarget(tail));
 
       members.push(f.newTriggerTarget(saveTitle,{
+        passLive:false,
         targetStateUpdated:(state,title)=>{
           active.copyClone(edit);
           activateChooser();
@@ -545,6 +544,6 @@ class ContentingTest extends SurfaceApp{
   }
 }
 export function launchApp(){
-  if(false) new SimpleApp(SimpleTests.TogglingLive).buildSurface();
+  if(false) new SimpleApp(SimpleTests.SelectingScrolling).buildSurface();
   else new ContentingTest().buildSurface();
 }

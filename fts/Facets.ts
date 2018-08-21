@@ -108,6 +108,8 @@ export class Facets{
   }
   newTriggerTarget (title:string,coupler:TargetCoupler):Target{
     const trigger=new TargetCore(title,coupler);
+    const passLive=coupler.passLive;
+    trigger.setLive(passLive?passLive:false);
     this.trace('Created trigger title='+title);
     return trigger;
   }
