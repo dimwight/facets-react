@@ -22,14 +22,8 @@ import {
 import {
   AppCore,
   ContentingApp,
-  newAllSimplesTree,
-  newIndexingTree,
-  newSelectingScrollingTree,
-  newSelectingTypedTree,
-  newTextualTree,
-  newTogglingTree,
-  newTriggerTree,
-  selectingFacetsRetargeted,
+  Selecting,
+  Trees,
   SelectingTitles,
   SimpleTitles,
   TextContentType,
@@ -58,17 +52,17 @@ class TestAppSpec{
               readonly onRetargeted?:(facets:Facets,active:string)=>void,){}
 }
 const TestAppSpecs={
-  Textual:new TestAppSpec('Textual',newTextualTree,buildTextual),
-  TogglingLive:new TestAppSpec('TogglingLive',newTogglingTree,buildToggling,
+  Textual:new TestAppSpec('Textual',Trees.newTextualTree,buildTextual),
+  TogglingLive:new TestAppSpec('TogglingLive',Trees.newTogglingTree,buildToggling,
     (facets:Facets)=>{
       facets.setTargetLive(SimpleTitles.Toggled,
         facets.getTargetState(SimpleTitles.Toggling)as boolean);
     }),
-  Indexing:new TestAppSpec('Indexing',newIndexingTree,buildIndexing),
-  Trigger:new TestAppSpec('Trigger',newTriggerTree,buildTrigger),
-  AllNonSelecting:new TestAppSpec('AllNonSelecting',newAllSimplesTree,
+  Indexing:new TestAppSpec('Indexing',Trees.newIndexingTree,buildIndexing),
+  Trigger:new TestAppSpec('Trigger',Trees.newTriggerTree,buildTrigger),
+  AllNonSelecting:new TestAppSpec('AllNonSelecting',Trees.newAllSimplesTree,
     true?buildAllSimples:buildAllSimplesForm),
-  SelectingTyped:new TestAppSpec('SelectingTyped',newSelectingTypedTree,
+  SelectingTyped:new TestAppSpec('SelectingTyped',Trees.newSelectingTypedTree,
     buildSelectingTyped,
     (facets:Facets,activeTitle:string)=>{
       traceThing('^disableAll',{activeTitle:activeTitle});
@@ -79,9 +73,9 @@ const TestAppSpecs={
         ),
       );
     }),
-  SelectingScrolling:new TestAppSpec('SelectingScrolling',newSelectingScrollingTree,
+  SelectingScrolling:new TestAppSpec('SelectingScrolling',Trees.newSelectingScrollingTree,
     buildSelectingScrolling,
-    (f:Facets,activeTitle:string)=>selectingFacetsRetargeted(f)),
+    (f:Facets,activeTitle:string)=>Selecting.facetsRetargeted(f)),
 };
 function buildTextual(facets:Facets){
   const first=SimpleTitles.FirstTextual,second=SimpleTitles.SecondTextual;

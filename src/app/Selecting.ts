@@ -96,29 +96,30 @@ export class ScrollableList implements ItemScroller{
     this.facets.updateTarget(this.indexingTitle,at)
   }
 }
-export function newSelectingActionTargets(f:Facets,list:ScrollableList){
-  return [
-    f.newTriggerTarget(SelectingTitles.UpButton,{
-      targetStateUpdated:()=>list.swapItemDown(),
-    }),
-    f.newTriggerTarget(SelectingTitles.DownButton,{
-      targetStateUpdated:()=>list.swapItemUp(),
-    }),
-    f.newTriggerTarget(SelectingTitles.DeleteButton,{
-      targetStateUpdated:()=>list.deleteItem(),
-    }),
-    f.newTriggerTarget(SelectingTitles.NewButton,{
-      targetStateUpdated:()=>list.addItem(),
-    }),
-  ]
+export namespace Selecting{
+  export function newActionTargets(f:Facets,list:ScrollableList){
+    return [
+      f.newTriggerTarget(SelectingTitles.UpButton,{
+        targetStateUpdated:()=>list.swapItemDown(),
+      }),
+      f.newTriggerTarget(SelectingTitles.DownButton,{
+        targetStateUpdated:()=>list.swapItemUp(),
+      }),
+      f.newTriggerTarget(SelectingTitles.DeleteButton,{
+        targetStateUpdated:()=>list.deleteItem(),
+      }),
+      f.newTriggerTarget(SelectingTitles.NewButton,{
+        targetStateUpdated:()=>list.addItem(),
+      }),
+    ]
+  }
+  export function facetsRetargeted(f:Facets){
+    let items:ScrollableList=f.supplement as ScrollableList;
+    traceThing('^facetsRetargeted');
+    const itemAt=items.itemAt(items.getShowAt());
+    f.setTargetLive(SelectingTitles.DeleteButton,textContents.length>1);
+    f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
+    f.setTargetLive(SelectingTitles.DownButton,
+      itemAt<textContents.length-1);
+  }
 }
-export function selectingFacetsRetargeted(f:Facets){
-  let items:ScrollableList=f.supplement as ScrollableList;
-  traceThing('^selectingFacetsRetargeted');
-  const itemAt=items.itemAt(items.getShowAt());
-  f.setTargetLive(SelectingTitles.DeleteButton,textContents.length>1);
-  f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
-  f.setTargetLive(SelectingTitles.DownButton,
-    itemAt<textContents.length-1);
-}
-
