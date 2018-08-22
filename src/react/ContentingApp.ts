@@ -25,11 +25,11 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import contents=Texts.contents;
 export class ContentingApp extends AppCore{
-  readonly fullListTargets=true;
+  private readonly fullListTargets=true;
   private readonly chooserTitle=SelectingTitles.Chooser;
   private readonly indexingTitle=SimpleTitles.Indexing;
   private readonly list:ScrollableList;
-  constructor(readonly layoutBuild:(app:ContentingApp,f:Facets)=>void){
+  constructor(readonly layoutBuild:(f:Facets,fullListTargets:boolean)=>void){
     super(newInstance(false));
     this.list=new ScrollableList(Texts.contents,3,this.facets,this.indexingTitle);
   }
@@ -105,7 +105,7 @@ export class ContentingApp extends AppCore{
     traceThing('^disableAll',activeTitle);
   }
   buildLayout(){
-    this.layoutBuild(this,this.facets)
+    this.layoutBuild(this.facets,this.fullListTargets)
   }
 }
 

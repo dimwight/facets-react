@@ -222,7 +222,7 @@ function buildSelectingScrolling(facets:Facets){
     document.getElementById('root'),
   );
 }
-export function buildContentingLayout(app:ContentingApp,f:Facets){
+export function buildContentingLayout(f:Facets,fullListTargets:boolean){
   function newEditField(tail:string){
     return (<PanelRow>
       <TextualField title={Selectings.TextEditField+tail} facets={f} cols={30}/>
@@ -241,7 +241,7 @@ export function buildContentingLayout(app:ContentingApp,f:Facets){
           title={Simples.Indexing}
           facets={f}
           listWidth={200}/>
-        {app.fullListTargets?<PanelRow>
+        {fullListTargets?<PanelRow>
             <TriggerButton title={Selectings.UpButton} facets={f}/>
             <TriggerButton title={Selectings.DownButton} facets={f}/>
             <TriggerButton title={Selectings.DeleteButton} facets={f}/>
