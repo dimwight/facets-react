@@ -34,7 +34,7 @@ const fts = Object.assign({}, common, {
   sourceMap: true,
   entry: 'fts/Facets.js',
   moduleName: 'Facets',
-  dest: 'public/Facets_.js',
+  dest: 'public/Facets.js',
 });
 
 const bundle = false?fts:main;
