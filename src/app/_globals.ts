@@ -1,7 +1,8 @@
-export * from './Selecting'
+export * from './Scrolling'
 export * from './AppCore'
 export namespace SimpleTitles{
-  export const FirstTextual='First',SecondTextual='Second',
+  export const
+    FirstTextual='First',SecondTextual='Second',
     Indexing='Choose Item',
     Index='Index',Indexed='Indexed',IndexStart=0,
     TextualIndexables=[FirstTextual,SecondTextual],
@@ -11,7 +12,8 @@ export namespace SimpleTitles{
     NumericField='Number',NumericLabel='Value',NumericStart=123;
 }
 export namespace SelectingTitles{
-  export const Frame='Frame',
+  export const
+    Frame='Frame',
     Selected='Selected',
     Chooser='Select Content',
     Actions='Actions',
