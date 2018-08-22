@@ -7,6 +7,7 @@ import {
   Texts,
 } from '../app/_globals';
 import {
+  Facets,
   newInstance,
   Target,
 } from 'facets-js';
@@ -24,11 +25,11 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import contents=Texts.contents;
 export class ContentingApp extends AppCore{
-  private readonly fullListTargets=true;
+  readonly fullListTargets=true;
   private readonly chooserTitle=SelectingTitles.Chooser;
   private readonly indexingTitle=SimpleTitles.Indexing;
   private readonly list:ScrollableList;
-  constructor(){
+  constructor(readonly buildContentingLayout:(app:ContentingApp,f:Facets)=>void){
     super(newInstance(false));
     this.list=new ScrollableList(Texts.contents,3,this.facets,this.indexingTitle);
   }
@@ -104,51 +105,7 @@ export class ContentingApp extends AppCore{
     traceThing('^disableAll',activeTitle);
   }
   buildLayout(){
-    function newEditField(tail:string){
-      return (<PanelRow>
-        <TextualField title={SelectingTitles.TextEditField+tail} facets={f} cols={30}/>
-      </PanelRow>)
-    }
-    function newSaveCancelRow(tail:string){
-      return (<PanelRow>
-        <TriggerButton title={SelectingTitles.SaveEditButton+tail} facets={f}/>
-        <TriggerButton title={SelectingTitles.CancelEditButton+tail} facets={f}/>
-      </PanelRow>)
-    }
-    let tail=Texts.Type.ShowChars.titleTail;
-    let f=this.facets;
-    ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
-        <RowPanel title={SelectingTitles.Chooser}>
-          <IndexingList
-            title={SimpleTitles.Indexing}
-            facets={f}
-            listWidth={200}/>
-          {this.fullListTargets?<PanelRow>
-              <TriggerButton title={SelectingTitles.UpButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.DownButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.DeleteButton} facets={f}/>
-              <br/><br/>
-              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
-            </PanelRow>
-            :<PanelRow>
-              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
-            </PanelRow>
-          }
-        </RowPanel>
-        <RowPanel title={Texts.Type.Standard.name}>
-          {newEditField('')}
-          {newSaveCancelRow('')}
-        </RowPanel>
-        <RowPanel title={Texts.Type.ShowChars.name}>
-          {newEditField(tail)}
-          <PanelRow>
-            <TextualLabel title={SelectingTitles.CharsCount+tail} facets={f}/>
-          </PanelRow>
-          {newSaveCancelRow(tail)}
-        </RowPanel>
-      </ShowPanel>,
-      document.getElementById('root'),
-    );
+    this.buildContentingLayout(this,this.facets)
   }
 }
 

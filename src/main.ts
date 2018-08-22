@@ -1,4 +1,9 @@
-import {launchApp as testApps} from './react/_globals';
+import {
+  ContentingApp,
+  launchApp as testApps,
+  buildContentingLayout,
+} from './react/_globals';
 import {launchApp as calendar} from './calendar/_locals';
-if(true)testApps();
+if(false)testApps();
+else if(true) new ContentingApp(buildContentingLayout).buildSurface();
 else calendar();

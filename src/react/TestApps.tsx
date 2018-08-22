@@ -223,7 +223,52 @@ function buildSelectingScrolling(facets:Facets){
     document.getElementById('root'),
   );
 }
+export function buildContentingLayout(app:ContentingApp,f:Facets){
+  function newEditField(tail:string){
+    return (<PanelRow>
+      <TextualField title={Selectings.TextEditField+tail} facets={f} cols={30}/>
+    </PanelRow>)
+  }
+  function newSaveCancelRow(tail:string){
+    return (<PanelRow>
+      <TriggerButton title={Selectings.SaveEditButton+tail} facets={f}/>
+      <TriggerButton title={Selectings.CancelEditButton+tail} facets={f}/>
+    </PanelRow>)
+  }
+  let tail=Texts.Type.ShowChars.titleTail;
+  ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
+      <RowPanel title={Selectings.Chooser}>
+        <IndexingList
+          title={Simples.Indexing}
+          facets={f}
+          listWidth={200}/>
+        {app.fullListTargets?<PanelRow>
+            <TriggerButton title={Selectings.UpButton} facets={f}/>
+            <TriggerButton title={Selectings.DownButton} facets={f}/>
+            <TriggerButton title={Selectings.DeleteButton} facets={f}/>
+            <br/><br/>
+            <TriggerButton title={Selectings.OpenEditButton} facets={f}/>
+          </PanelRow>
+          :<PanelRow>
+            <TriggerButton title={Selectings.OpenEditButton} facets={f}/>
+          </PanelRow>
+        }
+      </RowPanel>
+      <RowPanel title={Texts.Type.Standard.name}>
+        {newEditField('')}
+        {newSaveCancelRow('')}
+      </RowPanel>
+      <RowPanel title={Texts.Type.ShowChars.name}>
+        {newEditField(tail)}
+        <PanelRow>
+          <TextualLabel title={Selectings.CharsCount+tail} facets={f}/>
+        </PanelRow>
+        {newSaveCancelRow(tail)}
+      </RowPanel>
+    </ShowPanel>,
+    document.getElementById('root'),
+  );
+}
 export function launchApp(){
-  if(true) new App(Specs.AllNonSelecting).buildSurface();
-  else new ContentingApp().buildSurface();
+  new App(Specs.SelectingTyped).buildSurface();
 }
