@@ -9,13 +9,11 @@ import {
   ScrollableList,
   SelectingTitles,
   SimpleTitles,
-  TextContent,
-  textContents,
-  TextContentType,
+  Texts,
 } from './_globals';
 import {traceThing} from '../util/_globals';
 export namespace Trees{
-  export function newTextualTree(facets:Facets){
+  export function newTextual(facets:Facets){
     const first=facets.newTextualTarget(SimpleTitles.FirstTextual,{
         passText:'Some text for '+SimpleTitles.FirstTextual,
         targetStateUpdated:state=>{
@@ -28,7 +26,7 @@ export namespace Trees{
       });
     return facets.newTargetGroup('TextualTest',[first,second]);
   }
-  export function newTogglingTree(facets:Facets,setLive:boolean){
+  export function newToggling(facets:Facets,setLive:boolean){
     const toggling=facets.newTogglingTarget(SimpleTitles.Toggling,{
         passSet:SimpleTitles.ToggleStart,
         targetStateUpdated:state=>{
@@ -40,7 +38,7 @@ export namespace Trees{
       });
     return facets.newTargetGroup('TogglingTest',[toggling,toggled]);
   }
-  export function newTriggerTree(facets:Facets){
+  export function newTrigger(facets:Facets){
     let triggers:number=0;
     const trigger=facets.newTriggerTarget(SimpleTitles.Trigger,{
         targetStateUpdated:(state,title)=>{
@@ -56,7 +54,7 @@ export namespace Trees{
       });
     return facets.newTargetGroup('TriggerTest',[trigger,triggered]);
   }
-  export function newIndexingTree(facets:Facets){
+  export function newIndexing(facets:Facets){
     const indexing=facets.newIndexingTarget(SimpleTitles.Indexing,{
         passIndex:0,
         newUiSelectable:(indexable)=>indexable,
@@ -70,12 +68,12 @@ export namespace Trees{
       });
     return facets.newTargetGroup('IndexingTest',[indexing,index,indexed]);
   }
-  export function newAllSimplesTree(facets:Facets):Target{
+  export function newAllSimples(facets:Facets):Target{
     return facets.newTargetGroup('AllSimples',[
-      newTextualTree(facets),
-      newTogglingTree(facets,true),
-      newIndexingTree(facets),
-      newTriggerTree(facets)]);
+      newTextual(facets),
+      newToggling(facets,true),
+      newIndexing(facets),
+      newTrigger(facets)]);
   }
   export function setSimplesLive(facets:Facets,state:boolean){
     [SimpleTitles.FirstTextual,SimpleTitles.SecondTextual,
@@ -85,18 +83,18 @@ export namespace Trees{
       facets.setTargetLive(title,state);
     })
   }
-  export function newSelectingTypedTree(facets:Facets){
+  export function newSelectingTyped(facets:Facets){
     function listAt():number{
       return facets.getTargetState(frame.indexingTitle as string) as number;
     }
-    function getType(indexed:TextContent){
-      return TextContentType.getContentType(indexed);
+    function getType(indexed:Texts.Content){
+      return Texts.Type.getContentType(indexed);
     }
     const frame:IndexingFramePolicy={
       frameTitle:SelectingTitles.Frame,
       indexingTitle:SelectingTitles.Chooser,
-      getIndexables:()=>textContents,
-      newUiSelectable:(item:TextContent)=>item.text,
+      getIndexables:()=>Texts.contents,
+      newUiSelectable:(item:Texts.Content)=>item.text,
       newFrameTargets:()=>[
         facets.newTextualTarget(SimpleTitles.Indexed,{
           getText:()=>getType(facets.getIndexingState(
@@ -105,7 +103,7 @@ export namespace Trees{
       ]
       ,
       newIndexedTreeTitle:indexed=>SelectingTitles.Selected+getType(indexed).titleTail,
-      newIndexedTree:(indexed:TextContent,title:string)=>{
+      newIndexedTree:(indexed:Texts.Content,title:string)=>{
         const tail=getType(indexed).titleTail;
         return facets.newTargetGroup(title,tail===''?[
           facets.newTextualTarget(SelectingTitles.OpenEditButton,{
@@ -125,17 +123,17 @@ export namespace Trees{
     };
     return facets.newIndexingFrame(frame);
   }
-  export function newSelectingScrollingTree(facets:Facets){
-      let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
-      const list:ScrollableList=new ScrollableList(textContents,3,facets,SelectingTitles.Chooser,createNew);
+  export function newSelectingScrolling(facets:Facets){
+      let createNew=(from:Texts.Content)=>({text:from.text+'+'}as Texts.Content);
+      const list:ScrollableList=new ScrollableList(Texts.contents,3,facets,SelectingTitles.Chooser,createNew);
       const frame:IndexingFramePolicy={
         frameTitle:SelectingTitles.Frame,
         indexingTitle:SelectingTitles.Chooser,
         newFrameTargets:()=>Selecting.newActionTargets(facets,list),
         getIndexables:()=>list.getScrolledItems(),
-        newUiSelectable:(item:TextContent)=>item.text,
+        newUiSelectable:(item:Texts.Content)=>item.text,
         newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
-        newIndexedTree:(indexed:TextContent,title:string)=>{
+        newIndexedTree:(indexed:Texts.Content,title:string)=>{
           traceThing('^newIndexedTargets',{indexed:indexed});
           return facets.newTargetGroup(title,[
             facets.newTextualTarget(SelectingTitles.OpenEditButton,{

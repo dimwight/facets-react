@@ -6,7 +6,7 @@ import {
 } from '../util/_globals';
 import {
   SelectingTitles,
-  textContents,
+  Texts,
 } from './_globals';
 export interface ItemScroller{
   scrollItems(skip:number):void
@@ -117,9 +117,10 @@ export namespace Selecting{
     let items:ScrollableList=f.supplement as ScrollableList;
     traceThing('^facetsRetargeted');
     const itemAt=items.itemAt(items.getShowAt());
-    f.setTargetLive(SelectingTitles.DeleteButton,textContents.length>1);
+    const textsCount=Texts.contents.length;
+    f.setTargetLive(SelectingTitles.DeleteButton,textsCount>1);
     f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
     f.setTargetLive(SelectingTitles.DownButton,
-      itemAt<textContents.length-1);
+      itemAt<textsCount-1);
   }
 }

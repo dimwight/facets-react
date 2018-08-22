@@ -4,9 +4,7 @@ import {
   ScrollableList,
   SelectingTitles,
   SimpleTitles,
-  TextContent,
-  textContents,
-  TextContentType,
+  Texts,
 } from '../app/_globals';
 import {
   newInstance,
@@ -24,6 +22,7 @@ import {
 } from './_globals';
 import ReactDOM from 'react-dom';
 import React from 'react';
+import contents=Texts.contents;
 export class ContentingApp extends AppCore{
   private readonly fullListTargets=true;
   private readonly chooserTitle=SelectingTitles.Chooser;
@@ -31,14 +30,14 @@ export class ContentingApp extends AppCore{
   private readonly list:ScrollableList;
   constructor(){
     super(newInstance(false));
-    this.list=new ScrollableList(textContents,3,this.facets,this.indexingTitle);
+    this.list=new ScrollableList(Texts.contents,3,this.facets,this.indexingTitle);
   }
   newContentTrees():Target|Target[]{
     function activateChooser(){
       f.activateContentTree(SelectingTitles.Chooser);
     }
-    function newContentTree(content:TextContent):Target{
-      function newEditTarget(indexed:TextContent,tail:string,onTextEdit:()=>void){
+    function newContentTree(content:Texts.Content):Target{
+      function newEditTarget(indexed:Texts.Content,tail:string,onTextEdit:()=>void){
         return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
           passText:indexed.text,
           targetStateUpdated:(state,title)=>{
@@ -50,19 +49,18 @@ export class ContentingApp extends AppCore{
       function newCharsTarget(tail:string){
         return f.newTextualTarget(SelectingTitles.CharsCount+tail,{
           getText:(title)=>''+(f.getTargetState(
-            SelectingTitles.TextEditField+TextContentType.ShowChars.titleTail)as string).length,
+            SelectingTitles.TextEditField+Texts.Type.ShowChars.titleTail)as string).length,
         })
       }
-      let type=TextContentType.getContentType(content);
+      let type=Texts.Type.getContentType(content);
       let tail=type.titleTail;
       let members:Target[]=[];
       const saveTitle=SelectingTitles.SaveEditButton+tail;
       const onTextEdit=()=>{
-        traceThing('^onTextEdit',{saveTitle:saveTitle})
         f.setTargetLive(saveTitle,true)
       };
       members.push(newEditTarget(content,tail,onTextEdit));
-      if(type==TextContentType.ShowChars) members.push(newCharsTarget(tail));
+      if(type==Texts.Type.ShowChars) members.push(newCharsTarget(tail));
 
       members.push(f.newTriggerTarget(saveTitle,{
         passLive:false,
@@ -77,7 +75,7 @@ export class ContentingApp extends AppCore{
       return f.newTargetGroup(type.name,members);
     }
     let f=this.facets;
-    let active:TextContent,edit:TextContent;
+    let active:Texts.Content,edit:Texts.Content;
     let chooserTargets=this.fullListTargets?Selecting.newActionTargets(f,this.list):[];
     chooserTargets.push(
       f.newTriggerTarget(SelectingTitles.OpenEditButton,{
@@ -90,14 +88,14 @@ export class ContentingApp extends AppCore{
       }));
     let trees:Target[]=[];
     trees.push(
-      newContentTree(textContents[0]),
-      newContentTree(textContents[1]),
+      newContentTree(contents[0]),
+      newContentTree(contents[1]),
       f.newIndexingFrame({
         frameTitle:this.chooserTitle,
         indexingTitle:this.indexingTitle,
         getIndexables:()=>this.list.getScrolledItems(),
         newFrameTargets:()=>chooserTargets,
-        newUiSelectable:(item:TextContent)=>item.text,
+        newUiSelectable:(item:Texts.Content)=>item.text,
       }));
     return trees;
   }
@@ -117,7 +115,7 @@ export class ContentingApp extends AppCore{
         <TriggerButton title={SelectingTitles.CancelEditButton+tail} facets={f}/>
       </PanelRow>)
     }
-    let tail=TextContentType.ShowChars.titleTail;
+    let tail=Texts.Type.ShowChars.titleTail;
     let f=this.facets;
     ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
         <RowPanel title={SelectingTitles.Chooser}>
@@ -137,11 +135,11 @@ export class ContentingApp extends AppCore{
             </PanelRow>
           }
         </RowPanel>
-        <RowPanel title={TextContentType.Standard.name}>
+        <RowPanel title={Texts.Type.Standard.name}>
           {newEditField('')}
           {newSaveCancelRow('')}
         </RowPanel>
-        <RowPanel title={TextContentType.ShowChars.name}>
+        <RowPanel title={Texts.Type.ShowChars.name}>
           {newEditField(tail)}
           <PanelRow>
             <TextualLabel title={SelectingTitles.CharsCount+tail} facets={f}/>

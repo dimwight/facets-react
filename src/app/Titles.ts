@@ -26,7 +26,7 @@ export namespace SelectingTitles{
     DownButton='Move Down',
     DeleteButton='Delete',
     OpenEditButton='Edit',
-    TextEditField='Edit Text',
+    TextEditField='Edit Texts',
     SaveEditButton='Save',
     CancelEditButton='Cancel',
     CharsCount='Characters';
