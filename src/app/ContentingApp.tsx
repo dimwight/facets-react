@@ -1,7 +1,7 @@
 import {
   AppCore,
-  listFacetsRetargeted,
-  newListActionTargets,
+  selectingFacetsRetargeted,
+  newSelectingActionTargets,
   ScrollableList,
   SelectingTitles,
   SimpleTitles,
@@ -79,7 +79,7 @@ export class ContentingApp extends AppCore{
     }
     let f=this.facets;
     let active:TextContent,edit:TextContent;
-    let chooserTargets=this.fullListTargets?newListActionTargets(f,this.list):[];
+    let chooserTargets=this.fullListTargets?newSelectingActionTargets(f,this.list):[];
     chooserTargets.push(
       f.newTriggerTarget(SelectingTitles.OpenEditButton,{
         targetStateUpdated:()=>{
@@ -103,7 +103,7 @@ export class ContentingApp extends AppCore{
     return trees;
   }
   onRetargeted(activeTitle:string){
-    if(this.fullListTargets) listFacetsRetargeted(this.facets);
+    if(this.fullListTargets) selectingFacetsRetargeted(this.facets);
     traceThing('^disableAll',activeTitle);
   }
   buildLayout(){

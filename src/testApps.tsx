@@ -26,11 +26,11 @@ import {
   SelectingTitles,
   AppCore,
   SimpleTitles,
-  newListActionTargets,
+  newSelectingActionTargets,
   TextContentType,
   TextContent,
   textContents,
-  listFacetsRetargeted,
+  selectingFacetsRetargeted,
   ContentingApp,
 } from './app/_globals';
 import {traceThing,} from './util/_globals';
@@ -256,7 +256,7 @@ function newSelectingScrollingTree(facets:Facets){
   const frame:IndexingFramePolicy={
     frameTitle:SelectingTitles.Frame,
     indexingTitle:SelectingTitles.Chooser,
-    newFrameTargets:()=>newListActionTargets(facets,list),
+    newFrameTargets:()=>newSelectingActionTargets(facets,list),
     getIndexables:()=>list.getScrolledItems(),
     newUiSelectable:(item:TextContent)=>item.text,
     newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
@@ -362,7 +362,7 @@ const SimpleTests={
     }),
   SelectingScrolling:new SimpleTest('SelectingScrolling',newSelectingScrollingTree,
     buildSelectingScrolling,
-    (f:Facets,activeTitle:string)=>listFacetsRetargeted(f)),
+    (f:Facets,activeTitle:string)=>selectingFacetsRetargeted(f)),
 };
 export function launchApp(){
   if(true) new SimpleApp(SimpleTests.SelectingTyped).buildSurface();

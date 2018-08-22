@@ -96,7 +96,7 @@ export class ScrollableList implements ItemScroller{
     this.facets.updateTarget(this.indexingTitle,at)
   }
 }
-export function newListActionTargets(f:Facets,list:ScrollableList){
+export function newSelectingActionTargets(f:Facets,list:ScrollableList){
   return [
     f.newTriggerTarget(SelectingTitles.UpButton,{
       targetStateUpdated:()=>list.swapItemDown(),
@@ -112,9 +112,9 @@ export function newListActionTargets(f:Facets,list:ScrollableList){
     }),
   ]
 }
-export function listFacetsRetargeted(f:Facets){
+export function selectingFacetsRetargeted(f:Facets){
   let items:ScrollableList=f.supplement as ScrollableList;
-  traceThing('^listFacetsRetargeted');
+  traceThing('^selectingFacetsRetargeted');
   const itemAt=items.itemAt(items.getShowAt());
   f.setTargetLive(SelectingTitles.DeleteButton,textContents.length>1);
   f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
