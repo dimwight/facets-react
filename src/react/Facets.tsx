@@ -6,7 +6,7 @@ import {
 } from 'facets-js';
 import {SmartTextField} from './_locals';
 import {IndexingDropdown} from './_globals';
-import './Facet.css';
+import './Facets.css';
 export type FnGetBoolean=()=>boolean
 export type FnPassString=(string:string)=>void
 export type FnGetString=()=>string

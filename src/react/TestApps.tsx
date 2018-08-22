@@ -6,6 +6,7 @@ import {
   Target,
 } from 'facets-js';
 import {
+  ContentingApp,
   FieldSpec,
   FieldType,
   IndexingDropdown,
@@ -21,7 +22,6 @@ import {
 } from './_globals';
 import {
   AppCore,
-  ContentingApp,
   Selecting,
   Trees,
   SelectingTitles as Selectings,
@@ -29,7 +29,13 @@ import {
   Texts,
 } from '../app/_globals';
 import {traceThing} from '../util/_globals';
-class TestApp extends AppCore{
+class Spec{
+  constructor(readonly name:string,
+              readonly newTrees:(f:Facets,flag?:boolean)=>Target,
+              readonly buildLayout:(f:Facets)=>void,
+              readonly onRetargeted?:(facets:Facets,active:string)=>void,){}
+}
+class App extends AppCore{
   constructor(readonly test:Spec){
     super(newInstance(false));
   }
@@ -44,12 +50,6 @@ class TestApp extends AppCore{
   buildLayout(){
     this.test.buildLayout(this.facets)
   }
-}
-class Spec{
-  constructor(readonly name:string,
-              readonly newTrees:(f:Facets,flag?:boolean)=>Target,
-              readonly buildLayout:(f:Facets)=>void,
-              readonly onRetargeted?:(facets:Facets,active:string)=>void,){}
 }
 const Specs={
   Textual:new Spec('Textual',Trees.newTextual,buildTextual),
@@ -132,7 +132,7 @@ function buildAllSimples(facets:Facets){
         <TextualLabel title={Simples.Toggled} facets={facets}/>
       </RowPanel>
       <RowPanel title={Specs.Indexing.name} withRubric={true}>
-        {false?<IndexingDropdown title={Simples.Indexing} facets={facets}/>
+        {true?<IndexingDropdown title={Simples.Indexing} facets={facets}/>
           :<IndexingList title={Simples.Indexing} facets={facets}/>}
         <TextualLabel title={Simples.Index} facets={facets}/>
         <TextualLabel title={Simples.Indexed} facets={facets}/>
@@ -224,6 +224,6 @@ function buildSelectingScrolling(facets:Facets){
   );
 }
 export function launchApp(){
-  if(true) new TestApp(Specs.SelectingTyped).buildSurface();
+  if(true) new App(Specs.AllNonSelecting).buildSurface();
   else new ContentingApp().buildSurface();
 }

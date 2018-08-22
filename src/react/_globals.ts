@@ -1,4 +1,5 @@
-export * from './Facet';
+export * from './Facets';
 export * from './Indexing'
 export * from './TestApps'
+export * from './ContentingApp'
 

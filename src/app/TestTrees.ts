@@ -7,64 +7,64 @@ import {
 import {
   Selecting,
   ScrollableList,
-  SelectingTitles,
-  SimpleTitles,
+  SelectingTitles as Selectings,
+  SimpleTitles as Simples,
   Texts,
 } from './_globals';
 import {traceThing} from '../util/_globals';
 export namespace Trees{
   export function newTextual(facets:Facets){
-    const first=facets.newTextualTarget(SimpleTitles.FirstTextual,{
-        passText:'Some text for '+SimpleTitles.FirstTextual,
+    const first=facets.newTextualTarget(Simples.FirstTextual,{
+        passText:'Some text for '+Simples.FirstTextual,
         targetStateUpdated:state=>{
-          facets.updateTarget(SimpleTitles.SecondTextual,
-            SimpleTitles.FirstTextual+' has changed to: '+state);
+          facets.updateTarget(Simples.SecondTextual,
+            Simples.FirstTextual+' has changed to: '+state);
         },
       }),
-      second=facets.newTextualTarget(SimpleTitles.SecondTextual,{
-        passText:'Some text for '+SimpleTitles.SecondTextual,
+      second=facets.newTextualTarget(Simples.SecondTextual,{
+        passText:'Some text for '+Simples.SecondTextual,
       });
     return facets.newTargetGroup('TextualTest',[first,second]);
   }
   export function newToggling(facets:Facets,setLive:boolean){
-    const toggling=facets.newTogglingTarget(SimpleTitles.Toggling,{
-        passSet:SimpleTitles.ToggleStart,
+    const toggling=facets.newTogglingTarget(Simples.Toggling,{
+        passSet:Simples.ToggleStart,
         targetStateUpdated:state=>{
           if(setLive) Trees.setSimplesLive(facets,state as boolean)
         },
       }),
-      toggled=facets.newTextualTarget(SimpleTitles.Toggled,{
-        getText:()=>facets.getTargetState(SimpleTitles.Toggling)as boolean?'Set':'Not set',
+      toggled=facets.newTextualTarget(Simples.Toggled,{
+        getText:()=>facets.getTargetState(Simples.Toggling)as boolean?'Set':'Not set',
       });
     return facets.newTargetGroup('TogglingTest',[toggling,toggled]);
   }
   export function newTrigger(facets:Facets){
     let triggers:number=0;
-    const trigger=facets.newTriggerTarget(SimpleTitles.Trigger,{
+    const trigger=facets.newTriggerTarget(Simples.Trigger,{
         targetStateUpdated:(state,title)=>{
           if(++triggers>4) facets.setTargetLive(title,false);
         },
       }),
-      triggered=facets.newTextualTarget(SimpleTitles.Triggereds,{
+      triggered=facets.newTextualTarget(Simples.Triggereds,{
         getText:()=>{
           const count=triggers.toString();
-          return !facets.isTargetLive(SimpleTitles.Trigger)?
+          return !facets.isTargetLive(Simples.Trigger)?
             `No more than ${count}!`:count
         },
       });
     return facets.newTargetGroup('TriggerTest',[trigger,triggered]);
   }
   export function newIndexing(facets:Facets){
-    const indexing=facets.newIndexingTarget(SimpleTitles.Indexing,{
+    const indexing=facets.newIndexingTarget(Simples.Indexing,{
         passIndex:0,
         newUiSelectable:(indexable)=>indexable,
-        getIndexables:()=>SimpleTitles.TextualIndexables,
+        getIndexables:()=>Simples.TextualIndexables,
       } as IndexingCoupler),
-      index=facets.newTextualTarget(SimpleTitles.Index,{
-        getText:()=>''+facets.getTargetState(SimpleTitles.Indexing),
+      index=facets.newTextualTarget(Simples.Index,{
+        getText:()=>''+facets.getTargetState(Simples.Indexing),
       }),
-      indexed=facets.newTextualTarget(SimpleTitles.Indexed,{
-        getText:()=>SimpleTitles.TextualIndexables[facets.getTargetState(SimpleTitles.Indexing)as number],
+      indexed=facets.newTextualTarget(Simples.Indexed,{
+        getText:()=>Simples.TextualIndexables[facets.getTargetState(Simples.Indexing)as number],
       });
     return facets.newTargetGroup('IndexingTest',[indexing,index,indexed]);
   }
@@ -76,9 +76,9 @@ export namespace Trees{
       newTrigger(facets)]);
   }
   export function setSimplesLive(facets:Facets,state:boolean){
-    [SimpleTitles.FirstTextual,SimpleTitles.SecondTextual,
-      SimpleTitles.Indexed,SimpleTitles.Indexing,SimpleTitles.Index,
-      SimpleTitles.Trigger,SimpleTitles.Triggereds,
+    [Simples.FirstTextual,Simples.SecondTextual,
+      Simples.Indexed,Simples.Indexing,Simples.Index,
+      Simples.Trigger,Simples.Triggereds,
     ].forEach(title=>{
       facets.setTargetLive(title,state);
     })
@@ -91,31 +91,31 @@ export namespace Trees{
       return Texts.Type.getContentType(indexed);
     }
     const frame:IndexingFramePolicy={
-      frameTitle:SelectingTitles.Frame,
-      indexingTitle:SelectingTitles.Chooser,
+      frameTitle:Selectings.Frame,
+      indexingTitle:Selectings.Chooser,
       getIndexables:()=>Texts.contents,
       newUiSelectable:(item:Texts.Content)=>item.text,
       newFrameTargets:()=>[
-        facets.newTextualTarget(SimpleTitles.Indexed,{
+        facets.newTextualTarget(Simples.Indexed,{
           getText:()=>getType(facets.getIndexingState(
-            SelectingTitles.Chooser).indexed).name,
+            Selectings.Chooser).indexed).name,
         }),
       ]
       ,
-      newIndexedTreeTitle:indexed=>SelectingTitles.Selected+getType(indexed).titleTail,
+      newIndexedTreeTitle:indexed=>Selectings.Selected+getType(indexed).titleTail,
       newIndexedTree:(indexed:Texts.Content,title:string)=>{
         const tail=getType(indexed).titleTail;
         return facets.newTargetGroup(title,tail===''?[
-          facets.newTextualTarget(SelectingTitles.OpenEditButton,{
+          facets.newTextualTarget(Selectings.OpenEditButton,{
             passText:indexed.text,
             targetStateUpdated:state=>indexed.text=state as string,
           }),
         ]:[
-          facets.newTextualTarget(SelectingTitles.OpenEditButton+tail,{
+          facets.newTextualTarget(Selectings.OpenEditButton+tail,{
             passText:indexed.text,
             targetStateUpdated:state=>indexed.text=state as string,
           }),
-          facets.newTextualTarget(SelectingTitles.CharsCount+tail,{
+          facets.newTextualTarget(Selectings.CharsCount+tail,{
             getText:()=>''+indexed.text.length,
           }),
         ])
@@ -125,23 +125,23 @@ export namespace Trees{
   }
   export function newSelectingScrolling(facets:Facets){
       let createNew=(from:Texts.Content)=>({text:from.text+'+'}as Texts.Content);
-      const list:ScrollableList=new ScrollableList(Texts.contents,3,facets,SelectingTitles.Chooser,createNew);
+      const list:ScrollableList=new ScrollableList(Texts.contents,3,facets,Selectings.Chooser,createNew);
       const frame:IndexingFramePolicy={
-        frameTitle:SelectingTitles.Frame,
-        indexingTitle:SelectingTitles.Chooser,
+        frameTitle:Selectings.Frame,
+        indexingTitle:Selectings.Chooser,
         newFrameTargets:()=>Selecting.newActionTargets(facets,list),
         getIndexables:()=>list.getScrolledItems(),
         newUiSelectable:(item:Texts.Content)=>item.text,
-        newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
+        newIndexedTreeTitle:indexed=>Selectings.Selected,
         newIndexedTree:(indexed:Texts.Content,title:string)=>{
           traceThing('^newIndexedTargets',{indexed:indexed});
           return facets.newTargetGroup(title,[
-            facets.newTextualTarget(SelectingTitles.OpenEditButton,{
+            facets.newTextualTarget(Selectings.OpenEditButton,{
               passText:indexed.text,
               targetStateUpdated:state=>indexed.text=state as string,
             }),
-            facets.newTextualTarget(SelectingTitles.CharsCount,{
-              getText:()=>''+(facets.getTargetState(SelectingTitles.OpenEditButton)as string
+            facets.newTextualTarget(Selectings.CharsCount,{
+              getText:()=>''+(facets.getTargetState(Selectings.OpenEditButton)as string
               ).length,
             }),
           ])

@@ -3,7 +3,7 @@ import {
   FnPassString,
   FnGetString,
   FnGetBoolean,
-} from './Facet'
+} from './Facets'
 import {traceThing} from '../Util/Bits';
 interface TextFieldProps{
   getStartText?:FnGetString

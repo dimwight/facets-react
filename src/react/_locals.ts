@@ -1,2 +1,2 @@
 export * from './SmartTextField'
-export * from './Facet';
+export * from './Facets';
