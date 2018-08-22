@@ -6,7 +6,6 @@ import {
   Target,
 } from 'facets-js';
 import {
-  ContentingApp,
   FieldSpec,
   FieldType,
   IndexingDropdown,
