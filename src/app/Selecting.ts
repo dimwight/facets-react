@@ -4,27 +4,6 @@ import {
   SmartList,
   traceThing,
 } from '../util/_globals';
-export namespace SelectingTitles{
-  export const Frame='Frame',
-    Selected='Selected',
-    Chooser='Select Content',
-    Actions='Actions',
-    Live='Live',
-    NewButton='New',
-    ScrollUp='Scroll Up',
-    ScrollDown='Scroll Down',
-    ScrollBy='Scroll By',
-    UpButton='Move Up',
-    BackButton='Back',
-    ForwardButton='Forward',
-    DownButton='Move Down',
-    DeleteButton='Delete',
-    OpenEditButton='Edit',
-    TextEditField='Edit Text',
-    SaveEditButton='Save',
-    CancelEditButton='Cancel',
-    CharsCount='Characters';
-}
 export interface ItemScroller{
   scrollItems(skip:number):void
 }

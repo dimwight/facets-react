@@ -22,7 +22,7 @@ import {
   ScrollableList,
   SelectingTitles,
   AppCore,
-} from '../facets/_globals';
+} from '../app/_globals';
 import {
   DateTitles,
   DayItem,

@@ -5,7 +5,7 @@ import {
   LabelRubric,
   TargetValues,
 } from './_locals';
-import {ItemScroller} from "../facets/_globals";
+import {ItemScroller} from "../app/_globals";
 import './Indexing.css'
 interface IndexingValues extends TargetValues{
   selectables?:any[]

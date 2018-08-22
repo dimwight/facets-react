@@ -25,18 +25,9 @@ import {
   ScrollableList,
   SelectingTitles,
   AppCore,
-} from './facets/_globals';
+  SimpleTitles
+} from './app/_globals';
 import {traceThing,} from './util/_globals';
-namespace SimpleTitles{
-  export const FirstTextual='First',SecondTextual='Second',
-    Indexing='Choose Item',
-    Index='Index',Indexed='Indexed',IndexStart=0,
-    TextualIndexables=[FirstTextual,SecondTextual],
-    Toggling='Click to toggle',Toggled='Toggled state',
-    Trigger='Click Me!',Triggereds='Button presses',
-    ToggleStart=false,
-    NumericField='Number',NumericLabel='Value',NumericStart=123;
-}
 class SimpleApp extends AppCore{
   constructor(readonly test:SimpleTest){
     super(newInstance(false));
