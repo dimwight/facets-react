@@ -4,7 +4,10 @@ import {
   SmartList,
   traceThing,
 } from '../util/_globals';
-import {SelectingTitles} from './_globals';
+import {
+  SelectingTitles,
+  textContents,
+} from './_globals';
 export interface ItemScroller{
   scrollItems(skip:number):void
 }
@@ -108,5 +111,14 @@ export function newListActionTargets(f:Facets,list:ScrollableList){
       targetStateUpdated:()=>list.addItem(),
     }),
   ]
+}
+export function listFacetsRetargeted(f:Facets){
+  let items:ScrollableList=f.supplement as ScrollableList;
+  traceThing('^listFacetsRetargeted');
+  const itemAt=items.itemAt(items.getShowAt());
+  f.setTargetLive(SelectingTitles.DeleteButton,textContents.length>1);
+  f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
+  f.setTargetLive(SelectingTitles.DownButton,
+    itemAt<textContents.length-1);
 }
 

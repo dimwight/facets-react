@@ -1,5 +1,7 @@
-export * from './Scrolling'
+export * from './List'
 export * from './AppCore'
+export * from './TextContent'
+export * from './ContentingApp'
 export namespace SimpleTitles{
   export const
     FirstTextual='First',SecondTextual='Second',

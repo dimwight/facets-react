@@ -27,6 +27,11 @@ import {
   AppCore,
   SimpleTitles,
   newListActionTargets,
+  TextContentType,
+  TextContent,
+  textContents,
+  listFacetsRetargeted,
+  ContentingApp,
 } from './app/_globals';
 import {traceThing,} from './util/_globals';
 class SimpleApp extends AppCore{
@@ -43,30 +48,6 @@ class SimpleApp extends AppCore{
   }
   buildLayout(){
     this.test.buildLayout(this.facets)
-  }
-}
-class TextContent{
-  constructor(public text:string){}
-  clone():TextContent{
-    return new TextContent(this.text)
-  }
-  copyClone(clone:TextContent){
-    this.text=clone.text
-  }
-}
-const textContents=[
-  new TextContent('Hello world!'),
-  new TextContent('Hello, good evening and welcome!'),
-  new TextContent('Hello Dolly!'),
-  new TextContent('Hello, sailor!'),
-];
-class TextContentType{
-  constructor(readonly name:string,
-              readonly titleTail:string,){}
-  static Standard=new TextContentType('Standard','');
-  static ShowChars=new TextContentType('ShowChars','|ShowChars');
-  static getContentType(content:TextContent){
-    return content.text.length>20?TextContentType.ShowChars:TextContentType.Standard;
   }
 }
 function newTextualTree(facets:Facets){
@@ -383,145 +364,7 @@ const SimpleTests={
     buildSelectingScrolling,
     (f:Facets,activeTitle:string)=>listFacetsRetargeted(f)),
 };
-function listFacetsRetargeted(f:Facets){
-  let items:ScrollableList=f.supplement as ScrollableList;
-  traceThing('^listFacetsRetargeted');
-  const itemAt=items.itemAt(items.getShowAt());
-  f.setTargetLive(SelectingTitles.DeleteButton,textContents.length>1);
-  f.setTargetLive(SelectingTitles.UpButton,itemAt>0);
-  f.setTargetLive(SelectingTitles.DownButton,
-    itemAt<textContents.length-1);
-}
-class ContentingTest extends AppCore{
-  private readonly fullListTargets=true;
-  private readonly chooserTitle=SelectingTitles.Chooser;
-  private readonly indexingTitle=SimpleTitles.Indexing;
-  private readonly list:ScrollableList;
-  constructor(){
-    super(newInstance(false));
-    this.list=new ScrollableList(textContents,3,this.facets,this.indexingTitle);
-  }
-  newContentTrees():Target|Target[]{
-    function activateChooser(){
-      f.activateContentTree(SelectingTitles.Chooser);
-    }
-    function newContentTree(content:TextContent):Target{
-      function newEditTarget(indexed:TextContent,tail:string,onTextEdit:()=>void){
-        return f.newTextualTarget(SelectingTitles.TextEditField+tail,{
-          passText:indexed.text,
-          targetStateUpdated:(state,title)=>{
-            indexed.text=state as string;
-            onTextEdit();
-          },
-        })
-      }
-      function newCharsTarget(tail:string){
-        return f.newTextualTarget(SelectingTitles.CharsCount+tail,{
-          getText:(title)=>''+(f.getTargetState(
-            SelectingTitles.TextEditField+TextContentType.ShowChars.titleTail)as string).length,
-        })
-      }
-      let type=TextContentType.getContentType(content);
-      let tail=type.titleTail;
-      let members:Target[]=[];
-      const saveTitle=SelectingTitles.SaveEditButton+tail;
-      const onTextEdit=()=>{
-        traceThing('^onTextEdit',{saveTitle:saveTitle})
-        f.setTargetLive(saveTitle,true)
-      };
-      members.push(newEditTarget(content,tail,onTextEdit));
-      if(type==TextContentType.ShowChars) members.push(newCharsTarget(tail));
-
-      members.push(f.newTriggerTarget(saveTitle,{
-        passLive:false,
-        targetStateUpdated:(state,title)=>{
-          active.copyClone(edit);
-          activateChooser();
-        },
-      }));
-      members.push(f.newTriggerTarget(SelectingTitles.CancelEditButton+tail,{
-        targetStateUpdated:(state,title)=>activateChooser(),
-      }));
-      return f.newTargetGroup(type.name,members);
-    }
-    let f=this.facets;
-    let active:TextContent,edit:TextContent;
-    let chooserTargets=this.fullListTargets?newListActionTargets(f,this.list):[];
-    chooserTargets.push(
-      f.newTriggerTarget(SelectingTitles.OpenEditButton,{
-        targetStateUpdated:()=>{
-          active=this.facets.getIndexingState(this.indexingTitle)
-            .indexed;
-          this.facets.addContentTree(newContentTree(
-            edit=active.clone()));
-        },
-      }));
-    let trees:Target[]=[];
-    trees.push(
-      newContentTree(textContents[0]),
-      newContentTree(textContents[1]),
-      f.newIndexingFrame({
-        frameTitle:this.chooserTitle,
-        indexingTitle:this.indexingTitle,
-        getIndexables:()=>this.list.getScrolledItems(),
-        newFrameTargets:()=>chooserTargets,
-        newUiSelectable:(item:TextContent)=>item.text,
-      }));
-    return trees;
-  }
-  onRetargeted(activeTitle:string){
-    if(this.fullListTargets) listFacetsRetargeted(this.facets);
-    traceThing('^disableAll',activeTitle);
-  }
-  buildLayout(){
-    function newEditField(tail:string){
-      return (<PanelRow>
-        <TextualField title={SelectingTitles.TextEditField+tail} facets={f} cols={30}/>
-      </PanelRow>)
-    }
-    function newSaveCancelRow(tail:string){
-      return (<PanelRow>
-        <TriggerButton title={SelectingTitles.SaveEditButton+tail} facets={f}/>
-        <TriggerButton title={SelectingTitles.CancelEditButton+tail} facets={f}/>
-      </PanelRow>)
-    }
-    let tail=TextContentType.ShowChars.titleTail;
-    let f=this.facets;
-    ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
-        <RowPanel title={SelectingTitles.Chooser}>
-          <IndexingList
-            title={SimpleTitles.Indexing}
-            facets={f}
-            listWidth={200}/>
-          {this.fullListTargets?<PanelRow>
-              <TriggerButton title={SelectingTitles.UpButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.DownButton} facets={f}/>
-              <TriggerButton title={SelectingTitles.DeleteButton} facets={f}/>
-              <br/><br/>
-              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
-            </PanelRow>
-            :<PanelRow>
-              <TriggerButton title={SelectingTitles.OpenEditButton} facets={f}/>
-            </PanelRow>
-          }
-        </RowPanel>
-        <RowPanel title={TextContentType.Standard.name}>
-          {newEditField('')}
-          {newSaveCancelRow('')}
-        </RowPanel>
-        <RowPanel title={TextContentType.ShowChars.name}>
-          {newEditField(tail)}
-          <PanelRow>
-            <TextualLabel title={SelectingTitles.CharsCount+tail} facets={f}/>
-          </PanelRow>
-          {newSaveCancelRow(tail)}
-        </RowPanel>
-      </ShowPanel>,
-      document.getElementById('root'),
-    );
-  }
-}
 export function launchApp(){
-  if(false) new SimpleApp(SimpleTests.SelectingScrolling).buildSurface();
-  else new ContentingTest().buildSurface();
+  if(true) new SimpleApp(SimpleTests.SelectingTyped).buildSurface();
+  else new ContentingApp().buildSurface();
 }
