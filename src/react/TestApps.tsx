@@ -67,7 +67,7 @@ const Specs={
     (facets:Facets,activeTitle:string)=>{
       traceThing('^disableAll',{activeTitle:activeTitle});
       const live=true?null:facets.getTargetState(Selectings.Live) as boolean;
-      if(live!==null) [Selectings.OpenEditButton,Selectings.CharsCount].forEach(title=>
+      if(live!==null) [Selectings.TextEditField,Selectings.CharsCount].forEach(title=>
         ['',Texts.Type.ShowChars.titleTail].forEach(tail=>
           facets.setTargetLive(title+tail,live),
         ),
@@ -169,8 +169,8 @@ function buildAllSimplesForm(facets:Facets){
 }
 function buildSelectingTyped(facets:Facets){
   function newEditField(tail:string){
-    return false?null:<PanelRow>
-      <TextualField title={Selectings.OpenEditButton+tail} facets={facets}cols={30}/>
+    return <PanelRow>
+      <TextualField title={Selectings.TextEditField+tail} facets={facets}cols={30}/>
     </PanelRow>;
   }
   let tail=Texts.Type.ShowChars.titleTail;
@@ -215,7 +215,7 @@ function buildSelectingScrolling(facets:Facets){
           <TriggerButton title={Selectings.NewButton} facets={facets}/>
         </PanelRow>
         <PanelRow>
-          <TextualField title={Selectings.OpenEditButton} facets={facets} cols={30}/>
+          <TextualField title={Selectings.TextEditField} facets={facets} cols={30}/>
         </PanelRow>
       </RowPanel>
     </RowPanel>,

@@ -106,12 +106,12 @@ export namespace Trees{
       newIndexedTree:(indexed:Texts.Content,title:string)=>{
         const tail=getType(indexed).titleTail;
         return facets.newTargetGroup(title,tail===''?[
-          facets.newTextualTarget(Selectings.OpenEditButton,{
+          facets.newTextualTarget(Selectings.TextEditField,{
             passText:indexed.text,
             targetStateUpdated:state=>indexed.text=state as string,
           }),
         ]:[
-          facets.newTextualTarget(Selectings.OpenEditButton+tail,{
+          facets.newTextualTarget(Selectings.TextEditField+tail,{
             passText:indexed.text,
             targetStateUpdated:state=>indexed.text=state as string,
           }),
@@ -136,12 +136,12 @@ export namespace Trees{
         newIndexedTree:(indexed:Texts.Content,title:string)=>{
           traceThing('^newIndexedTargets',{indexed:indexed});
           return facets.newTargetGroup(title,[
-            facets.newTextualTarget(Selectings.OpenEditButton,{
+            facets.newTextualTarget(Selectings.TextEditField,{
               passText:indexed.text,
               targetStateUpdated:state=>indexed.text=state as string,
             }),
             facets.newTextualTarget(Selectings.CharsCount,{
-              getText:()=>''+(facets.getTargetState(Selectings.OpenEditButton)as string
+              getText:()=>''+(facets.getTargetState(Selectings.TextEditField)as string
               ).length,
             }),
           ])
