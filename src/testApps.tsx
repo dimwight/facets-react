@@ -25,7 +25,8 @@ import {
   ScrollableList,
   SelectingTitles,
   AppCore,
-  SimpleTitles
+  SimpleTitles,
+  newListActionTargets,
 } from './app/_globals';
 import {traceThing,} from './util/_globals';
 class SimpleApp extends AppCore{
@@ -268,6 +269,32 @@ function newSelectingTypedTree(facets:Facets){
   };
   return facets.newIndexingFrame(frame);
 }
+function newSelectingScrollingTree(facets:Facets){
+  let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
+  const list:ScrollableList=new ScrollableList(textContents,3,facets,SelectingTitles.Chooser,createNew);
+  const frame:IndexingFramePolicy={
+    frameTitle:SelectingTitles.Frame,
+    indexingTitle:SelectingTitles.Chooser,
+    newFrameTargets:()=>newListActionTargets(facets,list),
+    getIndexables:()=>list.getScrolledItems(),
+    newUiSelectable:(item:TextContent)=>item.text,
+    newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
+    newIndexedTree:(indexed:TextContent,title:string)=>{
+      traceThing('^newIndexedTargets',{indexed:indexed});
+      return facets.newTargetGroup(title,[
+        facets.newTextualTarget(SelectingTitles.OpenEditButton,{
+          passText:indexed.text,
+          targetStateUpdated:state=>indexed.text=state as string,
+        }),
+        facets.newTextualTarget(SelectingTitles.CharsCount,{
+          getText:()=>''+(facets.getTargetState(SelectingTitles.OpenEditButton)as string
+          ).length,
+        }),
+      ])
+    },
+  };
+  return facets.newIndexingFrame(frame);
+}
 function buildSelectingTyped(facets:Facets){
   function newEditField(tail:string){
     return false?null:<PanelRow>
@@ -297,6 +324,29 @@ function buildSelectingTyped(facets:Facets){
         </RowPanel>
       </ShowPanel>
 
+    </RowPanel>,
+    document.getElementById('root'),
+  );
+}
+function buildSelectingScrolling(facets:Facets){
+  ReactDOM.render(
+    <RowPanel title={SimpleTests.SelectingScrolling.name} withRubric={true}>
+      <RowPanel title={SelectingTitles.Frame}>
+        {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>:
+          <IndexingList
+            title={SelectingTitles.Chooser }
+            facets={facets}
+            listWidth={false?NaN:200}/>}
+        <PanelRow>
+          <TriggerButton title={SelectingTitles.UpButton} facets={facets}/>
+          <TriggerButton title={SelectingTitles.DownButton} facets={facets}/>
+          <TriggerButton title={SelectingTitles.DeleteButton} facets={facets}/>
+          <TriggerButton title={SelectingTitles.NewButton} facets={facets}/>
+        </PanelRow>
+        <PanelRow>
+          <TextualField title={SelectingTitles.OpenEditButton} facets={facets} cols={30}/>
+        </PanelRow>
+      </RowPanel>
     </RowPanel>,
     document.getElementById('root'),
   );
@@ -333,71 +383,6 @@ const SimpleTests={
     buildSelectingScrolling,
     (f:Facets,activeTitle:string)=>listFacetsRetargeted(f)),
 };
-function buildSelectingScrolling(facets:Facets){
-  ReactDOM.render(
-    <RowPanel title={SimpleTests.SelectingScrolling.name} withRubric={true}>
-      <RowPanel title={SelectingTitles.Frame}>
-        {false?<IndexingDropdown title={SelectingTitles.Chooser} facets={facets}/>:
-          <IndexingList
-            title={SelectingTitles.Chooser }
-            facets={facets}
-            listWidth={false?NaN:200}/>}
-        <PanelRow>
-          <TriggerButton title={SelectingTitles.UpButton} facets={facets}/>
-          <TriggerButton title={SelectingTitles.DownButton} facets={facets}/>
-          <TriggerButton title={SelectingTitles.DeleteButton} facets={facets}/>
-          <TriggerButton title={SelectingTitles.NewButton} facets={facets}/>
-        </PanelRow>
-        <PanelRow>
-          <TextualField title={SelectingTitles.OpenEditButton} facets={facets} cols={30}/>
-        </PanelRow>
-      </RowPanel>
-    </RowPanel>,
-    document.getElementById('root'),
-  );
-}
-function newSelectingScrollingTree(facets:Facets){
-  let createNew=(from:TextContent)=>({text:from.text+'+'}as TextContent);
-  const list:ScrollableList=new ScrollableList(textContents,3,facets,SelectingTitles.Chooser,createNew);
-  const frame:IndexingFramePolicy={
-    frameTitle:SelectingTitles.Frame,
-    indexingTitle:SelectingTitles.Chooser,
-    newFrameTargets:()=>newListActionTargets(facets,list),
-    getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(item:TextContent)=>item.text,
-    newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
-    newIndexedTree:(indexed:TextContent,title:string)=>{
-      traceThing('^newIndexedTargets',{indexed:indexed});
-      return facets.newTargetGroup(title,[
-        facets.newTextualTarget(SelectingTitles.OpenEditButton,{
-          passText:indexed.text,
-          targetStateUpdated:state=>indexed.text=state as string,
-        }),
-        facets.newTextualTarget(SelectingTitles.CharsCount,{
-          getText:()=>''+(facets.getTargetState(SelectingTitles.OpenEditButton)as string
-          ).length,
-        }),
-      ])
-    },
-  };
-  return facets.newIndexingFrame(frame);
-}
-function newListActionTargets(f:Facets,list:ScrollableList){
-  return [
-    f.newTriggerTarget(SelectingTitles.UpButton,{
-      targetStateUpdated:()=>list.swapItemDown(),
-    }),
-    f.newTriggerTarget(SelectingTitles.DownButton,{
-      targetStateUpdated:()=>list.swapItemUp(),
-    }),
-    f.newTriggerTarget(SelectingTitles.DeleteButton,{
-      targetStateUpdated:()=>list.deleteItem(),
-    }),
-    f.newTriggerTarget(SelectingTitles.NewButton,{
-      targetStateUpdated:()=>list.addItem(),
-    }),
-  ]
-}
 function listFacetsRetargeted(f:Facets){
   let items:ScrollableList=f.supplement as ScrollableList;
   traceThing('^listFacetsRetargeted');

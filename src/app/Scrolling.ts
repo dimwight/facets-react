@@ -1,9 +1,10 @@
-import {Facets,} from 'facets-js';
+import {Facets} from 'facets-js';
 import {
   SkippableList,
   SmartList,
   traceThing,
 } from '../util/_globals';
+import {SelectingTitles} from './_globals';
 export interface ItemScroller{
   scrollItems(skip:number):void
 }
@@ -91,5 +92,21 @@ export class ScrollableList implements ItemScroller{
     traceThing('^setShowAt',{'at':at});
     this.facets.updateTarget(this.indexingTitle,at)
   }
+}
+export function newListActionTargets(f:Facets,list:ScrollableList){
+  return [
+    f.newTriggerTarget(SelectingTitles.UpButton,{
+      targetStateUpdated:()=>list.swapItemDown(),
+    }),
+    f.newTriggerTarget(SelectingTitles.DownButton,{
+      targetStateUpdated:()=>list.swapItemUp(),
+    }),
+    f.newTriggerTarget(SelectingTitles.DeleteButton,{
+      targetStateUpdated:()=>list.deleteItem(),
+    }),
+    f.newTriggerTarget(SelectingTitles.NewButton,{
+      targetStateUpdated:()=>list.addItem(),
+    }),
+  ]
 }
 
