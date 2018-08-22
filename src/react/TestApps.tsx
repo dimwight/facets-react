@@ -170,8 +170,7 @@ function buildAllSimplesForm(facets:Facets){
 function buildSelectingTyped(facets:Facets){
   function newEditField(tail:string){
     return false?null:<PanelRow>
-      <TextualField title={Selectings.OpenEditButton+tail} facets={facets}
-                    cols={30}/>
+      <TextualField title={Selectings.OpenEditButton+tail} facets={facets}cols={30}/>
     </PanelRow>;
   }
   let tail=Texts.Type.ShowChars.titleTail;

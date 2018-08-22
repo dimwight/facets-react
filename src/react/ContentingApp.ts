@@ -29,7 +29,7 @@ export class ContentingApp extends AppCore{
   private readonly chooserTitle=SelectingTitles.Chooser;
   private readonly indexingTitle=SimpleTitles.Indexing;
   private readonly list:ScrollableList;
-  constructor(readonly buildContentingLayout:(app:ContentingApp,f:Facets)=>void){
+  constructor(readonly layoutBuild:(app:ContentingApp,f:Facets)=>void){
     super(newInstance(false));
     this.list=new ScrollableList(Texts.contents,3,this.facets,this.indexingTitle);
   }
@@ -105,7 +105,7 @@ export class ContentingApp extends AppCore{
     traceThing('^disableAll',activeTitle);
   }
   buildLayout(){
-    this.buildContentingLayout(this,this.facets)
+    this.layoutBuild(this,this.facets)
   }
 }
 
