@@ -1,22 +1,4 @@
-export {
-  RowPanel,
-  PanelRow,
-  TextualLabel,
-  TextualField,
-  TogglingCheckbox,
-  TriggerButton,
-  ShowPanel,
-  newFormField,
-  FieldType,
-  FieldSpec,
-  Facet,
-  LabelRubric,
-} from './Facet';
-export {
-  IndexingDropdown,
-  IndexingList,
-  IndexingFacet,
-  ListItemProps,
-  IndexingUiProps,
-} from './Indexing'
+export * from './Facet';
+export * from './Indexing'
+export * from './TestApps'
 

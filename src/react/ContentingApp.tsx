@@ -8,7 +8,7 @@ import {
   TextContent,
   textContents,
   TextContentType,
-} from './_globals';
+} from '../app/_globals';
 import {
   newInstance,
   Target,
@@ -22,7 +22,7 @@ import {
   TextualField,
   TextualLabel,
   TriggerButton,
-} from '../react/_globals';
+} from './_globals';
 import ReactDOM from 'react-dom';
 import React from 'react';
 export class ContentingApp extends AppCore{
