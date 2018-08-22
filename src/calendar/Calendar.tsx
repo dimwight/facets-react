@@ -21,7 +21,7 @@ import {
   ItemScroller,
   ScrollableList,
   SelectingTitles,
-  SurfaceApp,
+  AppCore,
 } from '../facets/_globals';
 import {
   DateTitles,
@@ -205,7 +205,7 @@ function disableAll(f:Facets){
   })
 }
 export function launchApp(){
-  new class extends SurfaceApp{
+  new class extends AppCore{
     newContentTrees(){
       return newTree(this.facets)
     }

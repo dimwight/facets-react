@@ -3,7 +3,7 @@ import {
   FacetsApp,
   Target,
 } from 'facets-js';
-export abstract class SurfaceApp implements FacetsApp{
+export abstract class AppCore implements FacetsApp{
   constructor(readonly facets:Facets){
     facets.times.doTime=false;
   }

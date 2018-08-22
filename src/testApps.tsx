@@ -24,7 +24,7 @@ import {
 import {
   ScrollableList,
   SelectingTitles,
-  SurfaceApp,
+  AppCore,
 } from './facets/_globals';
 import {traceThing,} from './util/_globals';
 namespace SimpleTitles{
@@ -37,7 +37,7 @@ namespace SimpleTitles{
     ToggleStart=false,
     NumericField='Number',NumericLabel='Value',NumericStart=123;
 }
-class SimpleApp extends SurfaceApp{
+class SimpleApp extends AppCore{
   constructor(readonly test:SimpleTest){
     super(newInstance(false));
   }
@@ -416,7 +416,7 @@ function listFacetsRetargeted(f:Facets){
   f.setTargetLive(SelectingTitles.DownButton,
     itemAt<textContents.length-1);
 }
-class ContentingTest extends SurfaceApp{
+class ContentingTest extends AppCore{
   private readonly fullListTargets=true;
   private readonly chooserTitle=SelectingTitles.Chooser;
   private readonly indexingTitle=SimpleTitles.Indexing;
