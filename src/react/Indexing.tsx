@@ -11,6 +11,7 @@ interface IndexingValues extends TargetValues{
   selectables?:any[]
   index?:number
   listWidth?:number
+  itemDblClicked?:()=>void
 }
 export abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>{
   constructor(props:IndexingValues){
@@ -83,7 +84,8 @@ export interface ListItemProps{
   tabIndex:number
   text:string
   id:string
-  onClick:(e:any)=>void
+  onClick?:(e:any)=>void
+  onDoubleClick?:(e:any)=>void
   onKeyDown:(e:any)=>void
   key:string
   height?:number
@@ -98,13 +100,18 @@ function ListItem(p:ListItemProps){
       overflow:'hidden',
     }}
     tabIndex={p.tabIndex}
-    onClick={p.onClick}
     onKeyDown={p.onKeyDown}
+    onClick={p.onClick}
+    onDoubleClick={p.onDoubleClick}
   >{p.text}</div>;
 }
 export class IndexingList extends IndexingFacet{
   private boxWidth=0;
-  onClick=(e:KeyboardEvent)=>{
+  onItemDoubleClick=(e:KeyboardEvent)=>{
+    traceThing('onItemDoubleClick',{e:e.code});
+  };
+  onItemClick=(e:KeyboardEvent)=>{
+    traceThing('onItemClick',{e:e.code});
     if(!this.state.live) return;
     this.indexChanged((e.target as HTMLElement).id.substr(0,1));
   };
@@ -136,7 +143,8 @@ export class IndexingList extends IndexingFacet{
       return (<ListItem
         classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
         tabIndex={selected&& !disabled?1:NaN}
-        onClick={this.onClick}
+        onClick={this.onItemClick}
+        // onDoubleClick={this.onItemDoubleClick}
         onKeyDown={this.onItemKeyDown}
         id={at+this.unique}
         text={s}

@@ -239,7 +239,9 @@ export function buildContentingLayout(f:Facets,fullListTargets:boolean){
         <IndexingList
           title={Simples.Indexing}
           facets={f}
-          listWidth={200}/>
+          listWidth={200}
+          itemDblClicked={()=>alert()}
+        />
         {fullListTargets?<PanelRow>
             <TriggerButton title={Selectings.UpButton} facets={f}/>
             <TriggerButton title={Selectings.DownButton} facets={f}/>
