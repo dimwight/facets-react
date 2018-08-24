@@ -234,27 +234,24 @@ export function buildContentingLayout(f:Facets,fullListTargets:boolean){
     </PanelRow>)
   }
   let tail=Texts.Type.ShowChars.titleTail;
+  const openEdit=Selectings.OpenEditButton;
   ReactDOM.render(<ShowPanel title={f.activeContentTitle} facets={f}>
       <RowPanel title={Selectings.Chooser}>
         <IndexingList
           title={Simples.Indexing}
           facets={f}
           listWidth={200}
-          itemDoubleClicked={()=>{
-            const title=Selectings.OpenEditButton;
-            traceThing('itemDoubleClicked',f.getTargetState(title));
-            f.updateTarget(title)
-          }}
-        />
+          itemDoubleClicked={()=>f.updateTarget(openEdit,'itemDoubleClicked')}
+        />}
         {fullListTargets?<PanelRow>
             <TriggerButton title={Selectings.UpButton} facets={f}/>
             <TriggerButton title={Selectings.DownButton} facets={f}/>
             <TriggerButton title={Selectings.DeleteButton} facets={f}/>
             <br/><br/>
-            <TriggerButton title={Selectings.OpenEditButton} facets={f}/>
+            <TriggerButton title={openEdit} facets={f}/>
           </PanelRow>
           :<PanelRow>
-            <TriggerButton title={Selectings.OpenEditButton} facets={f}/>
+            <TriggerButton title={openEdit} facets={f}/>
           </PanelRow>
         }
       </RowPanel>

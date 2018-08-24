@@ -147,7 +147,7 @@ export class Facets{
   }
   updateTarget(title:string,update?:SimpleState):void{
     if(update!=null)this.titleTarget(title).updateState(update);
-    traceThing('updateTarget',title);
+    traceThing('^updateTarget',title);
     this.notifiable.notify(title);
   }
   titleTarget(title:string):Targety{
