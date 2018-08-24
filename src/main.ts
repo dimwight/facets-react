@@ -5,5 +5,5 @@ import {
 } from './react/_globals';
 import {launchApp as calendarLaunch} from './calendar/_locals';
 if(false)testAppsLaunch();
-else if(true) new ContentingApp(buildContentingLayout).buildSurface();
+else if(false) new ContentingApp(buildContentingLayout).buildSurface();
 else calendarLaunch();
