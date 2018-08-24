@@ -61,7 +61,7 @@ function newTree(f:Facets){
       return newItemTargets(day);
     },
     getIndexables:()=>list.getScrolledItems(),
-    newUiSelectable:(day:DayItem)=>day.dayName(),
+    newUiSelectable:(day)=>day,
     newIndexedTreeTitle:indexed=>SelectingTitles.Selected,
   };
   return f.newIndexingFrame(frame);
@@ -120,11 +120,12 @@ class IndexingRowList extends IndexingFacet{
       (this.props.facets.supplement as ItemScroller).scrollItems(jump)
   };
   protected renderUi(props:IndexingUiProps){
-    traceThing('^IndexingRowList',props);
+    traceThing('^IndexingRowList',props.selectables);
     const selectables=props.selectables,rows:any[]=[];
     const rowHeight=30,rowCount=5,rowItemCount=selectables.length/rowCount;
     const disabled=!this.state.live;
-    const newSliceRow=(keyAt:number,slice:any[])=>{
+    const newSliceRow=(keyAt:number,slice:DayItem[])=>{
+      traceThing('IndexingRowList.newSliceRow',slice[0]);
       return <div
         className={'listRowFlex'}
         key={'listRow'+keyAt+this.unique}
@@ -136,10 +137,11 @@ class IndexingRowList extends IndexingFacet{
           border:false?'1px dotted':null,
         }}
       >{slice.map((day:DayItem,at:number)=>{
+        traceThing('IndexingRowList.map',day);
         const globalAt=at+(keyAt-1)*slice.length;
         const selected=globalAt===props.selectedAt;
-        const dayNumber=day.dayNumber();
         const dayName=day.dayName();
+        const dayNumber=day.dayNumber();
         return (<RowItem
           classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
           tabIndex={selected&& !disabled?1:NaN}

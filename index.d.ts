@@ -91,7 +91,7 @@ export interface IndexingCoupler extends TargetCoupler {
    * Get representation for indexable in the UI.
    * If absent a default string will be created.
    * @param {any} indexable to represent
-   * @returns the representation
+   * @returns {any} the representation
    */
   newUiSelectable? (indexable: any) : any;
 }
@@ -128,9 +128,9 @@ export interface IndexingFramePolicy {
    * Supply object to expose indexable in the UI.
    * Analogue of {@link IndexingCoupler} function.
    * @param {any} indexable to represent
-   * @returns {string} the representation
+   * @returns {any} the representation
    */
-  newUiSelectable? (indexable: any):string;
+  newUiSelectable? (indexable: any):any;
   /**
    * Create {@link Target}s to be children of the framing {@link Target}
    * @returns {Target[]} the targets

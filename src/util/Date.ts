@@ -1,7 +1,12 @@
-import {SkippableItem} from './_globals';
+import {
+  SkippableItem,
+  traceThing,
+} from './_globals';
 import {format,addDays} from "date-fns";
 export class DayItem implements SkippableItem<Date>{
-  constructor(public readonly date:Date){}
+  constructor(public readonly date:Date){
+    traceThing('^DayItem',this.dayName())
+  }
   newSkipped(skip:number):DayItem{
     return new DayItem(addDays(this.date,skip))
   }
