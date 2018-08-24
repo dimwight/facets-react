@@ -5,7 +5,7 @@ import {
   SelectingTitles,
   SimpleTitles,
   Texts,
-} from '../app/_globals';
+} from './_globals';
 import {
   Facets,
   newInstance,
@@ -20,7 +20,7 @@ import {
   TextualField,
   TextualLabel,
   TriggerButton,
-} from './_globals';
+} from '../react/_globals';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import contents=Texts.contents;
