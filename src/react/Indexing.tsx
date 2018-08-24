@@ -110,14 +110,17 @@ export class IndexingList extends IndexingFacet{
   onItemClick=(e:MouseEvent)=>{
     traceThing('onItemClick');
     if(true||!this.state.live) return;
-    this.indexChanged(Number((e.target as HTMLElement).id.substr(0,1)));
+    this.indexChanged(this.getIndex(e));
   };
+  private getIndex(e:Event){
+    return Number((e.target as HTMLElement).id.substr(0,1));
+  }
   onItemDoubleClick=(e:MouseEvent)=>{
     traceThing('onItemDoubleClick');
   };
   onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
-    const indexThen:number=Number((e.target as HTMLElement).id.substr(0,1));
+    const indexThen:number=this.getIndex(e);
     let indexNow:number=indexThen;
     if(e.key==='ArrowDown'){
       indexNow++;
