@@ -107,34 +107,37 @@ function ListItem(p:ListItemProps){
 }
 export class IndexingList extends IndexingFacet{
   private boxWidth=0;
-  onItemClick=(e:MouseEvent)=>{
-    traceThing('onItemClick');
-    if(true||!this.state.live) return;
-    this.indexChanged(this.getIndex(e));
-  };
+  private indexThen=-1;
   private getIndex(e:Event){
     return Number((e.target as HTMLElement).id.substr(0,1));
   }
+  onItemClick=(e:MouseEvent)=>{
+    const now=this.getIndex(e);
+    const then=this.indexThen;
+    traceThing('^onItemClick',{now:now,then:then});
+    if(now==then||!this.state.live) return;
+    this.indexChanged(this.indexThen=now);
+  };
   onItemDoubleClick=(e:MouseEvent)=>{
-    traceThing('onItemDoubleClick');
+    alert();
   };
   onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;
-    const indexThen:number=this.getIndex(e);
-    let indexNow:number=indexThen;
+    this.indexThen=this.getIndex(e);
+    let now=this.indexThen;
     if(e.key==='ArrowDown'){
-      indexNow++;
+      now++;
     }
     else if(e.key==='ArrowUp'){
-      indexNow--;
+      now--;
     }
-    if(indexNow!==indexThen){
+    if(now!==this.indexThen){
       if(!this.state.selectables)throw new Error('No selectables');
-      if(indexNow>=0&&indexNow<this.state.selectables.length)
-        this.indexChanged(indexNow);
+      if(now>=0&&now<this.state.selectables.length)
+        this.indexChanged(this.indexThen=now);
       else if(this.props.facets.supplement)
         (this.props.facets.supplement as ItemScroller
-        ).scrollItems(indexNow<0?-1:1)
+        ).scrollItems(now<0?-1:1)
     }
   };
   protected renderUi(props:IndexingUiProps){
