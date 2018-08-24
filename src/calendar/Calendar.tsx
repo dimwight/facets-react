@@ -125,7 +125,7 @@ class IndexingRowList extends IndexingFacet{
     const rowHeight=30,rowCount=5,rowItemCount=selectables.length/rowCount;
     const disabled=!this.state.live;
     const newSliceRow=(keyAt:number,slice:DayItem[])=>{
-      traceThing('IndexingRowList.newSliceRow',slice[0]);
+      traceThing('^IndexingRowList.newSliceRow',slice[0]);
       return <div
         className={'listRowFlex'}
         key={'listRow'+keyAt+this.unique}
@@ -137,7 +137,7 @@ class IndexingRowList extends IndexingFacet{
           border:false?'1px dotted':null,
         }}
       >{slice.map((day:DayItem,at:number)=>{
-        traceThing('IndexingRowList.map',day);
+        traceThing('^IndexingRowList.map',day);
         const globalAt=at+(keyAt-1)*slice.length;
         const selected=globalAt===props.selectedAt;
         const dayName=day.dayName();
