@@ -13,7 +13,7 @@ import {
 export class TargetCore extends NotifyingCore implements Targety {
   public static type='Targety';
   private live=true;
-  protected static NoState='No state set';
+  protected static NoState='No state yet';
   protected state_:SimpleState=TargetCore.NoState;
   state(): SimpleState {
     return this.state_;

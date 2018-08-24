@@ -21,6 +21,7 @@ import {
   TargetCoupler,
   IndexingFramePolicy,
 } from 'facets-js';
+import {traceThing} from '../src/util/_globals';
 export function newInstance(trace:boolean):Facets{
   return new Facets(trace);
 }
@@ -146,6 +147,7 @@ export class Facets{
   }
   updateTarget(title:string,update?:SimpleState):void{
     if(update!=null)this.titleTarget(title).updateState(update);
+    traceThing('updateTarget',title);
     this.notifiable.notify(title);
   }
   titleTarget(title:string):Targety{
