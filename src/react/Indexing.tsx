@@ -11,7 +11,7 @@ interface IndexingValues extends TargetValues{
   selectables?:any[]
   index?:number
   listWidth?:number
-  itemDblClicked?:()=>void
+  itemDoubleClicked?:()=>void
 }
 export abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>{
   constructor(props:IndexingValues){
@@ -119,7 +119,7 @@ export class IndexingList extends IndexingFacet{
     this.indexChanged(this.indexThen=now);
   };
   onItemDoubleClick=(e:MouseEvent)=>{
-    alert();
+    if(this.props.itemDoubleClicked)this.props.itemDoubleClicked();
   };
   onItemKeyDown=(e:KeyboardEvent)=>{
     if(!this.state.live) return;

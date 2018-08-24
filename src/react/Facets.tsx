@@ -41,7 +41,6 @@ export class Facet<I extends TargetValues,K extends TargetValues>
   protected stateChanged(state:SimpleState){
     let facets=this.props.facets,title=this.props.title;
     facets.updateTarget(title,state);
-    // facets.updateTarget(title);
   }
   componentDidMount(){
     this.canSetState=true;

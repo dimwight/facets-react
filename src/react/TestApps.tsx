@@ -240,7 +240,11 @@ export function buildContentingLayout(f:Facets,fullListTargets:boolean){
           title={Simples.Indexing}
           facets={f}
           listWidth={200}
-          itemDblClicked={()=>alert()}
+          itemDoubleClicked={()=>{
+            const title=Selectings.OpenEditButton;
+            traceThing('itemDoubleClicked',f.getTargetState(title));
+            f.updateTarget(title)
+          }}
         />
         {fullListTargets?<PanelRow>
             <TriggerButton title={Selectings.UpButton} facets={f}/>
