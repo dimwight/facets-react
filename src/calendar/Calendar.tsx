@@ -138,7 +138,8 @@ class IndexingRowList extends IndexingFacet{
       >{slice.map((day:DayItem,at:number)=>{
         const globalAt=at+(keyAt-1)*slice.length;
         const selected=globalAt===props.selectedAt;
-        const dayName=day.dayName(),dayNumber=day.dayNumber();
+        const dayNumber=day.dayNumber();
+        const dayName=day.dayName();
         return (<RowItem
           classTail={(selected&& !disabled?'Selected':'')+(disabled?'Disabled':'')}
           tabIndex={selected&& !disabled?1:NaN}
