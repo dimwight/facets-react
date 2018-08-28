@@ -29,17 +29,20 @@ export class Facet<I extends TargetValues,K extends TargetValues>
     props.facets.attachFacet(props.title,this.facetUpdated);
   }
   facetUpdated=(update:any)=>{
+    const props=this.props;
+    const title=props.title;
     const updateWithLive:{}=Object.assign({},
       this.readUpdate(update),{
-        live:this.props.facets.isTargetLive(this.props.title),
-        showTitle:this.props.title.replace(/\|.*/,''),
+        live:props.facets.isTargetLive(title),
+        showTitle:title.replace(/\|.*/,''),
       });
     if(!this.canSetState)
-      this.state=Object.assign({}as K,this.props,updateWithLive,);
+
+      this.state=Object.assign({}as K,props,updateWithLive,);
     else this.setState(updateWithLive);
   };
   protected stateChanged(state:SimpleState){
-    const facets=this.props.facets,title=this.props.title;
+    const {facets,title}=this.props;
     facets.updateTarget(title,state);
   }
   componentDidMount(){
