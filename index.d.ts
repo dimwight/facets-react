@@ -3,13 +3,13 @@
  */
 export interface Target{}
 /**
- * For passing state in and out of a simple {@link Target}.
+ * For passing state in and out of a {@link Target}.
  */
-export type SimpleState=string|boolean|number
+export type TargetState=string|boolean|number|any
 /**
- * For passing a {@link SimpleState} to the UI.
+ * For passing a {@link TargetState} to the UI.
  */
-export type FacetUpdater=(state: SimpleState) => void
+export type FacetUpdater=(state: TargetState) => void
 /**
  * Connects a {@link Target} with client code.
  */
@@ -19,7 +19,7 @@ export interface TargetCoupler {
    * @param {any} state the new state
    * @param {string} title identifies the {@link Target}
    */
-  targetStateUpdated? (state: SimpleState, title: string) : void;
+  targetStateUpdated? (state: TargetState,title: string) : void;
   passLive?:boolean;
 }
 /**
@@ -83,7 +83,6 @@ export interface IndexingCoupler extends TargetCoupler {
   passIndex?: number;
   /**
    * Get the current contents to be indexed.
-   * @param {string} title identifies the {@link Target}
    * @returns {any[]} the contents
    */
   getIndexables () : any[];
@@ -248,21 +247,21 @@ export interface Facets {
    * Attach an abstract facet to the framework targeter tree.
    * @param {string} title identifies the targeter via its {@link Target}
    * @param {FacetUpdater} updater callback to
-   * update the UI with the {@link SimpleState} of the current {@link Target}
+   * update the UI with the {@link TargetState} of the current {@link Target}
    */
   attachFacet(title: string, updater: FacetUpdater): void;
   /**
    * Update the state of the {@link Target} identified.
    * @param {string} title identifies the {@link Target}
-   * @param {SimpleState} update to update the {@link Target}
+   * @param {TargetState} update to update the {@link Target}
    */
   // updateTargetState(title: string, update: SimpleState): void;
   /**
    * Obtain the the state of the {@link Target} identified.
    * @param {string} title identifies the {@link Target}
-   * @returns {SimpleState} the state
+   * @returns {TargetState} the state
    */
-  getTargetState(title: string): SimpleState;
+  getTargetState(title: string): TargetState;
   /**
    * Notify the framework of an update and trigger a retargeting.
    * @param {string} title identifies the {@link Target}
@@ -271,9 +270,9 @@ export interface Facets {
   /**
    * Update {@link Target} and and trigger a retargeting.
    * @param {string} title identifies the {@link Target}
-   * @param {SimpleState} update for {@link Target} state
+   * @param {TargetState} update for {@link Target} state
    */
-  updateTarget/*WithNotify*/(title: string, update?: SimpleState): void;
+  updateTarget/*WithNotify*/(title: string, update?: TargetState): void;
   /** Sets the 'enabled' state of a {@link Target}.
    * Provides for disabling of UI facet.
    * @param {string} title identifies the {@link Target}
@@ -306,13 +305,13 @@ interface FacetsApp {
   /** Called by framework after retargeting {@link Target} trees but
    * before updating facets in the UI.
    * @param {string} activeTitle the {@link Target} last created
-   * in {@link getContentTrees()}
+   * in {@link newContentTrees()}
    * or {@link Facets#addContentTree(Target)},
    * or whose title was last passed to {@link Facets#activateContentTree(string)}.
    */
   onRetargeted(activeTitle: string): void;
   /** Construct a UI with facets exposing {@link Target}s defined
-   * in {@link getContentTrees()}.
+   * in {@link newContentTrees()}.
    */
   buildLayout(): void;
 }

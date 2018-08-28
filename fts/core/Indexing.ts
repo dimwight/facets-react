@@ -3,7 +3,7 @@ import {
 } from './_globals';
 import { 
   IndexingCoupler,
-  SimpleState
+  TargetState
 } from 'facets-js';
 import {traceThing} from '../../src/util/Bits';
 export class Indexing extends TargetCore {
@@ -55,7 +55,7 @@ export class Indexing extends TargetCore {
             break;
         }          
   }
-  updateState(update: SimpleState) {
+  updateState(update: TargetState) {
     this.setIndex(update as number);
   }
 }

@@ -10,7 +10,7 @@ import {
   IndexingFrame,
 } from './core/_globals';
 import {
-  SimpleState,
+  TargetState,
   FacetUpdater,
   TextualCoupler,
   FacetsApp,
@@ -136,7 +136,7 @@ export class Facets{
     };
     t.attachFacet(facet);
   }
-  getTargetState(title:string):SimpleState{
+  getTargetState(title:string):TargetState{
     return this.titleTarget(title).state();
   }
   isTargetLive(title:string):boolean{
@@ -145,7 +145,7 @@ export class Facets{
   setTargetLive(title:string,live:boolean){
     this.titleTarget(title).setLive(live);
   }
-  updateTarget(title:string,update?:SimpleState):void{
+  updateTarget(title:string,update?:TargetState):void{
     if(update!=null)this.titleTarget(title).updateState(update);
     traceThing('^updateTarget',title);
     this.notifiable.notify(title);

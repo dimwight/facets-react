@@ -7,15 +7,15 @@ import {
   NotifyingCore,
 } from './_locals';
 import {
-  SimpleState,
+  TargetState,
   TargetCoupler,
 } from 'facets-js';
 export class TargetCore extends NotifyingCore implements Targety {
   public static type='Targety';
   private live=true;
   protected static NoState='No state yet';
-  protected state_:SimpleState=TargetCore.NoState;
-  state(): SimpleState {
+  protected state_:TargetState=TargetCore.NoState;
+  state(): TargetState {
     return this.state_;
   }
   constructor(title:string,protected extra?:Targety[]|TargetCoupler){
@@ -36,7 +36,7 @@ export class TargetCore extends NotifyingCore implements Targety {
   lazyElements():Targety[]{
     return []
   }
-  updateState(update:SimpleState){
+  updateState(update:TargetState){
     this.state_=update;
     const extra=this.extra;
     const updater=!extra||extra instanceof Array?null

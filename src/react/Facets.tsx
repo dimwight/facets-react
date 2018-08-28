@@ -2,7 +2,7 @@ import React from 'react';
 import {traceThing} from '../util/_globals';
 import {
   Facets,
-  SimpleState,
+  TargetState,
 } from 'facets-js';
 import {SmartTextField} from './_locals';
 import {IndexingDropdown} from './_globals';
@@ -14,7 +14,7 @@ export interface TargetValues{
   title:string
   showTitle?:string;
   facets:Facets
-  state?:SimpleState
+  state?:TargetState
   live?:boolean
 }
 export class Facet<I extends TargetValues,K extends TargetValues>
@@ -41,7 +41,7 @@ export class Facet<I extends TargetValues,K extends TargetValues>
       this.state=Object.assign({}as K,props,updateWithLive,);
     else this.setState(updateWithLive);
   };
-  protected stateChanged(state:SimpleState){
+  protected stateChanged(state:TargetState){
     const {facets,title}=this.props;
     facets.updateTarget(title,state);
   }

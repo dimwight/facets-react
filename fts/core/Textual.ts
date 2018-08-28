@@ -1,6 +1,6 @@
 import {
   TextualCoupler,
-  SimpleState,
+  TargetState,
 } from 'facets-js';
 import {TargetCore} from './_globals';
 export class Textual extends TargetCore{
@@ -8,7 +8,7 @@ export class Textual extends TargetCore{
     super(title,coupler);
     if(coupler.passText)this.state_=coupler.passText;
   }
-  state(): SimpleState {
+  state(): TargetState {
     const coupler=!this.extra?null:this.extra as TextualCoupler;
     if(this.state_!==TargetCore.NoState){return this.state_;}
     else if(!coupler||!coupler.getText)return '';
