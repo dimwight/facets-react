@@ -97,16 +97,18 @@ export class TogglingCheckbox extends Facet<TogglingValues,TogglingValues>{
     })
   };
   render(){
+    const state=this.state;
     return (<span>
-      <LabelRubric text={this.state.showTitle as string} disabled={!this.state.live}
-                   target={this.state.showTitle}/>
+      <LabelRubric text={state.showTitle as string} disabled={!state.live}
+                   target={state.showTitle}/>
         <input
           id={this.props.title}
+
           type='checkbox'
           style={{verticalAlign:'middle'}}
           onChange={this.onChange as any}
-          checked={this.state.set as any}
-          disabled={!this.state.live as any}
+          checked={state.set}
+          disabled={!state.live}
         />
     </span>)
   }
@@ -155,12 +157,13 @@ export class TextualLabel extends Facet<TextualValues,TextualValues>{
     return {text:String(update)}
   }
   render(){
-    traceThing('^TextualLabel',this.state);
-    const disabled=!this.state.live;
+    const state=this.state;
+    traceThing('^TextualLabel',state);
+    const disabled=!state.live;
     return (<span>
-      <LabelRubric text={this.state.showTitle as string} disabled={disabled}/>
+      <LabelRubric text={state.showTitle as string} disabled={disabled}/>
       &nbsp;
-      <LabelText text={this.state.text as string} disabled={disabled}/>
+      <LabelText text={state.text as string} disabled={disabled}/>
         </span>)
   }
 }
