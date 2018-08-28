@@ -29,7 +29,7 @@ export class Facet<I extends TargetValues,K extends TargetValues>
     props.facets.attachFacet(props.title,this.facetUpdated);
   }
   facetUpdated=(update:any)=>{
-    let updateWithLive:{}=Object.assign({},
+    const updateWithLive:{}=Object.assign({},
       this.readUpdate(update),{
         live:this.props.facets.isTargetLive(this.props.title),
         showTitle:this.props.title.replace(/\|.*/,''),
@@ -39,7 +39,7 @@ export class Facet<I extends TargetValues,K extends TargetValues>
     else this.setState(updateWithLive);
   };
   protected stateChanged(state:SimpleState){
-    let facets=this.props.facets,title=this.props.title;
+    const facets=this.props.facets,title=this.props.title;
     facets.updateTarget(title,state);
   }
   componentDidMount(){
@@ -72,8 +72,8 @@ export function LabelText(props:LabelValues){
     {props.text}&nbsp;</span>)
 }
 export function LabelRubric(props:LabelValues){
-  let htmlFor=props.target,text=props.text,
-    className=(props.disabled?'rubricDisabled':'rubric');
+  const {target:htmlFor,text,disabled}=props,
+    className=(disabled?'rubricDisabled':'rubric');
   return htmlFor?<label htmlFor={htmlFor} className={className}>
       {text}&nbsp;</label>
     :<span className={className}>
@@ -87,7 +87,7 @@ export class TogglingCheckbox extends Facet<TogglingValues,TogglingValues>{
     return {set:Boolean(update)}
   }
   onChange=(e:Event)=>{
-    let set=(e.target as HTMLInputElement).checked;
+    const set=(e.target as HTMLInputElement).checked;
     this.stateChanged(set);
     this.setState({
       set:set,
@@ -153,7 +153,7 @@ export class TextualLabel extends Facet<TextualValues,TextualValues>{
   }
   render(){
     traceThing('^TextualLabel',this.state);
-    let disabled=!this.state.live;
+    const disabled=!this.state.live;
     return (<span>
       <LabelRubric text={this.state.showTitle as string} disabled={disabled}/>
       &nbsp;
@@ -166,12 +166,13 @@ export class ShowPanel extends Facet<TextualValues,TextualValues>{
     return {text:String(update)}
   }
   render(){
-    let all:any[]|any=this.props.children,show=all;
+    const all:any[]|any=this.props.children;
+    let show=all;
     all.forEach((child:any,at:number)=>{
       traceThing('^ShowPanel_',child);
       if(child.props.title===this.state.text) show=child;
     });
-    let children=React.Children.map(false?all:show,child=>{
+    const children=React.Children.map(false?all:show,child=>{
       return <div className={'panelMount'}>{child}</div>
     });
     return <div className={'panel'}>{children}</div>
@@ -184,12 +185,12 @@ interface RowPanelProps{
   children?:any
 }
 function PanelRubric(props:LabelValues){
-  let text=props.text,
+  const text=props.text,
     className=props.classes+' '+(props.disabled?'rubricDisabled':'rubric');
   return <div className={className}>{text}&nbsp;</div>
 }
 export function RowPanel(props:RowPanelProps){
-  let children=React.Children.map(props.children,child=>{
+  const children=React.Children.map(props.children,child=>{
     return <div className={'panelMount'}>{child}</div>
   });
   const title=props.title;
@@ -200,7 +201,7 @@ export function RowPanel(props:RowPanelProps){
   </div>
 }
 export function PanelRow(props:RowPanelProps){
-  let children=React.Children.map(props.children,child=>{
+  const children=React.Children.map(props.children,child=>{
     return (<span>{child} </span>)
   });
   return <div className={'panelRow'}>{children}</div>

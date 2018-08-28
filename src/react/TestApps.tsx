@@ -50,7 +50,7 @@ class App extends AppCore{
     this.test.buildLayout(this.facets)
   }
 }
-const Specs={
+export const Specs={
   Textual:new Spec('Textual',Trees.newTextual,buildTextual),
   TogglingLive:new Spec('TogglingLive',Trees.newToggling,buildToggling,
     (facets:Facets)=>{
@@ -270,6 +270,6 @@ export function buildContentingLayout(f:Facets,fullListTargets:boolean){
     document.getElementById('root'),
   );
 }
-export function launchApp(){
-  new App(Specs.SelectingTyped).buildSurface();
+export function launchApp(spec:Spec){
+  new App(spec).buildSurface();
 }
