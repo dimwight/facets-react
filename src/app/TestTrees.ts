@@ -30,7 +30,7 @@ export namespace Trees{
     const toggling=facets.newTogglingTarget(Simples.Toggling,{
         passSet:Simples.ToggleStart,
         targetStateUpdated:state=>{
-          if(setLive) Trees.setSimplesLive(facets,state as boolean)
+          if(setLive) setSimplesLive(facets,state as boolean)
         },
       }),
       toggled=facets.newTextualTarget(Simples.Toggled,{
