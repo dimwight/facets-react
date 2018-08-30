@@ -3,6 +3,8 @@ import {
   IndexingCoupler,
   IndexingFramePolicy,
   Target,
+  Viewable,
+  ViewerCoupler,
 } from 'facets-js';
 import {
   Selecting,
@@ -13,6 +15,14 @@ import {
 } from './_globals';
 import {traceThing} from '../util/_globals';
 export namespace Trees{
+  export function newViewer(facets:Facets){
+    return facets.newViewerTarget("Viewer",{
+      viewable:{
+        getContent:()=>'Hi there',
+        viewerSelectionEdited:(edit:string)=>alert(edit)
+      }
+    })
+  }
   export function newTextual(facets:Facets){
     const first=facets.newTextualTarget(Simples.FirstTextual,{
         passText:'Some text for '+Simples.FirstTextual,
@@ -73,7 +83,8 @@ export namespace Trees{
       newTextual(facets),
       newToggling(facets,true),
       newIndexing(facets),
-      newTrigger(facets)]);
+      newTrigger(facets),
+    ]);
   }
   export function setSimplesLive(facets:Facets,state:boolean){
     [Simples.FirstTextual,Simples.SecondTextual,

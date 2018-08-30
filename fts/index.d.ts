@@ -13,12 +13,12 @@ export interface Viewable{
   /**
    Define a selection within content
    */
-  getSelection():any
+  getSelection?():any
   /**
    *Notify latest selection
    @param {any} selection
    */
-  viewerSelectionChanged(selection:any):void
+  viewerSelectionChanged?(selection:any):void
   /**
 
    @param edit
@@ -244,17 +244,17 @@ export interface Facets {
    * @returns the {@link Target}
    */
   newTriggerTarget(title: string, coupler: TargetCoupler): Target
-  /** Creates a {@link Target} containing others.
-   * @param {string} title to identify the {@link Target}
-   * @param {Target[]} members of the group
-   * @returns group of {@link Target}s
-   */
   /** Creates a viewer {@link Target}.
    *  @param {string} title to identify the {@link Target}
    * @param {ViewerCoupler} coupler connects the {@link Target} to client code
    * @returns the {@link Target}
    */
   newViewerTarget(title: string, coupler: ViewerCoupler): Target
+  /** Creates a {@link Target} containing others.
+   * @param {string} title to identify the {@link Target}
+   * @param {Target[]} members of the group
+   * @returns group of {@link Target}s
+   */
   newTargetGroup(title: string, members: Target[]): Target
   /** Creates a {@link Target} that indexes a list.
    *  @param {string} title to identify the {@link Target}

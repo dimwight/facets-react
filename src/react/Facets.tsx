@@ -18,8 +18,8 @@ export interface TargetValues{
   live?:boolean
 }
 export class FacetCore<I extends TargetValues,K extends TargetValues>
-  extends React.Component<I,K>{
-  private canSetState:boolean;
+    extends React.Component<I,K>{
+  private canSetState:boolean=false;
   public static ids=0;
   protected readonly unique:string;
   constructor(props:I){
