@@ -3,9 +3,16 @@
  */
 export interface Target{}
 /**
+ Content of viewer {@link Target}.
+ */
+export interface Viewable{
+  viewerSelectionChanged(selection:any):void;
+  viewerSelectionEdited(edit:any):void;
+}
+/**
  * For passing state in and out of a {@link Target}.
  */
-export type TargetState=string|boolean|number|any
+export type TargetState=string|boolean|number|Viewable
 /**
  * For passing a {@link TargetState} to the UI.
  */
@@ -21,6 +28,17 @@ export interface TargetCoupler {
    */
   targetStateUpdated? (state: TargetState,title: string) : void;
   passLive?:boolean;
+}
+/**
+ Connects a viewer {@link Target} with client code.
+ */
+export interface ViewerCoupler extends TargetCoupler {
+  /**
+   * Supply content for the {@link Target}.
+   * @returns {Viewable} the content
+   */
+  getViewable() : Viewable;
+
 }
 /**
  Connects a textual {@link Target} with client code.
@@ -215,6 +233,12 @@ export interface Facets {
    * @param {Target[]} members of the group
    * @returns group of {@link Target}s
    */
+  /** Creates a viewer {@link Target}.
+   *  @param {string} title to identify the {@link Target}
+   * @param {ViewerCoupler} coupler connects the {@link Target} to client code
+   * @returns the {@link Target}
+   */
+  newViewerTarget(title: string, coupler: ViewerCoupler): Target;
   newTargetGroup(title: string, members: Target[]): Target;
   /** Creates a {@link Target} that indexes a list.
    *  @param {string} title to identify the {@link Target}
