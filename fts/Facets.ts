@@ -22,6 +22,7 @@ import {
   IndexingFramePolicy,
 } from 'facets-js';
 import {traceThing} from '../src/util/_globals';
+import {ViewerCoupler} from './index';
 export function newInstance(trace:boolean):Facets{
   return new Facets(trace);
 }
@@ -96,6 +97,11 @@ export class Facets{
     if(!tree)throw new Error('No tree for '+title);
     this.root.indexing().setIndexed(tree);
     this.notifiable.notify(title);
+  }
+  newViewerTarget(title:string,coupler:ViewerCoupler):Target{
+    const viewer=new Textual(title,coupler);
+    this.trace(`Created viewer title=$title`);
+    return viewer;
   }
   newTextualTarget(title:string,coupler:TextualCoupler):Target{
     const textual=new Textual(title,coupler);

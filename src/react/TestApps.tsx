@@ -51,6 +51,7 @@ class App extends AppCore{
   }
 }
 export const Specs={
+  Viewer:new Spec('Viewer',Trees.newViewer,buildViewer),
   Textual:new Spec('Textual',Trees.newTextual,buildTextual),
   TogglingLive:new Spec('TogglingLive',Trees.newToggling,buildToggling,
     (facets:Facets)=>{
@@ -84,6 +85,14 @@ function buildTextual(facets:Facets){
       <TextualLabel title={first} facets={facets}/>
       <TextualField title={second} facets={facets} cols={40}/>
       <TextualLabel title={second} facets={facets}/>
+    </RowPanel>,
+    document.getElementById('root'),
+  );
+}
+function buildViewer(facets:Facets){
+  ReactDOM.render(
+    <RowPanel title={Specs.Viewer.name} withRubric={true}>
+      <TextualField title={Specs.Viewer.name} facets={facets}/>
     </RowPanel>,
     document.getElementById('root'),
   );
@@ -271,5 +280,5 @@ export function buildContentingLayout(f:Facets,fullListTargets:boolean){
   );
 }
 export function launchApp(spec:Spec){
-  new App(spec).buildSurface();
+  new App(false?spec:Specs.Viewer).buildSurface();
 }

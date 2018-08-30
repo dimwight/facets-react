@@ -124,6 +124,7 @@ interface TextualValues extends TargetValues{
 }
 export class TextualField extends FacetCore<TextualValues,TextualValues>{
   protected readUpdate(update:any){
+    traceThing('TextualField',update);
     return {text:String(update)}
   }
   onFieldEnter=(text:string)=>{
