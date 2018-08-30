@@ -130,7 +130,7 @@ export class Facets{
     this.trace('Attaching facet: title='+title);
     const facet={
       retarget:(ta:Targety)=>{
-        this.trace('Facet retargeted title='+ta.title()+' state='+ta.state());
+        this.trace('FacetCore retargeted title='+ta.title()+' state='+ta.state());
         updater(ta.state());
       },
     };

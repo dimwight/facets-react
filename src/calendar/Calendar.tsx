@@ -6,7 +6,7 @@ import {
   newInstance,
 } from 'facets-js';
 import {
-  Facet,
+  FacetCore,
   IndexingFacet,
   IndexingUiProps,
   LabelRubric,
@@ -149,7 +149,7 @@ class IndexingRowList extends IndexingFacet{
           onKeyDown={this.onItemKeyDown}
           id={globalAt+'_'+this.unique}
           text={keyAt===0?dayName:dayNumber}
-          key={dayName+dayNumber+(Facet.ids++)}
+          key={dayName+dayNumber+(FacetCore.ids++)}
           height={rowHeight}
         />)
       })}</div>

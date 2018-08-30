@@ -1,7 +1,7 @@
 import React from 'react';
 import {traceThing} from '../util/_globals';
 import {
-  Facet,
+  FacetCore,
   LabelRubric,
   TargetValues,
 } from './_locals';
@@ -13,7 +13,7 @@ interface IndexingValues extends TargetValues{
   listWidth?:number
   itemDoubleClicked?:()=>void
 }
-export abstract class IndexingFacet extends Facet<IndexingValues,IndexingValues>{
+export abstract class IndexingFacet extends FacetCore<IndexingValues,IndexingValues>{
   constructor(props:IndexingValues){
     super(props)
   }
@@ -64,7 +64,7 @@ export class IndexingDropdown extends IndexingFacet{
     const options=props.selectables.map((s,at)=>
       <SelectOption
         text={s}
-        key={s+(++Facet.ids)}
+        key={s+(++FacetCore.ids)}
         value={at}
       />,
     );
@@ -154,7 +154,7 @@ export class IndexingList extends IndexingFacet{
         onKeyDown={this.onItemKeyDown}
         id={at+this.unique}
         text={s}
-        key={s+(Facet.ids++)}
+        key={s+(FacetCore.ids++)}
       />)
     });
     return (<span>

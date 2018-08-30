@@ -17,28 +17,26 @@ export interface TargetValues{
   state?:TargetState
   live?:boolean
 }
-export class Facet<I extends TargetValues,K extends TargetValues>
+export class FacetCore<I extends TargetValues,K extends TargetValues>
   extends React.Component<I,K>{
   private canSetState:boolean;
   public static ids=0;
   protected readonly unique:string;
   constructor(props:I){
     super(props);
-    this.unique=props.title+Facet.ids++;
-    traceThing('^ Facet',{'title':props.title});
+    this.unique=props.title+FacetCore.ids++;
+    traceThing('^ FacetCore',{'title':props.title});
     props.facets.attachFacet(props.title,this.facetUpdated);
   }
   facetUpdated=(update:any)=>{
-    const props=this.props;
-    const title=props.title;
+    const {title,facets}=this.props;
     const updateWithLive:{}=Object.assign({},
       this.readUpdate(update),{
-        live:props.facets.isTargetLive(title),
+        live:facets.isTargetLive(title),
         showTitle:title.replace(/\|.*/,''),
       });
     if(!this.canSetState)
-
-      this.state=Object.assign({}as K,props,updateWithLive,);
+      this.state=Object.assign({}as K,this.props,updateWithLive,);
     else this.setState(updateWithLive);
   };
   protected stateChanged(state:TargetState){
@@ -55,7 +53,7 @@ export class Facet<I extends TargetValues,K extends TargetValues>
     return {state:update}
   }
 }
-export class TriggerButton extends Facet<TargetValues,TargetValues>{
+export class TriggerButton extends FacetCore<TargetValues,TargetValues>{
   protected readUpdate(update:any){
     return {}
   }
@@ -85,7 +83,7 @@ export function LabelRubric(props:LabelValues){
 interface TogglingValues extends TargetValues{
   set?:boolean
 }
-export class TogglingCheckbox extends Facet<TogglingValues,TogglingValues>{
+export class TogglingCheckbox extends FacetCore<TogglingValues,TogglingValues>{
   protected readUpdate(update:any):{}{
     return {set:Boolean(update)}
   }
@@ -124,7 +122,7 @@ interface TextualValues extends TargetValues{
   text?:string
   cols?:number
 }
-export class TextualField extends Facet<TextualValues,TextualValues>{
+export class TextualField extends FacetCore<TextualValues,TextualValues>{
   protected readUpdate(update:any){
     return {text:String(update)}
   }
@@ -148,7 +146,7 @@ export class TextualField extends Facet<TextualValues,TextualValues>{
     );
   }
 }
-export class TextualLabel extends Facet<TextualValues,TextualValues>{
+export class TextualLabel extends FacetCore<TextualValues,TextualValues>{
   constructor(props:TextualValues){
     super(props);
     traceThing('^TextualLabel.constructor',this.props);
@@ -167,7 +165,7 @@ export class TextualLabel extends Facet<TextualValues,TextualValues>{
         </span>)
   }
 }
-export class ShowPanel extends Facet<TextualValues,TextualValues>{
+export class ShowPanel extends FacetCore<TextualValues,TextualValues>{
   protected readUpdate(update:any):{}{
     return {text:String(update)}
   }
@@ -237,6 +235,5 @@ export function newFormField(spec:FieldSpec,facets:Facets,key:any){
       return <IndexingDropdown key={key} title={spec.title} facets={facets}/>;
     case FieldType.TriggerButton:
       return <TriggerButton key={key} title={spec.title} facets={facets}/>
-
   }
 }
