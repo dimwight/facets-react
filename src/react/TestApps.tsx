@@ -18,6 +18,7 @@ import {
   TextualLabel,
   TogglingCheckbox,
   TriggerButton,
+  TextViewer,
 } from './_globals';
 import {
   AppCore,
@@ -32,7 +33,7 @@ class Spec{
   constructor(readonly name:string,
               readonly newTrees:(f:Facets,flag?:boolean)=>Target,
               readonly buildLayout:(f:Facets)=>void,
-              readonly onRetargeted?:(facets:Facets,active:string)=>void,){}
+              readonly onRetargeted?:(facets:Facets,active:string)=>void){}
 }
 class App extends AppCore{
   constructor(readonly test:Spec){
@@ -92,7 +93,7 @@ function buildTextual(facets:Facets){
 function buildViewer(facets:Facets){
   ReactDOM.render(
     <RowPanel title={Specs.Viewer.name} withRubric={true}>
-      <TextualField title={Specs.Viewer.name} facets={facets}/>
+      <TextViewer title={Specs.Viewer.name} facets={facets}/>
     </RowPanel>,
     document.getElementById('root'),
   );

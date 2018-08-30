@@ -122,9 +122,31 @@ interface TextualValues extends TargetValues{
   text?:string
   cols?:number
 }
+export class TextViewer extends FacetCore<TargetValues,TargetValues>{
+  protected readUpdate(update:any){
+    traceThing('TextViewer.readUpdate',update);
+    return {text:String(update)}
+  }
+  onFieldEnter=(text:string)=>{
+    this.stateChanged(text);
+  };
+  getStateText=():string=>'Hi';
+  isDisabled=()=>!this.state.live as boolean;
+  render(){
+    return (<div className={'textualField'}>
+        <SmartTextField
+          getStartText={this.getStateText}
+          onEnter={this.onFieldEnter as FnPassString}
+          cols={20}
+          isDisabled={this.isDisabled}
+          hint={'Hint'}
+        />
+      </div>
+    );
+  }
+}
 export class TextualField extends FacetCore<TextualValues,TextualValues>{
   protected readUpdate(update:any){
-    traceThing('TextualField',update);
     return {text:String(update)}
   }
   onFieldEnter=(text:string)=>{

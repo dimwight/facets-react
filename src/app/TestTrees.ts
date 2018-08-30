@@ -3,8 +3,6 @@ import {
   IndexingCoupler,
   IndexingFramePolicy,
   Target,
-  Viewable,
-  ViewerCoupler,
 } from 'facets-js';
 import {
   Selecting,
