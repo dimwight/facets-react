@@ -281,5 +281,5 @@ export function buildContentingLayout(f:Facets,fullListTargets:boolean){
   );
 }
 export function launchApp(spec:Spec){
-  new App(false?spec:Specs.Viewer).buildSurface();
+  new App(false?spec:Specs.AllNonSelecting).buildSurface();
 }

@@ -53,30 +53,6 @@ export class FacetCore<I extends TargetValues,K extends TargetValues>
   protected readUpdate(update:any):{}{
     return {state:update}
   }
-  protected isDisabled=()=>!this.state.live as boolean;
-}
-export class TextViewer extends FacetCore<TargetValues,TargetValues>{
-  protected readUpdate(update:any){
-    const content=(update as Viewable).getContent();
-    traceThing('TextViewer.readUpdate',content);
-    return {text:String(content)}
-  }
-  onFieldEnter=(text:string)=>{
-    this.stateChanged(text);
-  };
-  getStateText=():string=>'Hi';
-  render(){
-    return (<div className={'textualField'}>
-        <SmartTextField
-          getStartText={this.getStateText}
-          onEnter={this.onFieldEnter as FnPassString}
-          cols={20}
-          isDisabled={this.isDisabled}
-          hint={'Hint'}
-        />
-      </div>
-    );
-  }
 }
 export class TriggerButton extends FacetCore<TargetValues,TargetValues>{
   protected readUpdate(update:any){
@@ -156,14 +132,15 @@ export class TextualField extends FacetCore<TextualValues,TextualValues>{
   };
   getStateText=():string=>this.state.text as string;
   render(){
+    const disabled=!this.state.live;
     return (<div className={'textualField'}>
         <LabelRubric text={this.state.showTitle as string}
-                     disabled={!this.state.live}/>
+                     disabled={disabled}/>
         <SmartTextField
           getStartText={this.getStateText}
           onEnter={this.onFieldEnter as FnPassString}
           cols={this.props.cols as number}
-          isDisabled={this.isDisabled}
+          isDisabled={()=>disabled}
           hint={'Hint'}
         />
       </div>
@@ -187,6 +164,27 @@ export class TextualLabel extends FacetCore<TextualValues,TextualValues>{
       &nbsp;
       <LabelText text={state.text as string} disabled={disabled}/>
         </span>)
+  }
+}
+export class TextViewer extends FacetCore<TargetValues,TargetValues>{
+  protected readUpdate(update:any){
+    const content=(update as Viewable).getContent();
+    traceThing('TextViewer.readUpdate',content);
+    return {text:String(content)}
+  }
+  onFieldEnter=(text:string)=>{
+    this.stateChanged(text);
+  };
+  getStateText=():string=>'Hi';
+  render(){
+    traceThing('render',this.state);
+    return (<div className={'textualField'}>
+        <textarea
+          value={'Ho'}
+          readOnly={true}
+        />
+      </div>
+    );
   }
 }
 export class ShowPanel extends FacetCore<TextualValues,TextualValues>{
