@@ -30,10 +30,10 @@ export interface Viewable{
  */
 export interface ViewerCoupler extends TargetCoupler {
   /**
-   * Supply content state for the {@link Target}.
+   * Supply initial content for the {@link Target}.
    * @returns {Viewable} the content
    */
-  viewable : Viewable
+  passViewable : Viewable
 
 }
 /**

@@ -15,7 +15,7 @@ import {traceThing} from '../util/_globals';
 export namespace Trees{
   export function newViewer(facets:Facets){
     return facets.newViewerTarget("Viewer",{
-      viewable:{
+      passViewable:{
         getContent:()=>'Hi there',
         viewerSelectionEdited:(edit:string)=>alert(edit)
       }
