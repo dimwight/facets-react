@@ -16,7 +16,7 @@ export namespace Trees{
   export function newViewer(facets:Facets){
     return facets.newViewerTarget("Viewer",{
       passViewable:{
-        getContent:()=>'Hi there',
+        getContent:()=>'Hi there again',
         viewerSelectionEdited:(edit:string)=>alert(edit)
       }
     })
